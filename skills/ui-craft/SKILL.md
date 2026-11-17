@@ -1,6 +1,6 @@
 ---
 name: ui-craft
-description: Design, implement, or review distinctive frontend UI/UX across televisions, kiosks, POS and handhelds, watches, car dashboards and HUDs, AR/VR headsets, e-paper tags, multi-screen workstations, tablets, digital signage, foldables, home panels, websites, business platforms, apps and mini programs. 用于大屏、电视、自助终端、车机、可穿戴、空间计算、多屏工位、折叠屏、家居面板、官网、后台与移动端的视觉设计、交互实现与界面评审。
+description: Design, implement, or review distinctive frontend UI/UX across enterprise command centers, plant walls, TVs, kiosks, POS and handhelds, wearables, car dashboards and HUDs, AR/VR headsets, e-paper tags, multi-screen workstations, tablets, digital signage, foldables, home panels, icon systems, illustration sets, websites, business platforms, apps and mini programs. 用于企业驾驶舱、产线大屏、电视、自助终端、车机、可穿戴、空间计算、多屏工位、折叠屏、家居面板、图标与插画体系、官网、后台与移动端的视觉设计、交互实现与界面评审。
 ---
 
 # UI-Craft · UI/UX 设计
@@ -32,12 +32,15 @@ description: Design, implement, or review distinctive frontend UI/UX across tele
 | 为 App、微信小程序或 H5 设计任务入口、返回、草稿和提交 | [移动平台的导航与验证](references/mobile-platforms.md) |
 | 切换深浅主题、调整长文字号与行距，或在值守界面区分预选和执行 | [外观偏好、阅读位置与动态反馈](references/appearance-and-reading.md) |
 | 设计指挥中心大屏、场馆公共显示或能源监控墙，确定主画面、远距字阶和整屏布局 | [大屏视觉方向与验证](references/wall-displays.md) |
+| 做集团级或车间级驾驶舱：多口径 KPI、指标带趋势、分布图与告警同屏 | [企业驾驶舱与产线监控墙](references/enterprise-dashboards.md) |
 | 为客厅电视、投屏或机顶盒设计遥控焦点导航与十英尺字阶 | [电视、家用大屏与遥控焦点](references/television.md) |
 | 区分实测与预测，或从区域趋势找到待处理站点 | [数据大屏与分析看板](references/data-display.md) |
 | 设计自助挂号机、排队机、收银台或手持终端，确定扫码、打印与失败回执 | [自助终端、POS 与手持设备](references/terminals-and-pos.md) |
 | 为车机、仪表、HUD、手表、AR 眼镜或 VR 头显分配极低注意力预算 | [座舱、可穿戴与空间计算](references/spatial-and-vehicle.md) |
 | 设计双屏工位、平板分屏、折叠屏形态切换或竖屏数字标牌 | [多屏、形态变化与分屏](references/multi-screen-and-forms.md) |
 | 为墙面家居面板、开关屏或低亮度环境设计即时控制 | [智能家居面板与低注意力界面](references/home-and-panels.md) |
+| 搭企业应用的壳层：权限导航、命令面板、可配置表格、审计轨迹 | [企业应用壳层与权限界面](references/enterprise-app-shell.md) |
+| 画功能图标、组织图标集、做插画或品牌标记，或检查图标一致性 | [图标、插画与图形资产](references/icons-and-illustration.md) |
 | 借鉴小米、华为、Rokid、Apple 或记录中的其他品牌 | [官方页面观察与迁移边界](references/brand-research.md) |
 | 检查成品，或根据用户标注修正具体页面 | [质量评审](references/quality-review.md)、[标注反馈](references/review-loop.md) |
 

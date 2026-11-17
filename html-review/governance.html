@@ -1,0 +1,725 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f8fa">
+<title>枢机 · 企业数据治理台</title>
+<style>
+:root{
+  --bg:#f7f8fa;--card:#fff;--ink:#171b20;--sub:#5a6472;--dim:#8b94a1;
+  --line:#e3e7ec;--rule:#eef1f4;
+  --nav:#131a24;--nav-2:#0e141c;--nav-ink:#c8d2de;--nav-dim:#7b8798;
+  --azure:#1d5fd8;--azure-soft:#e8effd;--teal:#0d7a6c;--amber:#a06a00;
+  --rose:#b03a2e;--violet:#6a4bbf;--green:#1c7a45;
+  font-family:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);font-size:13px;line-height:1.5;font-synthesis:none;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);height:100vh;overflow:hidden}
+h1,h2,h3,h4,p,dl,dd{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{cursor:not-allowed}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--azure);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ── app shell ─────────────────────────────────── */
+.app{display:grid;grid-template-columns:216px minmax(0,1fr);height:100vh}
+
+/* nav */
+.nav{background:linear-gradient(180deg,var(--nav),var(--nav-2));display:grid;grid-template-rows:auto 1fr auto;min-height:0;color:var(--nav-ink)}
+.nav-top{padding:14px 14px 12px;border-bottom:1px solid #ffffff12}
+.brandline{display:flex;align-items:center;gap:9px}
+.glyph{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;flex:none;background:linear-gradient(150deg,#3d8bff,#1d5fd8);box-shadow:0 0 0 1px #ffffff24}
+.glyph svg{width:15px;height:15px}
+.brandline b{font-size:13px;letter-spacing:.14em;color:#e9eef5;font-weight:650}
+.brandline small{display:block;font-size:8.5px;letter-spacing:.16em;color:var(--nav-dim);margin-top:1px}
+.orgpick{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:12px;padding:7px 8px;border-radius:6px;border:1px solid #ffffff14;background:#ffffff08;font-size:11.5px;color:#b9c5d4;width:100%}
+.orgpick:hover{background:#ffffff10}
+.orgpick b{font-weight:600;color:#e4ebf4;display:block;font-size:11.5px}
+.orgpick small{display:block;font-size:9.5px;color:var(--nav-dim);margin-top:1px}
+.navscroll{overflow:auto;padding:10px 8px;scrollbar-width:thin;scrollbar-color:#2a3648 transparent}
+.navscroll::-webkit-scrollbar{width:6px}
+.navscroll::-webkit-scrollbar-thumb{background:#2a3648;border-radius:3px}
+.navsec{margin-bottom:14px}
+.navsec>p{font-size:9.5px;letter-spacing:.14em;color:#5c6979;font-weight:650;padding:0 8px;margin-bottom:5px}
+.navitem{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border-radius:5px;font-size:12px;color:#a9b6c6;margin-bottom:1px;text-align:left;position:relative}
+.navitem:hover{background:#ffffff0d;color:#dbe4ef}
+.navitem[aria-current=true]{background:#1c2837;color:#eaf1f9;font-weight:600}
+.navitem[aria-current=true]::before{content:"";position:absolute;left:0;top:5px;bottom:5px;width:2px;border-radius:1px;background:#3d8bff}
+.navitem svg{width:14px;height:14px;flex:none;opacity:.85}
+.navitem .cnt{margin-left:auto;font-size:9.5px;font-family:var(--mono);color:#7b8798;background:#ffffff0d;padding:1px 5px;border-radius:3px}
+.navitem[aria-current=true] .cnt{background:#2b3a4d;color:#a9c6ef}
+.navfoot{padding:10px;border-top:1px solid #ffffff12}
+.who{display:flex;align-items:center;gap:8px;padding:6px;border-radius:6px;width:100%}
+.who:hover{background:#ffffff0d}
+.ava{width:26px;height:26px;border-radius:50%;background:linear-gradient(150deg,#5b7fa8,#2d4058);display:grid;place-items:center;font-size:10.5px;font-weight:700;color:#e8eef6;flex:none}
+.who b{display:block;font-size:11.5px;color:#e2e9f2;font-weight:600}
+.who small{display:block;font-size:9.5px;color:var(--nav-dim);margin-top:1px}
+
+/* main */
+.main{display:grid;grid-template-rows:auto auto minmax(0,1fr);min-height:0;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:0 20px;height:52px;background:var(--card);border-bottom:1px solid var(--line);min-width:0}
+.crumbs{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--sub);min-width:0;white-space:nowrap;overflow:hidden}
+.crumbs b{color:var(--ink);font-weight:600}
+.crumbs i{color:var(--dim);font-style:normal}
+.cmds{display:flex;align-items:center;gap:8px;flex:none}
+.searchbtn{display:flex;align-items:center;gap:7px;padding:6px 9px;border-radius:6px;border:1px solid var(--line);background:#fafbfc;color:var(--dim);font-size:11.5px;min-height:32px}
+.searchbtn:hover{border-color:#c9d4e0;color:var(--sub)}
+kbd{font-family:var(--mono);font-size:9.5px;padding:1px 4px;border-radius:3px;border:1px solid #d3dae2;background:#fff;color:var(--sub)}
+.iconbtn{width:32px;height:32px;border-radius:6px;display:grid;place-items:center;color:var(--sub);border:1px solid transparent}
+.iconbtn:hover{background:#f1f4f8;border-color:var(--line)}
+.savestate{font-size:11px;color:var(--dim);display:flex;align-items:center;gap:5px}
+.savestate i{width:5px;height:5px;border-radius:50%;background:var(--green)}
+
+/* page head */
+.pagehead{padding:16px 20px 12px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.pagehead h1{font-size:19px;letter-spacing:-.02em;font-weight:650}
+.pagehead p{font-size:11.5px;color:var(--sub);margin-top:4px;max-width:64ch;line-height:1.6}
+.headacts{display:flex;gap:8px;flex-wrap:wrap}
+.btn{min-height:32px;padding:0 12px;border-radius:6px;border:1px solid var(--line);background:#fff;font-size:11.5px;font-weight:600;color:var(--sub);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:#c2cdda;color:var(--ink)}
+.btn.primary{background:var(--azure);border-color:var(--azure);color:#fff}
+.btn.primary:hover{background:#1a54c2}
+.btn:disabled{opacity:.45}
+.btn svg{width:13px;height:13px}
+
+/* work area */
+.work{padding:0 20px 18px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:12px;min-height:0}
+.toolstrip{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.segment{display:flex;gap:2px;background:#eef1f5;border-radius:7px;padding:2px}
+.segment button{padding:5px 11px;border-radius:5px;font-size:11.5px;font-weight:600;color:var(--sub);min-height:28px}
+.segment button[aria-pressed=true]{background:#fff;color:var(--ink);box-shadow:0 1px 2px #0b1a2e14}
+.filterrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chipfilter{display:inline-flex;align-items:center;gap:5px;padding:4px 8px;border-radius:5px;border:1px solid #cfdae6;background:var(--azure-soft);color:#1a4fae;font-size:11px;font-weight:600}
+.chipfilter b{font-weight:600}
+.chipfilter:hover{background:#dfe8fc}
+
+/* split: table + audit */
+.board{display:grid;grid-template-columns:minmax(0,1fr) 322px;gap:12px;min-height:0}
+@media(max-width:1240px){.board{grid-template-columns:minmax(0,1fr)}.audit{display:none}}
+.tablecard{background:var(--card);border:1px solid var(--line);border-radius:8px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;min-height:0;overflow:hidden}
+.ttop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 12px;border-bottom:1px solid var(--rule);flex-wrap:wrap}
+.ttop .sel{font-size:11.5px;color:var(--sub);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ttop .sel b{color:var(--azure);font-weight:650}
+.bulkacts{display:flex;gap:6px;flex-wrap:wrap}
+.mini{min-height:26px;padding:0 9px;border-radius:5px;border:1px solid var(--line);background:#fff;font-size:11px;font-weight:600;color:var(--sub)}
+.mini:hover:not(:disabled){border-color:#c2cdda;color:var(--ink)}
+.mini.danger:hover:not(:disabled){border-color:#e2b5af;color:var(--rose);background:#fdf4f3}
+.tablescroll{overflow:auto;min-height:0;scrollbar-width:thin}
+.cbwrap{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:4px;cursor:pointer}
+.cbwrap:hover{background:#eef2f7}
+.cbwrap input{width:15px;height:15px;accent-color:var(--azure);cursor:pointer;margin:0}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12px;table-layout:fixed}
+thead th{position:sticky;top:0;z-index:3;text-align:left;font-size:10px;letter-spacing:.09em;color:var(--dim);font-weight:650;background:#fafbfc;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th.sel,td.sel{width:38px;padding-left:12px;padding-right:0}
+th .sortbtn{display:inline-flex;align-items:center;gap:3px;color:inherit;font:inherit;letter-spacing:inherit}
+th .sortbtn:hover{color:var(--ink)}
+th .sortbtn i{font-size:8px;opacity:.45;font-style:normal}
+th[aria-sort] .sortbtn i{opacity:1;color:var(--azure)}
+tbody td{padding:8px 10px;border-bottom:1px solid var(--rule);vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#f8fafc}
+tbody tr[aria-selected=true]{background:var(--azure-soft)}
+tbody tr[aria-selected=true] td:first-child{box-shadow:inset 2px 0 0 var(--azure)}
+tbody tr[data-locked=true] .name{color:var(--dim)}
+.name{display:block;font-weight:600;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub2{display:block;font-size:10.5px;color:var(--dim);margin-top:1px}
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:650;padding:2px 6px;border-radius:4px;border:1px solid;white-space:nowrap}
+.tag::before{content:"";width:4px;height:4px;border-radius:50%;background:currentColor}
+.tag.pii{color:#8a4b00;background:#fdf3e0;border-color:#ecd5a8}
+.tag.fin{color:#1a4fae;background:var(--azure-soft);border-color:#c3d5f7}
+.tag.ops{color:#0b6b60;background:#e6f4f1;border-color:#bfe0d9}
+.tag.core{color:#5a3a9e;background:#f0ebfb;border-color:#d8cbf2}
+.lvl{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;color:var(--sub);font-weight:600}
+.lvl i{display:block;width:11px;height:3px;border-radius:1px;background:#dbe2ea;position:relative}
+.lvl i::after{content:"";position:absolute;inset:0;width:var(--w,0);background:var(--azure);border-radius:1px}
+.own{display:flex;align-items:center;gap:5px}
+.own .a{width:18px;height:18px;border-radius:50%;background:#dde6f1;display:grid;place-items:center;font-size:8px;font-weight:700;color:#41546b;flex:none}
+.mask{font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+.lock{color:var(--dim);font-size:10.5px;display:inline-flex;align-items:center;gap:3px}
+.lock svg{width:10px;height:10px}
+.tfoot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 12px;border-top:1px solid var(--rule);font-size:11px;color:var(--dim);flex-wrap:wrap}
+.pager{display:flex;align-items:center;gap:4px}
+.pager button{min-width:26px;height:26px;border-radius:4px;border:1px solid var(--line);background:#fff;font-size:11px;color:var(--sub);font-family:var(--mono)}
+.pager button[aria-current=true]{background:var(--azure);border-color:var(--azure);color:#fff}
+
+/* audit panel */
+.audit{background:var(--card);border:1px solid var(--line);border-radius:8px;display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;overflow:hidden}
+.audit-head{padding:10px 12px;border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.audit-head h2{font-size:11px;letter-spacing:.12em;color:var(--sub);font-weight:650}
+.audit-head .live{font-size:9.5px;color:var(--green);display:flex;align-items:center;gap:4px;font-weight:650;letter-spacing:.06em}
+.audit-head .live i{width:5px;height:5px;border-radius:50%;background:currentColor}
+.audit-scroll{overflow:auto;min-height:0;padding:10px 12px;scrollbar-width:thin}
+.ev{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;padding-bottom:11px;position:relative}
+.ev:not(:last-child)::before{content:"";position:absolute;left:8px;top:18px;bottom:0;width:1px;background:var(--rule)}
+.ev .dot3{width:17px;height:17px;border-radius:50%;display:grid;place-items:center;background:#eef2f7;color:var(--sub);flex:none;z-index:1}
+.ev .dot3 svg{width:9px;height:9px}
+.ev[data-kind=write] .dot3{background:#e8effd;color:var(--azure)}
+.ev[data-kind=deny] .dot3{background:#fdf1ef;color:var(--rose)}
+.ev[data-kind=grant] .dot3{background:#e7f4ef;color:var(--green)}
+.ev .tx2{min-width:0;font-size:11.5px;line-height:1.5}
+.ev .tx2 b{font-weight:650;color:var(--ink)}
+.ev .tx2 p{color:var(--sub);font-size:11px;margin-top:1px}
+.ev .tx2 time{display:block;font-size:9.5px;color:var(--dim);margin-top:3px;font-family:var(--mono)}
+
+/* drawer */
+.drawer{position:fixed;inset:0;z-index:60;display:grid;grid-template-columns:minmax(0,1fr) min(0,480px);pointer-events:none}
+.drawer[hidden]{display:none}
+.drawer .shade{background:#0b1a2e3d;opacity:0;transition:opacity .18s;pointer-events:auto}
+.drawer.open .shade{opacity:1}
+.drawer .panel2{background:#fff;box-shadow:-8px 0 28px #0b1a2e1f;display:grid;grid-template-rows:auto 1fr;transform:translateX(102%);transition:transform .2s;pointer-events:auto;min-height:0;overflow:hidden}
+.drawer.open .panel2{transform:translateX(0)}
+.dhead{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.dhead h2{font-size:15px;font-weight:650;letter-spacing:-.01em}
+.dhead p{font-size:11px;color:var(--dim);margin-top:3px;font-family:var(--mono)}
+.dbody{overflow:auto;padding:14px 16px;min-height:0}
+.field{display:grid;gap:4px;margin-bottom:12px}
+.field label{font-size:10px;letter-spacing:.1em;color:var(--dim);font-weight:650}
+.field .val{font-size:12px;padding:7px 9px;border:1px solid var(--line);border-radius:5px;background:#fafbfc;color:var(--ink)}
+.field .val.mono{font-family:var(--mono);font-size:11px}
+.field .hint{font-size:10.5px;color:var(--dim);line-height:1.5}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.deny{border:1px solid #f0d6d2;background:#fdf6f5;border-radius:6px;padding:9px 11px;font-size:11px;line-height:1.6;color:#7d3a31;margin-bottom:12px}
+.deny b{color:var(--rose)}
+
+/* command palette */
+.palette{position:fixed;inset:0;z-index:70;background:#0b1a2e4d;display:grid;place-items:start center;padding-top:12vh}
+.palette[hidden]{display:none}
+.palbox{width:min(520px,92vw);background:#fff;border-radius:10px;box-shadow:0 24px 60px #0b1a2e42;overflow:hidden}
+.palbox input{width:100%;border:0;border-bottom:1px solid var(--line);padding:13px 15px;font-size:13px;outline:none}
+.pallist{max-height:46vh;overflow:auto;padding:5px}
+.palitem{display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border-radius:6px;font-size:12px;color:var(--sub);text-align:left}
+.palitem[aria-selected=true]{background:var(--azure-soft);color:#1a4fae}
+.palitem svg{width:13px;height:13px;flex:none}
+.palitem .k{margin-left:auto;font-size:9.5px;color:var(--dim);font-family:var(--mono)}
+.palfoot{padding:7px 12px;border-top:1px solid var(--rule);font-size:10px;color:var(--dim);display:flex;gap:12px}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,14px);z-index:80;background:#111b26;color:#e9eef5;font-size:11.5px;padding:9px 14px;border-radius:6px;box-shadow:0 12px 28px #0b1a2e33;opacity:0;transition:.2s;pointer-events:none;max-width:80vw}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:1024px){.app{grid-template-columns:64px minmax(0,1fr)}.navitem{min-height:44px}.nav .brandline b,.nav .brandline small,.orgpick,.navsec>p,.navitem span,.navitem .cnt,.who b,.who small{display:none}.navitem{justify-content:center}.nav-top{padding:12px 8px}.navfoot{padding:8px}}
+@media(max-width:760px){
+  body{height:auto;overflow:auto}.app{grid-template-columns:1fr;height:auto}
+  .nav{grid-template-rows:auto}.navscroll{display:flex;gap:4px;overflow-x:auto;padding:6px}
+  .navitem{min-width:44px;min-height:44px;padding:0;justify-content:center}
+  .navsec{margin:0;display:flex;gap:2px}.navsec>p{display:none}
+  .navfoot{display:none}
+  .topbar{height:auto;padding:8px 12px;flex-wrap:wrap;gap:8px}
+  .pagehead,.work{padding-left:12px;padding-right:12px}
+  .board{grid-template-columns:1fr}
+  .segmented{overflow-x:auto}
+  .btn,.mini{min-height:44px}.iconbtn{width:44px;height:44px}.searchbtn{min-height:44px}
+  .segment button{min-height:44px}
+  .pager button{min-width:44px;height:44px}
+  .palitem{padding:12px 10px}
+  tbody td{padding:11px 10px}
+  tbody tr[data-id]{min-height:48px}
+  th.sel,td.sel{width:44px}
+  th.sel input,td.sel input{width:22px;height:22px}
+  .cbwrap{width:44px;height:44px}
+  th,thead th{padding-top:10px;padding-bottom:10px}
+  th .sortbtn{min-height:40px;display:inline-flex;align-items:center}
+  .drawer{grid-template-columns:0 1fr}.drawer .panel2{width:min(100%,480px)}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-review-context="table">
+<div class="app">
+  <nav class="nav" aria-label="主导航">
+    <div class="nav-top">
+      <div class="brandline">
+        <span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="6.4" height="16" rx="1.4"/><rect x="13.6" y="4" width="6.4" height="9" rx="1.4"/><circle cx="16.8" cy="17.5" r="1.6" fill="#fff" stroke="none"/></svg></span>
+        <div><b>枢机</b><small>DATA GOVERNANCE</small></div>
+      </div>
+      <button class="orgpick" type="button" data-review-id="gov-org">
+        <span><b>衡远制造集团</b><small>生产环境 · 12 个域</small></span>
+        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+      </button>
+    </div>
+    <div class="navscroll">
+      <div class="navsec"><p>治理</p>
+        <button class="navitem" aria-current="true" type="button" data-nav="datasets">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="6.4" rx="7.6" ry="3"/><path d="M4.4 6.4v11.2c0 1.7 3.4 3 7.6 3s7.6-1.3 7.6-3V6.4"/><path d="M4.4 12c0 1.7 3.4 3 7.6 3s7.6-1.3 7.6-3"/></svg>
+          <span>数据集</span><b class="cnt">24</b>
+        </button>
+        <button class="navitem" type="button" data-nav="quality">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 17.5 9 11l3.6 3.4L20 5"/><path d="M15.4 5H20v4.6"/></svg>
+          <span>质量规则</span><b class="cnt">18</b>
+        </button>
+        <button class="navitem" type="button" data-nav="lineage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="6" cy="6" r="2.4"/><circle cx="18" cy="12" r="2.4"/><circle cx="6" cy="18" r="2.4"/><path d="M8.2 7.2 15.8 11M8.2 16.8 15.8 13"/></svg>
+          <span>血缘</span>
+        </button>
+        <button class="navitem" type="button" data-nav="glossary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 5.5h9a2.5 2.5 0 0 1 2.5 2.5v11H7.5A2.5 2.5 0 0 1 5 16.5Z"/><path d="M8.5 9h5M8.5 12.5h3"/></svg>
+          <span>业务词典</span>
+        </button>
+      </div>
+      <div class="navsec"><p>权限</p>
+        <button class="navitem" type="button" data-nav="access">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="8.4" r="3.2"/><path d="M3.6 19.6a5.6 5.6 0 0 1 10.8 0"/><path d="M16.4 9.6h4v3.4"/></svg>
+          <span>访问策略</span><b class="cnt">7</b>
+        </button>
+        <button class="navitem" type="button" data-nav="requests">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 11.4V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h9.6"/><path d="m8.6 11.6 2.8 2.8L19 7"/></svg>
+          <span>申请审批</span><b class="cnt">3</b>
+        </button>
+        <button class="navitem" type="button" data-nav="audit">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.4"/><path d="M12 7.6V12l3.2 2"/></svg>
+          <span>操作审计</span>
+        </button>
+      </div>
+      <div class="navsec"><p>系统</p>
+        <button class="navitem" type="button" data-nav="conn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3.6" y="4.4" width="16.8" height="5" rx="1.4"/><rect x="3.6" y="14.6" width="16.8" height="5" rx="1.4"/><path d="M7 6.9h.01M7 17.1h.01"/></svg>
+          <span>数据源</span><b class="cnt">6</b>
+        </button>
+        <button class="navitem" type="button" data-nav="members">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8.2" r="3.4"/><path d="M5.4 19.8a6.6 6.6 0 0 1 13.2 0"/></svg>
+          <span>成员</span>
+        </button>
+      </div>
+    </div>
+    <div class="navfoot">
+      <button class="who" type="button">
+        <span class="ava" aria-hidden="true">陈</span>
+        <span><b>陈溪</b><small>数据管理员</small></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumbs"><i>治理</i><i>/</i><b id="crumb">数据集</b><i>/</i><span id="crumbScope">全部 24 项</span></div>
+      <div class="cmds">
+        <span class="savestate"><i aria-hidden="true"></i><span id="syncNote">已同步 14:26</span></span>
+        <button class="searchbtn" id="openPalette" type="button" data-review-id="gov-palette">
+          <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="10.8" cy="10.8" r="6.6"/><path d="m15.6 15.6 4.3 4.3"/></svg>
+          搜索或执行命令 <kbd>⌘K</kbd>
+        </button>
+        <button class="iconbtn" type="button" aria-label="通知" title="通知">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M18 9.4a6 6 0 0 0-12 0c0 5.4-1.8 6.9-1.8 6.9h15.6S18 14.8 18 9.4Z"/><path d="M13.7 19.6a2 2 0 0 1-3.4 0"/></svg>
+        </button>
+        <button class="iconbtn" type="button" aria-label="帮助" title="帮助">
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="8.6"/><path d="M9.6 9.4a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 1.9-2.4 3.4"/><circle cx="12" cy="16.6" r=".9" fill="currentColor" stroke="none"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="pagehead">
+      <div>
+        <h1 id="pageTitle">数据集</h1>
+        <p id="pageDesc">共 24 项。当前账号可编辑 9 项，其余为只读或受限。所有写操作都会写入审计轨迹，可在右侧面板核对。</p>
+      </div>
+      <div class="headacts">
+        <button class="btn" id="exportBtn" type="button" data-review-id="gov-export">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M12 15.5V3.8M8 7.2l4-3.4 4 3.4"/><path d="M4.5 14.5v4.2A1.8 1.8 0 0 0 6.3 20.5h11.4a1.8 1.8 0 0 0 1.8-1.8v-4.2"/></svg>
+          导出清单
+        </button>
+        <button class="btn primary" id="newBtn" type="button" data-review-id="gov-new">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          新建数据集
+        </button>
+      </div>
+    </div>
+
+    <div class="work">
+      <div class="toolstrip">
+        <div class="segment" role="group" aria-label="查看范围">
+          <button type="button" data-scope="all" aria-pressed="true">全部 24</button>
+          <button type="button" data-scope="editable" aria-pressed="false">可编辑 9</button>
+          <button type="button" data-scope="restricted" aria-pressed="false">受限 6</button>
+          <button type="button" data-scope="mine" aria-pressed="false">我负责 4</button>
+        </div>
+        <div class="filterrow" id="filterRow"></div>
+      </div>
+
+      <div class="board">
+        <div class="tablecard">
+          <div class="ttop">
+            <div class="sel"><span id="selCount">未选择</span><div class="bulkacts" id="bulkActs"></div></div>
+            <div style="display:flex;gap:6px;align-items:center">
+              <button class="mini" id="colBtn" type="button">列设置</button>
+              <button class="mini" id="densityBtn" type="button" aria-pressed="false">紧凑</button>
+            </div>
+          </div>
+          <div class="tablescroll">
+            <table id="grid" aria-label="数据集清单">
+              <thead><tr id="headRow"></tr></thead>
+              <tbody id="body"></tbody>
+            </table>
+          </div>
+          <div class="tfoot">
+            <span id="rangeNote"></span>
+            <div class="pager" id="pager"></div>
+          </div>
+        </div>
+
+        <aside class="audit" aria-label="操作审计">
+          <div class="audit-head"><h2>操作审计</h2><span class="live"><i aria-hidden="true"></i>实时</span></div>
+          <div class="audit-scroll" id="auditList"></div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="drawer" id="drawer">
+  <div class="shade"></div>
+  <div class="panel2" role="dialog" aria-modal="true" aria-labelledby="dTitle">
+    <div class="dhead">
+      <div><h2 id="dTitle">数据集</h2><p id="dMeta"></p></div>
+      <button class="iconbtn" id="closeDrawer" type="button" aria-label="关闭">
+        <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 6 12 12M18 6 6 18"/></svg>
+      </button>
+    </div>
+    <div class="dbody" id="dBody"></div>
+  </div>
+</div>
+
+<div class="palette" id="palette" hidden>
+  <div class="palbox" role="dialog" aria-modal="true" aria-label="命令面板">
+    <input id="palInput" placeholder="输入命令或数据集名称" autocomplete="off" spellcheck="false">
+    <div class="pallist" id="palList"></div>
+    <div class="palfoot"><span>↑↓ 选择</span><span>Enter 执行</span><span>Esc 关闭</span></div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+
+  /* Permission is modelled as data, not as UI guesswork: every row carries the
+     capabilities the current account has, and the actions read from that. */
+  const CAP = { edit: 'edit', read: 'read', none: 'none' };
+  const rows = [
+    ['ds-1001', '生产工单主表', 'MES.WO_MASTER', '生产', 'ops', 4, '陈溪', '林望', '2026-11-17 13:42', CAP.edit, 'PII'],
+    ['ds-1002', '客户主数据', 'CRM.CUSTOMER', '销售', 'core', 5, '周覃', '陈溪', '2026-11-17 11:08', CAP.edit, '受控'],
+    ['ds-1003', '应收账龄明细', 'FIN.AR_AGING', '财务', 'fin', 4, '罗舸', '罗舸', '2026-11-16 18:20', CAP.read, '财务'],
+    ['ds-1004', '设备点检记录', 'MES.EQ_CHECK', '生产', 'ops', 3, '孙杭', '陈溪', '2026-11-17 09:14', CAP.edit, '—'],
+    ['ds-1005', '供应商结算单', 'SCM.SETTLE', '采购', 'fin', 5, '方宁', '周覃', '2026-11-15 16:02', CAP.read, '财务'],
+    ['ds-1006', '员工花名册', 'HR.EMPLOYEE', '人力', 'core', 5, '李禾', '李禾', '2026-11-14 10:45', CAP.none, 'PII'],
+    ['ds-1007', '库存快照', 'WMS.STOCK', '仓储', 'ops', 3, '孙杭', '陈溪', '2026-11-17 07:30', CAP.edit, '—'],
+    ['ds-1008', '工艺参数版本', 'MES.PROCESS', '生产', 'core', 4, '周原', '罗舸', '2026-11-13 15:10', CAP.read, '—'],
+    ['ds-1009', '售后工单', 'CRM.AFTER', '销售', 'ops', 3, '周覃', '陈溪', '2026-11-16 20:58', CAP.edit, 'PII'],
+    ['ds-1010', '成本分摊表', 'FIN.COST_ALLOC', '财务', 'fin', 5, '罗舸', '罗舸', '2026-11-12 09:22', CAP.none, '财务'],
+    ['ds-1011', '供应商资质', 'SCM.QUALIFY', '采购', 'core', 4, '方宁', '周覃', '2026-11-11 14:36', CAP.read, '受控'],
+    ['ds-1012', '产线节拍', 'MES.TACT', '生产', 'ops', 3, '孙杭', '陈溪', '2026-11-17 08:12', CAP.edit, '—'],
+    ['ds-1013', '发票台账', 'FIN.INVOICE', '财务', 'fin', 5, '罗舸', '罗舸', '2026-11-16 17:44', CAP.read, '财务'],
+    ['ds-1014', '渠道线索', 'CRM.LEAD', '销售', 'ops', 4, '周覃', '陈溪', '2026-11-16 19:30', CAP.edit, 'PII'],
+    ['ds-1015', '库位主数据', 'WMS.BIN', '仓储', 'ops', 2, '孙杭', '陈溪', '2026-11-10 11:05', CAP.edit, '—'],
+    ['ds-1016', '设备台账', 'EAM.ASSET', '设备', 'core', 4, '周原', '罗舸', '2026-11-15 09:50', CAP.read, '—'],
+    ['ds-1017', '工资核算', 'HR.PAYROLL', '人力', 'core', 5, '李禾', '李禾', '2026-11-09 16:28', CAP.none, 'PII'],
+    ['ds-1018', '质量判定', 'QMS.JUDGE', '质量', 'ops', 3, '孙杭', '陈溪', '2026-11-17 10:20', CAP.edit, '—'],
+    ['ds-1019', '采购订单', 'SCM.PO', '采购', 'fin', 4, '方宁', '周覃', '2026-11-16 15:08', CAP.read, '财务'],
+    ['ds-1020', '能耗读数', 'EMS.METER', '设备', 'ops', 2, '周原', '陈溪', '2026-11-17 06:00', CAP.edit, '—'],
+    ['ds-1021', '客户信用', 'CRM.CREDIT', '销售', 'fin', 5, '周覃', '罗舸', '2026-11-14 13:15', CAP.none, '财务'],
+    ['ds-1022', '研发 BOM', 'PLM.BOM', '研发', 'core', 5, '方宁', '李禾', '2026-11-13 11:22', CAP.read, '受控'],
+    ['ds-1023', '供应商效能', 'SCM.SCORE', '采购', 'ops', 3, '方宁', '周覃', '2026-11-12 17:00', CAP.edit, '—'],
+    ['ds-1024', '维修工时', 'EAM.LABOR', '设备', 'ops', 2, '周原', '陈溪', '2026-11-16 12:40', CAP.read, '—']
+  ].map(([id, name, code, domain, tier, level, owner, steward, updated, cap, sensitivity]) =>
+    ({ id, name, code, domain, tier, level, owner, steward, updated, cap, sensitivity }));
+
+  const tierLabel = { ops: '运营', fin: '财务', core: '核心' };
+  const capLabel = { edit: '可编辑', read: '只读', none: '受限' };
+  const PAGE = 8;
+  let scope = 'all', sortKey = 'updated', sortDir = -1, page = 1;
+  const selected = new Set();
+  let compact = false;
+  let current = null;
+
+  /* ── audit trail ─────────────────────────────── */
+  const audit = [
+    { kind: 'write', title: '陈溪 更新了访问策略', detail: 'CRM.CUSTOMER · 新增 3 个只读角色', time: '14:26:08' },
+    { kind: 'deny', title: '周覃 尝试导出 工资核算', detail: '被策略 HR-PAY-DENY 拒绝', time: '14:19:41' },
+    { kind: 'grant', title: '李禾 通过了一项申请', detail: '罗舸 → FIN.AR_AGING 只读 30 天', time: '13:58:22' },
+    { kind: 'write', title: '陈溪 修改了质量规则阈值', detail: 'QMS-07 · 空值率上限 2% → 1.5%', time: '13:44:10' },
+    { kind: 'write', title: '孙杭 更新了数据集描述', detail: 'MES.TACT · 补充节拍口径说明', time: '11:30:55' }
+  ];
+  const EV_ICON = {
+    write: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m14.5 5 4.5 4.5M5 19l1-4.6L16.6 3.8l4.6 4.6L10.6 19 5 19Z"/></svg>',
+    deny: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m7 7 10 10M17 7 7 17"/></svg>',
+    grant: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m5 12.5 4.5 4.5L19 7"/></svg>'
+  };
+  function drawAudit() {
+    $('auditList').innerHTML = audit.map(e => `
+      <div class="ev" data-kind="${e.kind}">
+        <span class="dot3" aria-hidden="true">${EV_ICON[e.kind]}</span>
+        <span class="tx2"><b>${e.title}</b><p>${e.detail}</p><time>${e.time}</time></span>
+      </div>`).join('');
+  }
+  function logEvent(kind, title, detail) {
+    const now = new Date();
+    const p = n => String(n).padStart(2, '0');
+    audit.unshift({ kind, title, detail, time: p(now.getHours()) + ':' + p(now.getMinutes()) + ':' + p(now.getSeconds()) });
+    if (audit.length > 12) audit.pop();
+    drawAudit();
+  }
+
+  /* ── filtering ──────────────────────────────── */
+  function scopedRows() {
+    if (scope === 'editable') return rows.filter(r => r.cap === 'edit');
+    if (scope === 'restricted') return rows.filter(r => r.cap !== 'edit');
+    if (scope === 'mine') return rows.filter(r => r.steward === '陈溪');
+    return rows;
+  }
+  function sorted(list) {
+    const copy = [...list];
+    copy.sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      return (av > bv ? 1 : av < bv ? -1 : 0) * sortDir;
+    });
+    return copy;
+  }
+  const COLUMNS = [
+    ['name', '数据集 / 编码', 26],
+    ['domain', '域', 9],
+    ['tier', '层级', 8],
+    ['level', '成熟度', 10],
+    ['steward', '负责人', 11],
+    ['updated', '最近更新', 14],
+    ['cap', '我的权限', 11]
+  ];
+  function drawHead() {
+    $('headRow').innerHTML = '<th class="sel"><label class="cbwrap"><input type="checkbox" id="allCheck" aria-label="选择本页全部"></label></th>' +
+      COLUMNS.map(([key, label, width]) =>
+        `<th style="width:${width}%" ${sortKey === key ? 'aria-sort="' + (sortDir === 1 ? 'ascending' : 'descending') + '"' : ''}>
+          <button class="sortbtn" type="button" data-sort="${key}">${label}<i aria-hidden="true">${sortKey === key ? (sortDir === 1 ? '▲' : '▼') : '⇅'}</i></button>
+        </th>`).join('');
+    $('allCheck').addEventListener('change', () => {
+      const pageRows = sorted(scopedRows()).slice((page - 1) * PAGE, page * PAGE);
+      for (const r of pageRows) {
+        if ($('allCheck').checked) selected.add(r.id); else selected.delete(r.id);
+      }
+      drawBody();
+    });
+    $('headRow').querySelectorAll('[data-sort]').forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.sort;
+      if (sortKey === key) sortDir = -sortDir; else { sortKey = key; sortDir = 1; }
+      drawHead(); drawBody();
+    }));
+  }
+  function drawBody() {
+    const list = sorted(scopedRows());
+    const pages = Math.max(1, Math.ceil(list.length / PAGE));
+    page = Math.min(page, pages);
+    const slice = list.slice((page - 1) * PAGE, page * PAGE);
+    $('body').innerHTML = slice.map(r => {
+      const locked = r.cap !== 'edit';
+      const sel = selected.has(r.id);
+      return `<tr data-id="${r.id}" data-locked="${locked}" aria-selected="${sel}" tabindex="0">
+        <td class="sel"><input type="checkbox" data-check="${r.id}" aria-label="选择 ${r.name}" ${sel ? 'checked' : ''} ${locked ? 'data-soft="1"' : ''}></td>
+        <td><span class="name">${r.name}</span><span class="sub2 mono">${r.code}</span></td>
+        <td>${r.domain}</td>
+        <td><span class="tag ${r.tier}">${tierLabel[r.tier]}</span></td>
+        <td><span class="lvl" title="成熟度 ${r.level} / 5"><i style="--w:${r.level * 20}%"></i><span>${r.level}/5</span></span></td>
+        <td><span class="own"><span class="a" aria-hidden="true">${r.steward.slice(0, 1)}</span>${r.steward}</span></td>
+        <td class="mono" style="font-size:10.5px;color:var(--dim)">${r.updated.slice(5)}</td>
+        <td>${locked
+          ? '<span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="10.5" width="14" height="9" rx="1.5"/><path d="M8.4 10.5V7.8a3.6 3.6 0 0 1 7.2 0v2.7"/></svg>' + capLabel[r.cap] + '</span>'
+          : '<span style="color:#1a4fae;font-weight:650">' + capLabel[r.cap] + '</span>'}</td>
+      </tr>`;
+    }).join('');
+    $('rangeNote').textContent = list.length
+      ? '第 ' + ((page - 1) * PAGE + 1) + '–' + ((page - 1) * PAGE + slice.length) + ' 项，共 ' + list.length + ' 项'
+      : '共 0 项';
+    $('pager').innerHTML = Array.from({ length: pages }, (_, i) =>
+      `<button type="button" data-page="${i + 1}" aria-current="${i + 1 === page}">${i + 1}</button>`).join('');
+    const pageRows = slice;
+    $('allCheck').checked = pageRows.length > 0 && pageRows.every(r => selected.has(r.id));
+    $('allCheck').indeterminate = pageRows.some(r => selected.has(r.id)) && !$('allCheck').checked;
+    drawBulk();
+  }
+  function drawBulk() {
+    const editableSelected = [...selected].filter(id => rows.find(r => r.id === id)?.cap === 'edit');
+    const restrictedSelected = [...selected].length - editableSelected.length;
+    $('selCount').innerHTML = selected.size
+      ? '已选 <b>' + selected.size + '</b> 项' + (restrictedSelected ? ' · 其中 ' + restrictedSelected + ' 项受限' : '')
+      : '未选择';
+    $('bulkActs').innerHTML = selected.size ? `
+      <button class="mini" data-bulk="tag" type="button">打标签</button>
+      <button class="mini" data-bulk="owner" type="button" ${editableSelected.length ? '' : 'disabled'}>改负责人</button>
+      <button class="mini danger" data-bulk="remove" type="button" ${editableSelected.length ? '' : 'disabled'}>停用</button>
+      <button class="mini" data-bulk="clear" type="button">清除</button>` : '';
+  }
+
+  /* ── drawer ─────────────────────────────────── */
+  function openRow(id) {
+    const r = rows.find(x => x.id === id);
+    if (!r) return;
+    current = r;
+    const editable = r.cap === 'edit';
+    $('dTitle').textContent = r.name;
+    $('dMeta').textContent = r.code + ' · ' + r.domain + ' · ' + r.id;
+    $('dBody').innerHTML = `
+      <div class="grid2">
+        <div class="field"><label>层级</label><div class="val">${tierLabel[r.tier]}</div></div>
+        <div class="field"><label>成熟度</label><div class="val">${r.level} / 5</div></div>
+        <div class="field"><label>负责人</label><div class="val">${r.owner}</div></div>
+        <div class="field"><label>数据管家</label><div class="val">${r.steward}</div></div>
+      </div>
+      <div class="field"><label>敏感级别</label><div class="val">${r.sensitivity}</div></div>
+      <div class="field"><label>最近更新</label><div class="val mono">${r.updated}</div></div>
+      ${editable
+        ? `<div class="field"><label>数据集描述</label><div class="val" style="min-height:56px">用于${r.domain}域${tierLabel[r.tier]}层，按日增量更新，服务于月度报表与合规取数。</div><p class="hint">修改描述会写入审计轨迹，并通知数据管家。</p></div>`
+        : `<p class="deny"><b>当前账号仅有${capLabel[r.cap]}权限。</b>描述、字段口径与策略都无法在此修改。如需变更，请提交访问申请，由数据管家 李禾 审批。</p>`}
+      <div class="field"><label>字段数量与更新频率</label><div class="val mono">${r.level * 14 + 6} 字段 · 每日 02:00 增量</div></div>
+    `;
+    $('drawer').classList.add('open');
+    $('drawer').hidden = false;
+    $('closeDrawer').focus();
+    $('live').textContent = r.name + '，' + capLabel[r.cap] + '权限' + (editable ? '，可查看并修改' : '，只可查看');
+  }
+  function closeDrawer() {
+    $('drawer').classList.remove('open');
+    setTimeout(() => { $('drawer').hidden = true; }, 200);
+  }
+
+  /* ── command palette ─────────────────────────── */
+  const COMMANDS = [
+    { label: '新建数据集', key: 'N', run: () => toast('新建表单将在抽屉中打开（模拟）。') },
+    { label: '导出当前清单', key: 'E', run: () => doExport() },
+    { label: '切到「可编辑」范围', key: '1', run: () => setScope('editable') },
+    { label: '切到「受限」范围', key: '2', run: () => setScope('restricted') },
+    { label: '打开操作审计', key: 'A', run: () => toast('审计轨迹已在右侧面板，最新 5 条。') },
+    { label: '切换紧凑密度', key: 'D', run: () => $('densityBtn').click() }
+  ];
+  let palIndex = 0, palItems = [];
+  function openPalette() {
+    $('palette').hidden = false;
+    $('palInput').value = '';
+    renderPalette('');
+    $('palInput').focus();
+  }
+  function closePalette() { $('palette').hidden = true; }
+  function renderPalette(query) {
+    const q = query.trim().toLowerCase();
+    palItems = [
+      ...COMMANDS.filter(c => !q || c.label.toLowerCase().includes(q)),
+      ...rows.filter(r => !q || r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q))
+        .slice(0, 6).map(r => ({ label: r.name + ' · ' + r.code, key: '↗', run: () => { closePalette(); openRow(r.id); } }))
+    ];
+    if (!palItems.length) {
+      $('palList').innerHTML = '<div style="padding:14px;color:#8b94a1;font-size:12px">没有匹配的命令或数据集</div>';
+      return;
+    }
+    palIndex = Math.min(palIndex, palItems.length - 1);
+    $('palList').innerHTML = palItems.map((item, i) =>
+      `<button class="palitem" type="button" data-i="${i}" aria-selected="${i === palIndex}">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        ${item.label}<span class="k">${item.key}</span></button>`).join('');
+  }
+
+  /* ── misc ───────────────────────────────────── */
+  function toast(text) {
+    const t = $('toast');
+    t.textContent = text; t.classList.add('show');
+    clearTimeout(toast._timer);
+    toast._timer = setTimeout(() => t.classList.remove('show'), 2600);
+  }
+  function doExport() {
+    logEvent('write', '陈溪 导出了数据集清单', scopedRows().length + ' 项 · 含编码与权限字段');
+    toast('已导出 ' + scopedRows().length + ' 项（模拟），操作已记入审计。');
+  }
+  function setScope(next) {
+    scope = next; page = 1; selected.clear();
+    document.querySelectorAll('[data-scope]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.scope === next)));
+    drawBody();
+    $('crumbScope').textContent = ({ all: '全部 24 项', editable: '可编辑 9 项', restricted: '受限 15 项', mine: '我负责 4 项' })[next];
+    $('live').textContent = '范围切换为' + $('crumbScope').textContent;
+  }
+
+  /* ── wire ────────────────────────────────────── */
+  document.querySelectorAll('[data-scope]').forEach(b => b.addEventListener('click', () => setScope(b.dataset.scope)));
+  $('body').addEventListener('click', e => {
+    const check = e.target.closest('[data-check]');
+    if (check) {
+      e.stopPropagation();
+      const id = check.dataset.check;
+      if (check.checked) selected.add(id); else selected.delete(id);
+      drawBody();
+      return;
+    }
+    const tr = e.target.closest('tr[data-id]');
+    if (tr) openRow(tr.dataset.id);
+  });
+  $('body').addEventListener('keydown', e => {
+    const tr = e.target.closest('tr[data-id]');
+    if (tr && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openRow(tr.dataset.id); }
+  });
+  $('pager').addEventListener('click', e => {
+    const btn = e.target.closest('[data-page]');
+    if (btn) { page = Number(btn.dataset.page); drawBody(); }
+  });
+  $('bulkActs').addEventListener('click', e => {
+    const btn = e.target.closest('[data-bulk]');
+    if (!btn) return;
+    const action = btn.dataset.bulk;
+    if (action === 'clear') { selected.clear(); drawBody(); return; }
+    if (action === 'tag') {
+      logEvent('write', '陈溪 为 ' + selected.size + ' 项打了标签', '标签：待复核 · 来自批量操作');
+      toast('已为 ' + selected.size + ' 项打标签，含受限项。');
+    }
+    if (action === 'owner') {
+      const editable = [...selected].filter(id => rows.find(r => r.id === id)?.cap === 'edit').length;
+      logEvent('write', '陈溪 修改了 ' + editable + ' 项的负责人', '受限项已自动跳过');
+      toast('已修改 ' + editable + ' 项的负责人，受限项跳过。');
+    }
+    if (action === 'remove') {
+      const editable = [...selected].filter(id => rows.find(r => r.id === id)?.cap === 'edit').length;
+      logEvent('write', '陈溪 停用了 ' + editable + ' 项数据集', '可在 7 天内从审计记录恢复');
+      toast('已停用 ' + editable + ' 项（模拟），受限项不在范围内。');
+    }
+    selected.clear(); drawBody();
+  });
+  $('closeDrawer').addEventListener('click', closeDrawer);
+  $('drawer').querySelector('.shade').addEventListener('click', closeDrawer);
+  $('openPalette').addEventListener('click', openPalette);
+  $('palette').addEventListener('click', e => { if (e.target.id === 'palette') closePalette(); });
+  $('palInput').addEventListener('input', e => { palIndex = 0; renderPalette(e.target.value); });
+  $('palInput').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { closePalette(); return; }
+    if (e.key === 'ArrowDown') { e.preventDefault(); palIndex = Math.min(palIndex + 1, palItems.length - 1); renderPalette($('palInput').value); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); palIndex = Math.max(palIndex - 1, 0); renderPalette($('palInput').value); }
+    if (e.key === 'Enter') { e.preventDefault(); const item = palItems[palIndex]; if (item) item.run(); }
+  });
+  $('palList').addEventListener('click', e => {
+    const btn = e.target.closest('[data-i]');
+    if (btn) palItems[Number(btn.dataset.i)].run();
+  });
+  $('exportBtn').addEventListener('click', doExport);
+  $('newBtn').addEventListener('click', () => { logEvent('write', '陈溪 打开了新建数据集表单', '未提交'); toast('新建表单已打开（模拟）。'); });
+  $('densityBtn').addEventListener('click', () => {
+    compact = !compact;
+    $('densityBtn').setAttribute('aria-pressed', String(compact));
+    document.querySelectorAll('tbody td').forEach(td => { td.style.padding = compact ? '4px 10px' : ''; });
+  });
+  $('colBtn').addEventListener('click', () => toast('列设置：当前显示 7 列，可隐藏成熟度与最近更新。'));
+  document.addEventListener('keydown', e => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); openPalette(); }
+    if (e.key === 'Escape' && !$('palette').hidden) closePalette();
+    if (e.key === 'Escape' && $('drawer').classList.contains('open')) closeDrawer();
+  });
+  document.querySelectorAll('[data-nav]').forEach(btn => btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-nav]').forEach(b => b.removeAttribute('aria-current'));
+    btn.setAttribute('aria-current', 'true');
+    const name = btn.querySelector('span').textContent;
+    $('crumb').textContent = name;
+    toast('已切换到「' + name + '」（模拟）');
+  }));
+
+  drawHead(); drawBody(); drawAudit();
+  $('live').textContent = '数据集清单已加载，24 项，当前账号可编辑 9 项。';
+})();
+</script>
+</body>
+</html>

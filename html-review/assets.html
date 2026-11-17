@@ -2,53 +2,394 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>北线 · 设备巡检台账</title>
+<meta name="theme-color" content="#0a1220">
+<title>北线 · 设备运行控制台</title>
 <style>
-:root{color-scheme:light;--navy:#19334a;--ink:#1b3142;--soft:#4d606c;--teal:#10645b;--pale:#e3efeb;--line:#d5dedb;--bg:#f2f5f4;--amber:#92521d;font-family:Inter,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
-*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit;color:inherit}button,select{cursor:pointer}button{border:0;background:none}button:disabled{cursor:default;opacity:.48}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex="-1"]:focus-visible{outline:3px solid #187076;outline-offset:3px}
-[hidden]{display:none!important}h1,h2,h3,p{margin:0}.mono,time,.amount{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;font-variant-numeric:tabular-nums}
-.brandbar{background:var(--navy);border-bottom:4px solid #8fc6ae;color:#fff}.bar-inner,.shell{width:min(1240px,calc(100% - 64px));margin:auto}.bar-inner{min-height:57px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:11px}.glyph{width:29px;height:28px;display:grid;grid-template-columns:repeat(3,1fr);gap:3px;align-items:end}.glyph i{background:#a3d6bd;display:block;height:100%}.glyph i:nth-child(1){height:51%}.glyph i:nth-child(2){height:76%}.brand b{letter-spacing:.12em;font-size:20px}.product{font-size:13px;color:#d0dfe6;padding-left:14px;border-left:1px solid #697c89}.shift{font-size:13px;letter-spacing:.04em;color:#dbe8ec}.shell{padding:40px 0 32px}.head h1{font-size:clamp(30px,3vw,48px);line-height:1.2;letter-spacing:-.055em}.head p{margin-top:8px;color:var(--soft);font-size:14px;line-height:1.65}
-.tabs{display:flex;gap:22px;margin:27px 0 19px;border-bottom:1px solid #bccbc6}.tab{font-weight:650;font-size:15px;padding:10px 1px 12px;display:flex;align-items:center;gap:7px;border-bottom:3px solid transparent}.tab[aria-pressed=true]{border-color:var(--teal);color:var(--teal)}.tab b{font:600 12px/1.3 Consolas,monospace;background:#e0e7e4;color:#42514d;padding:2px 6px;border-radius:3px}
-.board,.sheet{border:1px solid #c6d1cc;background:white;border-radius:9px;overflow:hidden}.tools{padding:19px 21px 14px;border-bottom:1px solid var(--line)}.filters{display:grid;grid-template-columns:minmax(200px,1.75fr) minmax(126px,1fr) minmax(130px,1fr) minmax(134px,1fr);gap:12px;align-items:end}.filters label,.filters .label{display:block;font-size:13px;font-weight:650;margin-bottom:5px}.combo{display:flex}.combo input,select{min-width:0;min-height:39px;border:1px solid #9fafa9;background:white;padding:6px 10px;border-radius:4px}.combo input{width:100%;border-radius:4px 0 0 4px}.combo .go{flex:none;border-radius:0 4px 4px 0}.filters select{width:100%}.go,.primary{min-height:39px;padding:7px 14px;background:var(--teal);border-radius:4px;color:white;font-weight:650;font-size:14px}.minor{border:1px solid #9caea6;border-radius:4px;background:#fff;min-height:36px;padding:6px 11px;font-size:13px;font-weight:600}.textbtn,.open{color:var(--teal);text-underline-offset:4px}.textbtn{padding:4px 0;font-size:13px;text-decoration:underline}.chips{display:flex;align-items:center;flex-wrap:wrap;gap:7px;font-size:12px;color:var(--soft)}.chips:not(:empty){margin-top:12px}.chip{padding:5px 8px;background:#e9f1ef;border:1px solid #b8cec5;border-radius:4px;color:#184d47}
-.scope{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:13px 21px;background:#edf4f0;border-bottom:1px solid var(--line)}.scope-controls{display:flex;align-items:center;gap:13px;flex-wrap:wrap}.selectall{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:650;cursor:pointer}input[type=checkbox]{width:17px;height:17px;accent-color:var(--teal);margin:0;cursor:pointer}.scope-detail{font-size:13px;color:var(--soft)}.scope .primary{flex:none}.feedback{font-size:13px;line-height:1.6;color:#284e48}.feedback:not(:empty){margin:0 0 10px;padding:8px 12px;background:#e4eeea;border-left:3px solid var(--teal)}.undo-bar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;margin-bottom:10px;padding:7px 13px;background:#e4eeea;border:1px solid #b5d1c4;font-size:13px}
-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:14px}th{text-align:left;font-size:12px;letter-spacing:.035em;color:var(--soft);font-weight:600;background:#f8f9f8}th,td{padding:10px 12px;border-bottom:1px solid var(--line);overflow-wrap:anywhere}tbody tr:hover{background:#f5f8f6}tbody tr.selected{background:#f0f7f4}th:first-child,td:first-child{width:42px;padding-left:21px;padding-right:1px}th:nth-child(2){width:27%}th:nth-child(3){width:15%}th:nth-child(4){width:18%}th:nth-child(5){width:15%}.open{padding:0;font-weight:700;font-size:15px;color:var(--ink);text-align:left;line-height:1.4}.open:hover{text-decoration:underline}.secondary{display:block;margin-top:3px;font-size:12px;color:var(--soft)}.code{color:#4b6778;letter-spacing:.04em}.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:650;border:1px solid #ced9dd;background:#edf3f6;color:#31536b;padding:2px 7px;border-radius:4px}.pill::before{content:'';display:inline-block;width:6px;height:6px;border-radius:1px;background:currentColor}.flag{color:#7d4516;background:#fff0d9;border-color:#e5cca5}.done{color:#345d4d;background:#eaf3ec;border-color:#c9dacf}.service{color:#60556b;background:#efedf2;border-color:#d7d2dc}.eligible{color:#205d50}.muted{color:var(--soft)}.paging{padding:13px 21px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:13px;color:var(--soft)}.nav-btns{display:flex;align-items:center;gap:9px}.nav-btns button{padding:5px 9px;min-height:33px;border:1px solid var(--line);border-radius:4px}.empty{padding:35px 22px;text-align:center}.empty h3{margin-bottom:6px}.empty p{color:var(--soft);margin-bottom:12px}.empty .minor{margin:3px}.foot{display:flex;justify-content:space-between;gap:12px;margin-top:16px;font-size:12px;color:var(--soft);line-height:1.7}.sheet{padding:clamp(18px,3vw,36px);max-width:930px;margin:14px 0 0}.sheet h2{font-size:clamp(23px,3vw,35px);margin:7px 0 13px;letter-spacing:-.04em}.sheet h3{font-size:16px;margin:22px 0 8px}.sheet p{line-height:1.65}.keyline{padding:12px 0;border-block:1px solid var(--line);display:flex;gap:12px;align-items:center;flex-wrap:wrap}.facts{display:grid;grid-template-columns:155px 1fr;line-height:1.6;margin:0}.facts dt,.facts dd{border-bottom:1px solid var(--line);margin:0;padding:9px 0}.facts dt{color:var(--soft)}.batchrows{padding:0;list-style:none;margin:8px 0 16px}.batchrows li{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding:9px 0}.batchrows small{color:var(--soft);font-size:12px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.screenonly{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-@media(max-width:820px){.bar-inner,.shell{width:calc(100% - 34px)}.shell{padding-top:26px}.filters{grid-template-columns:1.5fr 1fr 1fr}.search{grid-column:1/-1}th:nth-child(2){width:24%}.tools,.scope{padding:14px}th,td{padding:8px}.scope-controls{gap:8px}.foot{display:block}.foot span{display:block}}
-@media(max-width:610px){.bar-inner,.shell{width:calc(100% - 24px)}.bar-inner{min-height:48px}.product{font-size:12px;padding-left:8px}.shift{font-size:11px}.brand{gap:7px}.brand b{font-size:16px}.glyph{width:22px;height:21px}.shell{padding-top:20px}.head p{font-size:13px}.tabs{margin:16px 0 12px}.tools{padding:11px}.filters{grid-template-columns:1fr 1fr;gap:8px}.filters .sort{grid-column:1/-1;display:flex;gap:8px;align-items:center}.sort label{margin:0}.sort select{width:auto;flex:1}.filters select,.combo input,.combo .go{min-height:44px}.scope{align-items:start;padding:11px;flex-wrap:wrap;gap:7px}.scope-controls{flex:1 1 100%}.scope-detail{font-size:12px}.scope .primary{min-height:42px}.scope .textbtn,.chip{min-height:36px}table,tbody{display:block}thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}tbody tr{display:grid;grid-template-columns:24px minmax(0,1fr) minmax(68px,auto);column-gap:8px;row-gap:4px;align-items:center;padding:9px 12px;border-bottom:1px solid var(--line)}td,td:first-child{border:0;padding:0;width:auto}td:first-child{grid-row:1/4;align-self:start;padding-top:4px}td:nth-child(2){grid-column:2;grid-row:1/3}td:nth-child(3){grid-column:2;grid-row:3;font-size:12px;color:var(--soft)}td:nth-child(4){grid-column:3;grid-row:1;text-align:right}td:nth-child(5){grid-column:3;grid-row:2;text-align:right;font-size:12px}td:nth-child(6){grid-column:3;grid-row:3;text-align:right;font-size:12px}.paging{padding:10px;font-size:12px;flex-wrap:wrap}.nav-btns{gap:4px}.nav-btns button{min-height:37px}.facts{grid-template-columns:93px 1fr}.backlink{min-height:40px}.batchrows li{align-items:start}.scope-detail:empty{display:none}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
-.keyline.batch-summary{display:block}
-.row-select{display:inline-flex;width:44px;height:44px;align-items:center;justify-content:center;cursor:pointer;border-radius:4px}
-.row-select:hover{background:#dcebe5}
-@media(min-width:611px){th:first-child,td:first-child{width:60px;padding-left:6px;padding-right:0}}
-@media(max-width:610px){
-  tbody tr{grid-template-columns:44px minmax(0,1fr) minmax(68px,auto);column-gap:6px;padding-left:4px}
-  td:first-child{padding:0}
-  .selectall,.open{min-height:44px}
-  td time::before{content:'计划 ';font-family:Inter,"Microsoft YaHei",sans-serif;color:var(--soft)}
+:root{
+  color-scheme:dark;
+  --void:#080e19;--deep:#0c1524;--panel:#111c2e;--raise:#16233a;--raise-2:#1b2a44;
+  --line:#22334d;--line-soft:#1a2740;
+  --paper:#eaf1fa;--mute:#8ea3bd;--dim:#6a7f9a;
+  --cyan:#3fd0d8;--cyan-dim:#1d7d84;--azure:#4da3ff;--lime:#9be36a;
+  --amber:#f0b03c;--rose:#f2645a;--violet:#a78bfa;
+  --radius:10px;
+  font-family:"Inter","Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--paper);font-synthesis:none;
+  --mono:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;
 }
+*{box-sizing:border-box}
+body{margin:0;background:
+  radial-gradient(ellipse 80% 50% at 12% -8%,#123047 0,transparent 58%),
+  radial-gradient(ellipse 60% 40% at 92% 0%,#1a2444 0,transparent 52%),
+  var(--void);
+  min-height:100vh;font-size:14px;line-height:1.5}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+button:disabled{cursor:default;opacity:.45}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex="-1"]:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+[hidden]{display:none!important}
+.mono,time,.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* ── App bar ───────────────────────────────────────────── */
+.topbar{border-bottom:1px solid var(--line-soft);background:#0a1220cc;backdrop-filter:blur(10px);position:sticky;top:0;z-index:30}
+.bar{width:min(1440px,calc(100% - 56px));margin:auto;min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.mark{width:30px;height:30px;border-radius:8px;background:linear-gradient(150deg,#2ee0e8,#2b7cff 62%,#6a4bff);display:grid;place-items:center;flex:none;box-shadow:0 0 0 1px #ffffff1f,0 6px 18px #2b7cff3d}
+.mark svg{width:17px;height:17px}
+.brand b{font-size:16px;letter-spacing:.13em;font-weight:650}
+.brand .sub{font-size:12px;color:var(--dim);padding-left:12px;margin-left:2px;border-left:1px solid var(--line);letter-spacing:.02em}
+.env{font-size:11px;letter-spacing:.06em;padding:4px 8px;border-radius:5px;border:1px solid #2b6a5f;background:#0f2a26;color:#7ee0c0;font-weight:600}
+.bar-right{display:flex;align-items:center;gap:14px;font-size:12px;color:var(--mute)}
+.shift{display:flex;align-items:center;gap:7px}
+.shift i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px #9be36a24}
+.iconbtn{width:32px;height:32px;border-radius:7px;border:1px solid var(--line);display:grid;place-items:center;color:var(--mute);background:#101b2c}
+.iconbtn:hover{color:var(--paper);border-color:#2e4463}
+
+/* ── Layout ────────────────────────────────────────────── */
+.shell{width:min(1440px,calc(100% - 56px));margin:auto;padding:22px 0 40px;display:grid;gap:16px}
+.pagehead{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.pagehead .eyebrow{font-size:11px;letter-spacing:.2em;color:var(--cyan);font-weight:650;text-transform:uppercase}
+.pagehead h1{font-size:clamp(24px,2.4vw,34px);line-height:1.16;letter-spacing:-.025em;margin-top:6px;font-weight:700}
+.pagehead p{color:var(--mute);font-size:13px;margin-top:7px;max-width:52ch;line-height:1.6}
+.stamps{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.stamp{font-size:11px;letter-spacing:.04em;padding:6px 10px;border-radius:6px;border:1px solid var(--line);color:var(--mute);background:#0e1826}
+.stamp b{color:var(--paper);font-weight:650}
+
+/* ── Metric strip ──────────────────────────────────────── */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{position:relative;border:1px solid var(--line-soft);border-radius:var(--radius);padding:14px 15px 12px;overflow:hidden;background:radial-gradient(circle at 108% -14%,var(--accent,#3fd0d8) -60%,transparent 52%),linear-gradient(168deg,#132034,#0e1726 72%)}
+.kpi::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:var(--accent,#3fd0d8);opacity:.85}
+.kpi .k-label{font-size:11.5px;letter-spacing:.1em;color:var(--mute);display:flex;align-items:center;gap:6px;font-weight:600}
+.kpi .k-label i{width:5px;height:5px;border-radius:50%;background:var(--accent,#3fd0d8)}
+.k-row{display:flex;align-items:flex-end;justify-content:space-between;gap:10px;margin-top:9px}
+.k-val{font-size:clamp(26px,2.5vw,34px);font-weight:700;letter-spacing:-.03em;line-height:1;font-family:var(--mono)}
+.k-val small{font-size:.42em;font-weight:600;color:var(--mute);letter-spacing:0;margin-left:4px}
+.k-delta{font-size:11.5px;font-weight:650;padding:2px 6px;border-radius:4px;white-space:nowrap;margin-bottom:2px;flex:none}
+.k-delta b{font-weight:650}
+.k-base{font-size:10.5px;color:#5f7492;letter-spacing:.04em;margin-top:5px}
+.k-delta.up{color:#ffcf8a;background:#4a3111}
+.k-delta.down{color:#9fe0a8;background:#12321f}
+.k-delta.flat{color:var(--dim);background:#16222f}
+.spark{display:block;width:100%;height:26px;margin-top:9px;overflow:visible}
+
+/* ── Breakdown row ─────────────────────────────────────── */
+.breakdown{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1.1fr);gap:12px}
+.card{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:15px 16px}
+.card h2{font-size:11.5px;letter-spacing:.14em;color:var(--mute);font-weight:650;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.card h2 span{color:var(--dim);letter-spacing:.02em;font-weight:500;font-size:11px}
+.dial{display:flex;align-items:center;gap:16px;margin-top:12px}
+.dial svg{flex:none;width:88px;height:88px}
+.dial-read b{display:block;font-size:26px;font-family:var(--mono);font-weight:700;letter-spacing:-.03em;line-height:1}
+.dial-read span{display:block;font-size:12px;color:var(--mute);margin-top:5px;line-height:1.5}
+.bars{margin-top:13px;display:grid;gap:10px}
+.bar-row{display:grid;grid-template-columns:52px 1fr 44px;gap:10px;align-items:center;font-size:12px}
+.bar-row em{font-style:normal;color:var(--mute);font-weight:600}
+.bar-track{height:7px;border-radius:99px;background:#16233a;overflow:hidden;display:flex}
+.bar-track i{display:block;height:100%;background:var(--cyan)}
+.bar-row b{font-family:var(--mono);text-align:right;font-weight:650;font-size:12.5px}
+.legend{display:grid;gap:7px;margin-top:12px}
+.legend div{display:grid;grid-template-columns:auto 1fr auto auto;gap:9px;align-items:center;font-size:12.5px}
+.legend i{width:8px;height:8px;border-radius:2px}
+.legend span{color:var(--mute)}
+.legend b{font-family:var(--mono);font-weight:650}
+.legend small{color:var(--dim);font-family:var(--mono);font-size:11px;min-width:38px;text-align:right}
+.stackbar{height:8px;border-radius:99px;overflow:hidden;display:flex;margin-top:14px;background:#16233a}
+.stackbar i{display:block;height:100%}
+
+/* ── Work area ─────────────────────────────────────────── */
+.board{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);overflow:clip}
+.board-head{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:12px 16px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.tabs{display:flex;gap:4px;background:#0d1826;border:1px solid var(--line-soft);border-radius:8px;padding:3px}
+.tab{font-size:13px;font-weight:650;padding:7px 13px;border-radius:6px;display:flex;align-items:center;gap:7px;color:var(--mute)}
+.tab[aria-pressed=true]{background:var(--raise);color:var(--paper);box-shadow:0 1px 0 #ffffff0d inset}
+.tab b{font:600 11px/1 var(--mono);padding:2px 5px;border-radius:3px;background:#1d2f49;color:#a9c2dd}
+.tab[aria-pressed=true] b{background:#0f3f46;color:#7ee0e4}
+.rulemeter{display:flex;align-items:center;gap:10px;font-size:11.5px;color:var(--dim)}
+.rulemeter b{color:var(--mute);font-family:var(--mono)}
+
+.filters{display:grid;grid-template-columns:minmax(190px,1.6fr) minmax(120px,.85fr) minmax(126px,.9fr) minmax(140px,.9fr);gap:10px;padding:14px 16px;border-bottom:1px solid var(--line-soft);align-items:end}
+.field{display:grid;gap:5px;min-width:0}
+.field label{font-size:11px;letter-spacing:.1em;color:var(--dim);font-weight:650}
+.combo{display:flex;min-width:0}
+input[type=search],select{min-width:0;width:100%;min-height:38px;padding:7px 11px;border-radius:7px;border:1px solid #263a56;background:#0b1523;color:var(--paper);font-size:13px}
+input[type=search]::placeholder{color:#5b6f8a}
+input[type=search]{border-radius:7px 0 0 7px;border-right:0}
+.combo .go{flex:none;border-radius:0 7px 7px 0;border:1px solid #2b7cff;background:linear-gradient(#2f7ff0,#2160c4);color:#fff;font-weight:650;font-size:13px;padding:0 15px;min-height:38px}
+.go:hover{filter:brightness(1.1)}
+input[type=search]:focus,select:focus{border-color:var(--cyan);outline:none;box-shadow:0 0 0 3px #3fd0d81f}
+.chips{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:0 16px;font-size:12px;color:var(--mute)}
+.chips:not(:empty){padding:10px 16px 0}
+.chip{padding:4px 8px;border-radius:5px;border:1px solid #2a6b72;background:#0e2a2e;color:#8fe6ea;font-size:11.5px}
+.chip:hover{background:#14383d}
+
+.scope{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:linear-gradient(90deg,#0f2136,#0c1727 60%);border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.scope-left{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.selectall{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;font-weight:650;cursor:pointer;color:var(--mute)}
+input[type=checkbox]{width:16px;height:16px;margin:0;accent-color:#37b6be;cursor:pointer}
+.linkbtn{font-size:12.5px;font-weight:650;color:var(--cyan);text-underline-offset:3px;text-decoration:underline;padding:4px 0}
+.scope-detail{font-size:12.5px;color:var(--mute);font-family:var(--mono)}
+.primary{min-height:36px;padding:0 16px;border-radius:7px;background:linear-gradient(#2f7ff0,#2160c4);color:#fff;font-weight:650;font-size:13px;border:1px solid #3d8cf5;box-shadow:0 2px 10px #1e5cc42e}
+.primary:hover{filter:brightness(1.08)}
+.secondary-btn{min-height:36px;padding:0 13px;border-radius:7px;border:1px solid #2b3f5c;background:#131f31;color:var(--paper);font-size:12.5px;font-weight:600}
+.secondary-btn:hover{border-color:#3c5a82;background:#182940}
+
+.feedback:not(:empty){margin:12px 16px 0;padding:9px 12px;border-radius:7px;border-left:3px solid var(--cyan);background:#0d2833;font-size:12.5px;line-height:1.55;color:#b7e4ec}
+.undo-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 16px 0;padding:8px 12px;border-radius:7px;border:1px solid #2a4a63;background:#0f1e2e;font-size:12.5px;color:#b3c8de;flex-wrap:wrap}
+
+/* ── Table ─────────────────────────────────────────────── */
+.tablewrap{overflow-x:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-size:13px}
+thead th{position:sticky;top:58px;z-index:5;text-align:left;font-size:11px;letter-spacing:.1em;color:var(--dim);font-weight:650;background:#0e1a2a;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child{width:54px;padding-left:16px}
+th:nth-child(2){width:29%}
+th:nth-child(3){width:12%}
+th:nth-child(4){width:15%}
+th:nth-child(5){width:13%}
+tbody td{padding:11px 12px;border-bottom:1px solid #17233a;vertical-align:middle}
+tbody tr{transition:background .1s}
+tbody tr:hover{background:#132135}
+tbody tr.selected{background:#10283a}
+tbody tr.selected td:first-child{box-shadow:inset 3px 0 0 var(--cyan)}
+tbody tr[data-status=flag] td:nth-child(2){box-shadow:inset 2px 0 0 var(--amber)}
+tbody tr[data-status=service] td:nth-child(2){box-shadow:inset 2px 0 0 var(--dim)}
+td:first-child{padding-left:16px}
+.row-select{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;cursor:pointer;border-radius:6px;margin-left:-11px}
+.row-select:hover{background:#12283c}
+.open{padding:0;font-weight:650;font-size:13.5px;color:var(--paper);text-align:left;line-height:1.35;display:block}
+.open:hover{color:var(--cyan);text-decoration:underline;text-underline-offset:3px}
+.code{display:block;margin-top:3px;font-size:11.5px;color:var(--dim);letter-spacing:.06em;font-family:var(--mono)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:650;padding:3px 8px;border-radius:5px;border:1px solid;white-space:nowrap}
+.pill::before{content:"";width:5px;height:5px;border-radius:1px;background:currentColor}
+.pill.due{color:#8fd7ff;background:#0d2839;border-color:#1d5573}
+.pill.flag{color:#ffc978;background:#3a2710;border-color:#5d400f}
+.pill.done{color:#9fe3a8;background:#0f2e1c;border-color:#1f5433}
+.pill.service{color:#b9b0d8;background:#221f3a;border-color:#3b3660}
+.eligible{color:#8fe3b0;font-size:12.5px;font-weight:600}
+.blocked{color:var(--dim);font-size:12.5px}
+time{font-size:12.5px;color:var(--mute)}
+
+.paging{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 16px;font-size:12px;color:var(--mute);flex-wrap:wrap}
+.nav-btns{display:flex;align-items:center;gap:6px}
+.nav-btns button{min-height:32px;padding:0 11px;border-radius:6px;border:1px solid #263a56;background:#101c2c;color:var(--mute);font-size:12.5px}
+.nav-btns button:hover:not(:disabled){color:var(--paper);border-color:#3c5a82}
+.nav-btns span{font-family:var(--mono);padding:0 4px}
+
+/* ── Empty ─────────────────────────────────────────────── */
+.empty{padding:44px 22px;text-align:center;display:grid;justify-items:center;gap:10px}
+.empty .glyph{width:64px;height:64px;border-radius:16px;display:grid;place-items:center;background:#12213a;border:1px solid var(--line);color:var(--dim)}
+.empty h3{font-size:15px;font-weight:650}
+.empty p{color:var(--mute);font-size:12.5px;max-width:38ch;line-height:1.6}
+.empty .secondary-btn{margin:2px}
+
+/* ── Detail / batch sheets ─────────────────────────────── */
+.backlink{display:inline-flex;align-items:center;gap:7px;font-size:13px;font-weight:650;color:var(--cyan);padding:8px 0;text-underline-offset:3px;text-decoration:underline}
+.sheet{background:var(--panel);border:1px solid var(--line-soft);border-radius:var(--radius);padding:clamp(18px,2.6vw,34px);max-width:900px;margin-top:12px}
+.sheet .shead{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--line-soft)}
+.sheet h2{font-size:clamp(21px,2.4vw,30px);letter-spacing:-.025em;margin:8px 0 0;font-weight:700}
+.sheet h3{font-size:11.5px;letter-spacing:.16em;color:var(--dim);font-weight:650;margin:20px 0 9px}
+.sheet p{color:#c2d3e6;font-size:13.5px;line-height:1.7}
+.facts{display:grid;grid-template-columns:96px 1fr;gap:9px 14px;margin:0;font-size:13px}
+.facts dt{color:var(--dim);font-weight:600}
+.facts dd{margin:0;color:var(--paper)}
+.batchrows{list-style:none;padding:0;margin:0;display:grid;gap:1px;background:#17233a;border:1px solid var(--line-soft);border-radius:8px;overflow:clip}
+.batchrows li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 13px;background:#101c2c;font-size:13px}
+.batchrows small{color:var(--dim);font-family:var(--mono);font-size:11.5px}
+.batchrows li>span:last-child{color:var(--mute);font-size:12.5px;text-align:right}
+.keyline{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px;font-size:12.5px;color:var(--mute)}
+.actions{display:flex;gap:10px;margin-top:22px;flex-wrap:wrap}
+.actions .primary{min-height:40px}
+
+.foot{display:flex;justify-content:space-between;gap:14px;font-size:11.5px;color:var(--dim);line-height:1.7;padding-top:4px;flex-wrap:wrap}
+
+/* ── Responsive ────────────────────────────────────────── */
+@media(max-width:1180px){
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .breakdown{grid-template-columns:1fr 1fr}
+  .breakdown .card:last-child{grid-column:1/-1}
+}
+@media(max-width:900px){
+  .bar,.shell{width:calc(100% - 32px)}
+  .shell{padding:16px 0 30px}
+  .filters{grid-template-columns:1fr 1fr}
+  .filters .field:first-child{grid-column:1/-1}
+  thead th{position:static}
+  th:nth-child(2){width:34%}
+}
+@media(max-width:640px){
+  .bar,.shell{width:calc(100% - 22px)}
+  .brand .sub{display:none}
+  .env{display:none}
+  .bar-right .shift{display:none}
+  body{font-size:14px}
+  .kpis{grid-template-columns:1fr 1fr;gap:9px}
+  .kpi{padding:11px 12px 10px}
+  .k-val{font-size:24px}
+  .breakdown{grid-template-columns:1fr}
+  .breakdown .card:last-child{grid-column:auto}
+  .filters{grid-template-columns:1fr;padding:12px}
+  .filters input[type=search],.filters select{min-height:44px}
+  .combo .go{min-height:44px;min-width:64px}
+  .board-head{padding:10px 12px}
+  .tab{min-height:40px}
+  .open{min-height:40px;display:flex;align-items:center}
+  .iconbtn{width:44px;height:44px}
+  .row-select{width:44px;height:44px}
+  .empty .secondary-btn{min-height:44px}
+  .scope{padding:10px 12px}
+  .scope .primary{min-height:44px}
+  .selectall,.linkbtn{min-height:40px}
+  .chip{min-height:34px}
+  .tablewrap{overflow:visible}
+  table,tbody{display:block}
+  thead{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  tbody tr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;column-gap:8px;row-gap:5px;align-items:center;padding:10px 12px;border-bottom:1px solid #17233a}
+  tbody td{border:0;padding:0}
+  tbody td:first-child{grid-row:1/4;align-self:start;padding:0}
+  tbody tr td:nth-child(2){grid-column:2/4;grid-row:1}
+  tbody tr td:nth-child(3){grid-column:2;grid-row:2;font-size:12px;color:var(--mute)}
+  tbody tr td:nth-child(4){grid-column:3;grid-row:2;justify-self:end}
+  tbody tr td:nth-child(5){grid-column:2;grid-row:3;font-size:12px;color:var(--mute)}
+  tbody tr td:nth-child(6){grid-column:3;grid-row:3;justify-self:end;font-size:12px}
+  tbody tr[data-status=flag] td:nth-child(2),tbody tr[data-status=service] td:nth-child(2){box-shadow:none}
+  tbody tr.selected{box-shadow:inset 3px 0 0 var(--cyan)}
+  .paging{padding:10px 12px}
+  .nav-btns button{min-height:40px}
+  .sheet{padding:16px 14px}
+  .facts{grid-template-columns:84px 1fr}
+  .actions .primary,.actions .secondary-btn{flex:1 1 auto;min-height:44px}
+  .empty{padding:32px 16px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 </head>
 <body data-review-context="list">
-<header class="brandbar"><div class="bar-inner"><div class="brand"><span class="glyph" aria-hidden="true"><i></i><i></i><i></i></span><b>北线</b><span class="product">厂务运维</span></div><span class="shift">早班　<span class="mono">08:00–16:00</span></span></div></header>
-<main class="shell"><div class="head"><h1>设备巡检台账</h1><p>按区域和巡检状态查找设备，核对后加入本班复核清单。</p></div>
-<p class="feedback" id="message" role="status" aria-live="polite"></p>
-<section id="list-view">
-<nav class="tabs" aria-label="台账范围"><button class="tab" id="tab-ledger" data-review-id="assets-ledger" aria-pressed="true">全部设备 <b id="ledger-count"></b></button><button class="tab" id="tab-queue" data-review-id="assets-queue" aria-pressed="false">本班清单 <b id="queue-count"></b></button></nav>
-<div class="undo-bar" id="undo-bar" hidden><span id="undo-description"></span><button class="textbtn" id="undo-batch" data-review-id="assets-undo">撤销此次加入</button></div>
-<div class="board">
-<div class="tools"><form id="filters" class="filters" aria-label="查询设备"><div class="search"><label for="query">搜索设备</label><div class="combo"><input type="search" id="query" name="q" placeholder="设备名称或编号" maxlength="80"><button class="go" id="find" type="submit" data-review-id="assets-search">查找</button></div></div><div><label for="area">所在区域</label><select id="area" data-review-id="assets-area"></select></div><div><label for="status">巡检状态</label><select id="status" data-review-id="assets-status"></select></div><div class="sort"><label for="sort">排序</label><select id="sort"><option value="id">设备编号升序</option><option value="time">巡检时刻优先</option></select></div></form>
-<div class="chips" id="chips" aria-label="已应用条件"></div></div>
-<div class="scope" id="scope"><div class="scope-controls"><label class="selectall"><input type="checkbox" id="page-select" data-review-id="assets-select-page">选本页</label><button id="select-all" class="textbtn" data-review-id="assets-select-all">选全部结果</button><span class="scope-detail" id="selected-count"></span><button id="clear-selection" class="textbtn" hidden>取消勾选</button></div><button class="primary" id="preview-batch" data-review-id="assets-preview" disabled>核对所选设备</button></div>
-<table aria-label="设备巡检结果" id="table"><thead><tr><th scope="col"><span class="screenonly">选择</span></th><th scope="col">设备 / 编号</th><th scope="col">所在区域</th><th scope="col">巡检状态</th><th scope="col">计划巡检</th><th scope="col">本班复核</th></tr></thead><tbody id="rows"></tbody></table>
-<section class="empty" id="empty" hidden></section>
-<div class="paging"><span id="range"></span><div class="nav-btns"><button id="prev" aria-label="上一页">上一页</button><span id="pages" class="mono"></span><button id="next-page" aria-label="下一页">下一页</button></div></div></div></section>
-<section id="detail-view" hidden><button id="detail-back" data-review-id="assets-detail-back" class="textbtn backlink">← 返回设备列表</button><article class="sheet" id="detail-content"></article></section>
-<section id="batch-view" hidden><button id="batch-back" class="textbtn backlink">← 返回勾选</button><article class="sheet" id="batch-content"></article></section>
-<footer class="foot"><span>虚构设备与班次 · 清单保存在当前浏览器</span><span>交班日 <time datetime="2026-11-09">2026.11.09</time></span></footer>
+<header class="topbar">
+  <div class="bar">
+    <div class="brand">
+      <span class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M4 16.5 9.4 7l4 6.6L20 4" stroke="#06121f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><circle cx="19.6" cy="4.2" r="1.9" fill="#06121f"/></svg></span>
+      <b>北线</b><span class="sub">厂务运维 / 设备台账</span><span class="env">生产环境</span>
+    </div>
+    <div class="bar-right">
+      <span class="shift"><i aria-hidden="true"></i>早班 · <span class="mono">08:00–16:00</span></span>
+      <span class="mono" id="clock">08:42:16</span>
+      <button class="iconbtn" type="button" aria-label="刷新数据" title="刷新数据"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M20 11a8 8 0 1 0-2.3 5.7" stroke-linecap="round"/><path d="M20 5v6h-6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <div class="pagehead">
+    <div>
+      <div class="eyebrow">Operations Console</div>
+      <h1>设备运行控制台</h1>
+      <p>按区域与巡检状态筛选设备，核对后加入本班复核清单。指标随筛选范围实时计算。</p>
+    </div>
+    <div class="stamps">
+      <span class="stamp">交班日 <b class="mono">2026.11.09</b></span>
+      <span class="stamp">当班 <b>方宁</b></span>
+      <span class="stamp">数据源 <b>巡检系统</b></span>
+    </div>
+  </div>
+
+  <section class="kpis" aria-label="本班关键指标" id="kpis"></section>
+
+  <section class="breakdown" aria-label="巡检态势">
+    <div class="card">
+      <h2>巡检完成率<span id="scopeLabel">当前范围</span></h2>
+      <div class="dial">
+        <svg viewBox="0 0 100 100" role="img" aria-labelledby="dialTitle">
+          <title id="dialTitle">巡检完成率环形图</title>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#16233a" stroke-width="11"></circle>
+          <circle id="dialArc" cx="50" cy="50" r="40" fill="none" stroke="url(#dialGrad)" stroke-width="11"
+            stroke-linecap="round" stroke-dasharray="251.3" stroke-dashoffset="183" transform="rotate(-90 50 50)"></circle>
+          <defs><linearGradient id="dialGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3fd0d8"></stop><stop offset="1" stop-color="#4da3ff"></stop>
+          </linearGradient></defs>
+        </svg>
+        <div class="dial-read"><b id="dialPct">27%</b><span id="dialNote">4 / 15 台已完成本轮</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>区域分布<span>台数</span></h2>
+      <div class="bars" id="areaBars"></div>
+    </div>
+    <div class="card">
+      <h2>状态构成<span id="stackTotal">15 台</span></h2>
+      <div class="stackbar" id="stackbar" role="img" aria-label="状态构成比例"></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </section>
+
+  <div class="feedback" id="message" role="status" aria-live="polite"></div>
+  <div class="undo-bar" id="undo-bar" hidden><span id="undo-description"></span><button class="linkbtn" id="undo-batch" data-review-id="assets-undo" type="button">撤销此次加入</button></div>
+
+  <section id="list-view">
+    <div class="board">
+      <div class="board-head">
+        <nav class="tabs" aria-label="台账范围">
+          <button class="tab" id="tab-ledger" data-review-id="assets-ledger" aria-pressed="true" type="button">全部设备 <b id="ledger-count">15</b></button>
+          <button class="tab" id="tab-queue" data-review-id="assets-queue" aria-pressed="false" type="button">本班清单 <b id="queue-count">0</b></button>
+        </nav>
+        <div class="rulemeter"><span>服务目标</span><b>4.5 h 内完成复核</b></div>
+      </div>
+
+      <form id="filters" class="filters" aria-label="查询设备">
+        <div class="field">
+          <label for="query">搜索设备</label>
+          <div class="combo">
+            <input type="search" id="query" name="q" placeholder="设备名称或编号" maxlength="80" autocomplete="off">
+            <button class="go" id="find" type="submit" data-review-id="assets-search">查找</button>
+          </div>
+        </div>
+        <div class="field"><label for="area">所在区域</label><select id="area" data-review-id="assets-area"></select></div>
+        <div class="field"><label for="status">巡检状态</label><select id="status" data-review-id="assets-status"></select></div>
+        <div class="field"><label for="sort">排序</label><select id="sort"><option value="id">设备编号升序</option><option value="time">巡检时刻优先</option></select></div>
+      </form>
+      <div class="chips" id="chips" aria-label="已应用条件"></div>
+
+      <div class="scope" id="scope">
+        <div class="scope-left">
+          <label class="selectall"><input type="checkbox" id="page-select" data-review-id="assets-select-page">选本页</label>
+          <button id="select-all" class="linkbtn" data-review-id="assets-select-all" type="button">选全部结果</button>
+          <span class="scope-detail" id="selected-count">未勾选</span>
+          <button id="clear-selection" class="linkbtn" type="button" hidden>取消勾选</button>
+        </div>
+        <button class="primary" id="preview-batch" data-review-id="assets-preview" type="button" disabled>核对所选设备</button>
+      </div>
+
+      <div class="tablewrap">
+        <table aria-label="设备巡检结果" id="table">
+          <thead><tr>
+            <th scope="col"><span style="position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)">选择</span></th>
+            <th scope="col">设备 / 编号</th><th scope="col">区域</th><th scope="col">巡检状态</th><th scope="col">计划巡检</th><th scope="col">本班复核</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <section class="empty" id="empty" hidden></section>
+      <div class="paging"><span id="range"></span><div class="nav-btns"><button id="prev" aria-label="上一页" type="button">上一页</button><span id="pages" class="mono"></span><button id="next-page" aria-label="下一页" type="button">下一页</button></div></div>
+    </div>
+  </section>
+
+  <section id="detail-view" hidden>
+    <button id="detail-back" data-review-id="assets-detail-back" class="backlink" type="button">← 返回设备列表</button>
+    <article class="sheet" id="detail-content"></article>
+  </section>
+
+  <section id="batch-view" hidden>
+    <button id="batch-back" class="backlink" type="button">← 返回勾选</button>
+    <article class="sheet" id="batch-content"></article>
+  </section>
+
+  <footer class="foot"><span>虚构设备与班次 · 清单保存在当前浏览器 · 指标由当前筛选范围实时计算</span><span>交接单 <span class="mono">NL-SHIFT-1109</span></span></footer>
 </main>
+
 <script>
 'use strict';
 const areas=['动力站','装配区','仓储区'];
 const statuses={due:'待复核',flag:'记录有异',done:'已完成',service:'停机检修'};
+const statusColor={due:'#4da3ff',flag:'#f0b03c',done:'#9be36a',service:'#a78bfa'};
 const reasons={done:'已完成本轮巡检',service:'检修中暂不纳入'};
 const data=[
   ['循环水泵 A','动力站','flag','08:30','陈路','泵组回流段','上次记录缺少出口压力，需补抄读数。'],
@@ -73,6 +414,7 @@ const pageSize=5;
 const prefix='forma-inspection/v1:'+new URL('.',location.href).pathname;
 const selected=new Set();
 let book={queue:[],lastBatch:[]},pending=null,needsReview=false,busy=false,storageError=false;
+
 function readBook(){
   const raw=localStorage.getItem(prefix);
   if(raw===null)return {queue:[],lastBatch:[]};
@@ -106,6 +448,69 @@ function pageSlice(all){return all.slice((state.page-1)*pageSize,state.page*page
 function reason(id,source=book){return source.queue.includes(id)?'已在本班清单':reasons[byId.get(id).status]||''}
 function availability(id){const blocked=reason(id);return blocked||'可加入'}
 function pill(row){return '<span class="pill '+row.status+'">'+statuses[row.status]+'</span>'}
+
+/* ── Live metrics, recomputed from the active filter ─────────────── */
+const SPARKS={
+  due:[5,6,5,7,6,6,6],flag:[2,2,3,3,2,3,3],service:[1,2,2,3,2,2,2],done:[2,3,3,3,4,4,4]
+};
+function sparkline(values,color,id){
+  const width=120,height=26,pad=3;
+  const max=Math.max(...values),min=Math.min(...values);
+  const span=max-min||1;
+  const points=values.map((value,index)=>{
+    const x=pad+index*(width-pad*2)/(values.length-1);
+    const y=height-pad-(value-min)/span*(height-pad*2);
+    return x.toFixed(1)+','+y.toFixed(1);
+  });
+  const fill='M'+points[0].replace(',',' ')+' L'+points.join(' L')+' L'+width+','+height+' L0,'+height+' Z';
+  return '<svg class="spark" viewBox="0 0 '+width+' '+height+'" preserveAspectRatio="none" aria-hidden="true">'+
+    '<path d="'+fill+'" fill="'+color+'" opacity=".13"></path>'+
+    '<polyline points="'+points.join(' ')+'" fill="none" stroke="'+color+'" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"></polyline>'+
+    '<circle cx="'+points[points.length-1].split(',')[0]+'" cy="'+points[points.length-1].split(',')[1]+'" r="2.2" fill="'+color+'"></circle></svg>';
+}
+function drawMetrics(scope){
+  const counts={due:0,flag:0,done:0,service:0};
+  for(const row of scope)counts[row.status]++;
+  const total=scope.length;
+  const deltas={due:['up','+2'],flag:['flat','±0'],service:['down','−1'],done:['up','+1']};
+  const cards=[
+    ['due','待复核',counts.due,'台','#4da3ff'],
+    ['flag','记录有异',counts.flag,'台','#f0b03c'],
+    ['service','停机检修',counts.service,'台','#a78bfa'],
+    ['done','本轮已完成',counts.done,'台','#9be36a']
+  ];
+  $('kpis').innerHTML=cards.map(([key,label,value,unit,color])=>{
+    const [dir,text]=deltas[key];
+    return '<article class="kpi" style="--accent:'+color+'">'+
+      '<p class="k-label"><i aria-hidden="true"></i>'+label+'</p>'+
+      '<div class="k-row"><span class="k-val">'+value+'<small>'+unit+'</small></span>'+
+      '<span class="k-delta '+dir+'"><b>'+text+'</b></span></div>'+
+      '<p class="k-base">较上一班 · 抽样 15 台</p>'+
+      sparkline(SPARKS[key],color,key)+'</article>';
+  }).join('');
+
+  const ratio=total?counts.done/total:0;
+  const circumference=2*Math.PI*40;
+  $('dialArc').setAttribute('stroke-dashoffset',String(circumference*(1-ratio)));
+  $('dialPct').textContent=(total?Math.round(ratio*100):0)+'%';
+  $('dialNote').textContent=counts.done+' / '+total+' 台已完成本轮';
+  $('scopeLabel').textContent=state.q||state.area||state.status?'当前筛选':'当前范围';
+
+  const areaCount=new Map(areas.map(area=>[area,0]));
+  for(const row of scope)areaCount.set(row.area,(areaCount.get(row.area)||0)+1);
+  $('areaBars').innerHTML=areas.map(area=>{
+    const value=areaCount.get(area)||0;
+    const share=total?value/total*100:0;
+    return '<div class="bar-row"><em>'+area+'</em><div class="bar-track"><i style="width:'+share.toFixed(1)+'%;background:linear-gradient(90deg,#3fd0d8,#4da3ff)"></i></div><b>'+value+'</b></div>';
+  }).join('');
+  $('stackTotal').textContent=total+' 台';
+  const order=['due','flag','done','service'];
+  $('stackbar').innerHTML=order.filter(key=>counts[key]).map(key=>
+    '<i style="width:'+(counts[key]/(total||1)*100).toFixed(2)+'%;background:'+statusColor[key]+'"></i>').join('');
+  $('legend').innerHTML=order.map(key=>
+    '<div><i style="background:'+statusColor[key]+'"></i><span>'+statuses[key]+'</span><b>'+counts[key]+'</b><small>'+(total?(counts[key]/total*100).toFixed(0):0)+'%</small></div>').join('');
+}
+
 function setContext(context){
   document.body.dataset.reviewContext=context;
   if(context==='detail')document.body.dataset.reviewObject=state.asset;else delete document.body.dataset.reviewObject;
@@ -132,16 +537,20 @@ function describeScope(all,visible){
   $('clear-selection').hidden=!selected.size;$('preview-batch').disabled=!selected.size;
   $('rows').querySelectorAll('[data-check]').forEach(input=>{input.checked=selected.has(input.dataset.check);input.closest('tr').classList.toggle('selected',input.checked)});
 }
+function emptyGlyph(){
+  return '<span class="glyph" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="4.5" width="17" height="13" rx="2"/><path d="M3.5 9h17M8 21h8M12 17.5V21"/><path d="m14.5 12.5 2 2 3.5-3.5"/></svg></span>';
+}
 function emptyResults(){
   const container=$('empty');container.replaceChildren();
+  container.insertAdjacentHTML('beforeend',emptyGlyph());
   const title=document.createElement('h3'),hint=document.createElement('p');
   container.append(title,hint);
-  if(state.view==='queue'&&!book.queue.length){title.textContent='本班清单还是空的';hint.textContent='在全部设备中勾选需要复核的设备后加入。';const b=document.createElement('button');b.className='minor';b.textContent='去全部设备';b.onclick=()=>changeTab('ledger');container.append(b);return}
+  if(state.view==='queue'&&!book.queue.length){title.textContent='本班清单还是空的';hint.textContent='在全部设备中勾选需要复核的设备后加入。';const b=document.createElement('button');b.className='secondary-btn';b.textContent='去全部设备';b.onclick=()=>changeTab('ledger');container.append(b);return}
   title.textContent='没有符合条件的设备';hint.textContent='可以移除一个条件，保留其余查找范围。';
   for(const [key,name] of [['q','关键词'],['area','区域'],['status','状态']]){
     if(!state[key])continue;
     const n=rows({...state,[key]:''}).length;
-    const b=document.createElement('button');b.className='minor';b.textContent='移除'+name+'（'+n+' 台）';b.dataset.reviewId='asset-relax-'+key;b.onclick=()=>{apply({[key]:''});focus(key==='q'?'query':key)};container.append(b);
+    const b=document.createElement('button');b.className='secondary-btn';b.textContent='移除'+name+'（'+n+' 台）';b.dataset.reviewId='asset-relax-'+key;b.onclick=()=>{apply({[key]:''});focus(key==='q'?'query':key)};container.append(b);
   }
 }
 function drawList(){
@@ -152,13 +561,15 @@ function drawList(){
   $('tab-ledger').setAttribute('aria-pressed',ledger);$('tab-queue').setAttribute('aria-pressed',!ledger);
   $('ledger-count').textContent=data.length;$('queue-count').textContent=book.queue.length;
   $('query').value=state.q;$('area').value=state.area;$('status').value=state.status;$('sort').value=state.sort;
-  $('undo-bar').hidden=!book.lastBatch.length;$('undo-description').textContent='最近一次加入 '+book.lastBatch.length+' 台设备';
+  if($('undo-bar').hidden===false||book.lastBatch.length){$('undo-bar').hidden=!book.lastBatch.length}
+  $('undo-description').textContent='最近一次加入 '+book.lastBatch.length+' 台设备';
   drawChips();
-  $('rows').innerHTML=visible.map(row=>'<tr><td>'+(ledger?'<label class="row-select" data-review-id="asset-select-'+row.id+'"><input type="checkbox" data-check="'+row.id+'" aria-label="勾选 '+row.id+' '+row.name+'"></label>':'<span aria-hidden="true">✓</span>')+'</td><td><button class="open" id="asset-'+row.id+'" data-open="'+row.id+'" data-review-id="asset-'+row.id+'">'+row.name+'</button><span class="secondary code mono">'+row.id+'</span></td><td>'+row.area+'</td><td>'+pill(row)+'</td><td><time>'+row.time+'</time></td><td class="'+(reason(row.id)?'muted':'eligible')+'">'+availability(row.id)+'</td></tr>').join('');
+  $('rows').innerHTML=visible.map(row=>'<tr data-status="'+row.status+'"'+(selected.has(row.id)?' class="selected"':'')+'><td>'+(ledger?'<label class="row-select" data-review-id="asset-select-'+row.id+'"><input type="checkbox" data-check="'+row.id+'" aria-label="勾选 '+row.id+' '+row.name+'"></label>':'<span aria-hidden="true" style="color:#5b7186">✓</span>')+'</td><td><button class="open" id="asset-'+row.id+'" data-open="'+row.id+'" data-review-id="asset-'+row.id+'" type="button">'+row.name+'</button><span class="code">'+row.id+'</span></td><td style="color:#a8bcd4">'+row.area+'</td><td>'+pill(row)+'</td><td><time datetime="'+row.time+'">'+row.time+'</time></td><td class="'+(reason(row.id)?'blocked':'eligible')+'">'+availability(row.id)+'</td></tr>').join('');
   $('scope').hidden=!ledger;$('table').hidden=!all.length;$('empty').hidden=Boolean(all.length);if(!all.length)emptyResults();
   $('range').textContent=all.length?'第 '+((state.page-1)*pageSize+1)+'–'+((state.page-1)*pageSize+visible.length)+' 台，共 '+all.length+' 台':'共 0 台';
   $('pages').textContent=all.length?state.page+' / '+pages:'0 / 0';$('prev').disabled=state.page<=1;$('next-page').disabled=state.page>=pages;
   describeScope(all,visible);
+  drawMetrics(all);
 }
 function apply(patch){
   const changed=Object.keys(patch).some(key=>patch[key]!==state[key]);
@@ -172,7 +583,9 @@ function changeTab(view){if(state.view!==view)apply({view,q:'',area:'',status:''
 function drawDetail(){
   const row=byId.get(state.asset);setContext('detail');
   const fields=[['所在区域',row.area],['具体位置',row.location],['责任人',row.owner],['计划巡检',row.time],['本班复核',availability(row.id)]];
-  $('detail-content').innerHTML='<span class="mono code">'+row.id+'</span><h2 id="detail-name" tabindex="-1" data-review-id="assets-detail-title">'+row.name+'</h2><div class="keyline">'+pill(row)+'<span>'+row.area+' · '+row.location+'</span></div><h3>巡检记录</h3><p>'+row.note+'</p><h3>设备资料</h3><dl class="facts">'+fields.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('')+'</dl>';
+  $('detail-content').innerHTML='<div class="shead"><div><span class="code" style="margin:0">'+row.id+'</span><h2 id="detail-name" tabindex="-1" data-review-id="assets-detail-title">'+row.name+'</h2></div>'+pill(row)+'</div>'+
+    '<div class="keyline"><span>'+row.area+' · '+row.location+'</span><span>·</span><span>责任人 '+row.owner+'</span></div>'+
+    '<h3>巡检记录</h3><p>'+row.note+'</p><h3>设备资料</h3><dl class="facts">'+fields.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('')+'</dl>';
 }
 function openDetail(id){
   if(!byId.has(id))return false;
@@ -194,10 +607,11 @@ function batchEntries(ids,source=book){return ids.map(id=>({id,reason:reason(id,
 function drawBatch(){
   setContext('batch');
   const eligible=pending.filter(item=>!item.reason),skipped=pending.filter(item=>item.reason);
-  const lines=items=>'<ul class="batchrows">'+items.map(({id,reason:why})=>'<li><span><b>'+byId.get(id).name+'</b> <small class="mono">'+id+'</small></span><span>'+(why||byId.get(id).area)+'</span></li>').join('')+'</ul>';
-  $('batch-content').innerHTML='<h2 id="batch-title" tabindex="-1" data-review-id="assets-batch-title">核对复核范围</h2><p class="keyline batch-summary">已勾选 '+pending.length+' 台，计划加入 <b>'+eligible.length+' 台</b>，跳过 '+skipped.length+' 台。</p>'+
+  const lines=items=>'<ul class="batchrows">'+items.map(({id,reason:why})=>'<li><span><b>'+byId.get(id).name+'</b> <small>'+id+'</small></span><span>'+(why||byId.get(id).area)+'</span></li>').join('')+'</ul>';
+  $('batch-content').innerHTML='<div class="shead"><div><span class="code" style="margin:0">复核范围</span><h2 id="batch-title" tabindex="-1" data-review-id="assets-batch-title">核对复核范围</h2></div></div>'+
+    '<div class="keyline"><span>已勾选 '+pending.length+' 台</span><span>·</span><span style="color:#8fe3b0">计划加入 '+eligible.length+' 台</span><span>·</span><span>跳过 '+skipped.length+' 台</span></div>'+
     (eligible.length?'<h3>将加入本班清单</h3>'+lines(eligible):'')+(skipped.length?'<h3>跳过的设备及原因</h3>'+lines(skipped):'')+
-    '<div class="actions"><button id="confirm-batch" class="primary" data-review-id="assets-confirm" '+(!eligible.length?'disabled':'')+'>确认加入 '+eligible.length+' 台</button><button class="minor" id="change-selection">修改勾选</button></div>';
+    '<div class="actions"><button id="confirm-batch" class="primary" data-review-id="assets-confirm" type="button" '+(!eligible.length?'disabled':'')+'>确认加入 '+eligible.length+' 台</button><button class="secondary-btn" id="change-selection" type="button">修改勾选</button></div>';
 }
 function leaveBatch(){pending=null;needsReview=false;drawList();focus('preview-batch')}
 async function updateBook(action){
@@ -255,6 +669,15 @@ $('detail-back').onclick=()=>{if(location.protocol!=='file:'&&history.state?.det
 window.addEventListener('popstate',handlePop);
 window.addEventListener('storage',event=>{if(event.key!==prefix)return;try{book=readBook();if(pending){needsReview=true;message('其他页面已修改本班清单，确认前将重新核对。')}else if(state.asset)drawDetail();else drawList()}catch{message('本班清单读取失败。')}});
 if(state.asset)drawDetail();else drawList();if(storageError)message('无法读取本班清单，请检查浏览器存储。');
+
+/* Clock in the app bar: a console should show the shift it is reading against. */
+const pad=n=>String(n).padStart(2,'0');
+function tick(){
+  const now=new Date();
+  const node=$('clock');
+  if(node)node.textContent=pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds());
+}
+tick();setInterval(tick,1000);
 </script>
 </body>
 </html>

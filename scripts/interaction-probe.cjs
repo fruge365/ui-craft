@@ -165,6 +165,59 @@ const cases = [
       const shown = await s.evaluate(`!document.getElementById('pt').hidden`);
       return shown ? '' : 'notice still hidden';
     } },
+  { page: 'cockpit', run: async s => {
+      const first = await s.evaluate(`document.querySelector('.metric .m-val').textContent`);
+      await s.click('[data-scope="north"]');
+      const second = await s.evaluate(`document.querySelector('.metric .m-val').textContent`);
+      const alerts = await s.evaluate(`document.querySelectorAll('#alerts .alert').length`);
+      return first.startsWith('418.6') && second.startsWith('82.6') && alerts === 3
+        ? '' : 'first=' + first + ' second=' + second + ' alerts=' + alerts;
+    } },
+  { page: 'shopfloor', run: async s => {
+      const nodes = await s.evaluate(`document.querySelectorAll('#conveyor svg > g').length`);
+      const texts = await s.evaluate(`document.querySelectorAll('#conveyor text').length`);
+      const oee = await s.evaluate(`document.querySelectorAll('#oee .oee-cell').length`);
+      const spc = await s.evaluate(`document.querySelectorAll('#spc circle').length`);
+      return nodes === 7 && texts > 14 && oee === 4 && spc === 18
+        ? '' : 'nodes=' + nodes + ' texts=' + texts + ' oee=' + oee + ' spc=' + spc;
+    } },
+  { page: 'icons', run: async s => {
+      const cells = await s.evaluate(`document.querySelectorAll('#iconSet .icon-cell').length`);
+      const uses = await s.evaluate(`document.querySelectorAll('#iconSet use').length`);
+      return cells === 29 && uses === 29 ? '' : 'cells=' + cells + ' uses=' + uses;
+    } },
+  { page: 'assets', run: async s => {
+      await s.click('#page-select');
+      const picked = await s.evaluate(`document.getElementById('selected-count').textContent`);
+      await s.click('#preview-batch');
+      await wait(200);
+      await s.click('#confirm-batch');
+      await wait(450);
+      const queue = await s.evaluate(`document.getElementById('queue-count').textContent`);
+      await s.click('#undo-batch');
+      await wait(450);
+      const after = await s.evaluate(`document.getElementById('queue-count').textContent`);
+      return /5 台/.test(picked) && queue === '3' && after === '0'
+        ? '' : 'picked=' + picked + ' queue=' + queue + ' after=' + after;
+    } },
+  { page: 'governance', run: async s => {
+      // Restricted rows must expose read-only and refuse the bulk write path.
+      await s.click('[data-scope="restricted"]');
+      const denied = await s.evaluate(`document.querySelectorAll('#body tr').length`);
+      await s.click('#body tr[data-id]');
+      await wait(250);
+      const hasDeny = await s.evaluate(`Boolean(document.querySelector('#dBody .deny'))`);
+      await s.click('#closeDrawer');
+      await wait(250);
+      // Command palette must open on the shortcut and filter live.
+      await s.evaluate(`document.dispatchEvent(new KeyboardEvent('keydown',{key:'k',metaKey:true,bubbles:true}))`);
+      await wait(200);
+      const palOpen = await s.evaluate(`!document.getElementById('palette').hidden`);
+      await s.evaluate(`(() => { const i = document.getElementById('palInput'); i.value = '工资'; i.dispatchEvent(new Event('input',{bubbles:true})); })()`);
+      const filtered = await s.evaluate(`document.querySelectorAll('#palList .palitem').length`);
+      return denied > 0 && hasDeny && palOpen && filtered >= 1
+        ? '' : 'rows=' + denied + ' deny=' + hasDeny + ' palette=' + palOpen + ' matches=' + filtered;
+    } },
   { page: 'homepanel', name: 'temperature steps stay inside the allowed range', run: async s => {
       for (let i = 0; i < 8; i++) await s.click('[data-step="-1"][data-room="living"]');
       const value = await s.evaluate(`document.getElementById('living-set').textContent`);

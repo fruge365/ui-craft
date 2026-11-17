@@ -25,7 +25,12 @@ const shots = [
   ['signage', 'signage.png', 700, 1180],
   ['foldable', 'foldable.png', 1300, 900],
   ['vr', 'vr.png', 1440, 940],
-  ['homepanel', 'homepanel.png', 1160, 880]
+  ['homepanel', 'homepanel.png', 1160, 880],
+  ['cockpit', 'cockpit.png', 1920, 1080],
+  ['shopfloor', 'shopfloor.png', 1920, 1080],
+  ['governance', 'governance.png', 1440, 900],
+  ['icons', 'icons.png', 1440, 1100],
+  ['assets', 'assets-console.png', 1440, 1050]
 ];
 
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));

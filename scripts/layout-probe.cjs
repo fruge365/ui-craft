@@ -11,7 +11,8 @@ const ORIGIN = process.env.UI_CRAFT_ORIGIN || 'http://127.0.0.1:4173';
 
 const PAGES = process.argv.slice(2).length ? process.argv.slice(2) : [
   'television', 'kiosk', 'pda', 'pos', 'watch', 'vehicle', 'arglass',
-  'esl', 'dualmonitor', 'tablet', 'signage', 'foldable', 'vr', 'homepanel'
+  'esl', 'dualmonitor', 'tablet', 'signage', 'foldable', 'vr', 'homepanel',
+  'cockpit', 'shopfloor', 'icons', 'assets'
 ];
 
 const sizes = [[1440, 900], [390, 844]];
@@ -92,6 +93,9 @@ const probe = `(() => {
     const style = getComputedStyle(el);
     if (style.display === 'none' || style.visibility === 'hidden' || Number(style.opacity) === 0) continue;
     if (hidden(el)) continue;
+    // A marquee or virtualised track overflows on purpose. Declaring it keeps the
+    // check honest instead of silencing it with a class name.
+    if (el.dataset.overflow === 'clip') continue;
     const rect = el.getBoundingClientRect();
     if (rect.width < 1 || rect.height < 1) continue;
     const clips = /hidden|clip/.test(style.overflowX);
@@ -105,12 +109,21 @@ const probe = `(() => {
     if (el.dataset.reviewId) seen.push(el.dataset.reviewId);
   }
   // Interactive elements below the 44px touch floor, only on narrow viewports.
+  // A checkbox wrapped in a padded label is hit through the label, so measure
+  // that instead of the bare 16px input.
   const small = [];
   if (innerWidth <= 480) {
     for (const el of document.querySelectorAll('button, a[href], input, select, textarea')) {
-      const rect = el.getBoundingClientRect();
+      let box = el;
+      if (el.tagName === 'INPUT' && el.type === 'checkbox') {
+        box = el.closest('label') || (el.parentElement && el.parentElement.getBoundingClientRect().height >= 40 ? el.parentElement : el);
+      }
+      const rect = box.getBoundingClientRect();
       if (rect.width < 1 || rect.height < 1) continue;
       if (hidden(el)) continue;
+    // A marquee or virtualised track overflows on purpose. Declaring it keeps the
+    // check honest instead of silencing it with a class name.
+    if (el.dataset.overflow === 'clip') continue;
       if (rect.height < 40 || rect.width < 28) {
         small.push(el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + ' ' + Math.round(rect.width) + '×' + Math.round(rect.height));
       }

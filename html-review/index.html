@@ -39,6 +39,8 @@
 <button class="page-tab" data-page="bigscreen" aria-pressed="false"><span class="num">03</span><span><strong>能源监控大屏</strong><span>江湾能源运行中心</span></span><b class="count" id="count-bigscreen">0</b></button>
 <button class="page-tab" data-page="signage" aria-pressed="false"><span class="num">39</span><span><strong>电梯厅标牌</strong><span>厅刊 · 竖屏日程</span></span><b class="count" id="count-signage">0</b></button>
 <button class="page-tab" data-page="television" aria-pressed="false"><span class="num">29</span><span><strong>客厅电视</strong><span>燕居 · 遥控焦点</span></span><b class="count" id="count-television">0</b></button>
+<button class="page-tab" data-page="cockpit" aria-pressed="false"><span class="num">43</span><span><strong>经营驾驶舱</strong><span>衡远 · 集团大屏</span></span><b class="count" id="count-cockpit">0</b></button>
+<button class="page-tab" data-page="shopfloor" aria-pressed="false"><span class="num">44</span><span><strong>产线监控墙</strong><span>铸线 · 车间大屏</span></span><b class="count" id="count-shopfloor">0</b></button>
 </div>
 <div class="sample-group" data-sample-group="终端与现场设备"><h2>终端与现场设备</h2>
 <button class="page-tab" data-page="kiosk" aria-pressed="false"><span class="num">30</span><span><strong>自助挂号机</strong><span>和济 · 门诊终端</span></span><b class="count" id="count-kiosk">0</b></button>
@@ -86,8 +88,10 @@
 <button class="page-tab" data-page="policy-diff" aria-pressed="false"><span class="num">22</span><span><strong>权限变更审阅</strong><span>门册 · 角色权限</span></span><b class="count" id="count-policy-diff">0</b></button>
 <button class="page-tab" data-page="handover" aria-pressed="false"><span class="num">20</span><span><strong>设备交班</strong><span>接力 · 班次与交接单</span></span><b class="count" id="count-handover">0</b></button>
 <button class="page-tab" data-page="depot" aria-pressed="false"><span class="num">18</span><span><strong>库区作业板</strong><span>仓位 · 货位盘点</span></span><b class="count" id="count-depot">0</b></button>
-<button class="page-tab" data-page="assets" aria-pressed="false"><span class="num">14</span><span><strong>设备台账</strong><span>北线 · 巡检复核</span></span><b class="count" id="count-assets">0</b></button></div>
+<button class="page-tab" data-page="assets" aria-pressed="false"><span class="num">14</span><span><strong>设备台账</strong><span>北线 · 巡检复核</span></span><b class="count" id="count-assets">0</b></button>
+<button class="page-tab" data-page="governance" aria-pressed="false"><span class="num">46</span><span><strong>数据治理台</strong><span>枢机 · 权限与审计</span></span><b class="count" id="count-governance">0</b></button></div>
 <div class="sample-group" data-sample-group="设计对照"><h2>设计对照</h2>
+<button class="page-tab" data-page="icons" aria-pressed="false"><span class="num">45</span><span><strong>图标与插画体系</strong><span>格致 · 图标网格与空状态</span></span><b class="count" id="count-icons">0</b></button>
 <button class="page-tab" data-page="style-lab" aria-pressed="false"><span class="num">10</span><span><strong>布局与配色</strong><span>对账 / 客户 / 拣货</span></span><b class="count" id="count-style-lab">0</b></button></div></div></div><label class="mobile-samples" for="samplePicker">评审样页 <select id="samplePicker"></select></label><div class="sidebar-foot">UI-Craft · UI/UX Design<br>意见仅存于当前浏览器</div></nav>
 <main class="main"><div class="intro"><div><div class="eyebrow">UI-Craft · 界面评审</div><h1>UI/UX 设计评审</h1><p>选择样页体验，再点「＋ 标注」记录意见。可从 <a href="?page=orbital">轨道指挥大屏</a>、<a href="?page=departures">客运信息屏</a> 或 <a href="?page=bigscreen">能源监控墙</a> 开始。</p></div><div class="intro-actions"><button id="importBtn">导入反馈</button><button id="exportMd">导出评审单</button><button class="primary" id="exportJson">导出 JSON ↗</button><input type="file" id="importFile" accept="application/json,.json" hidden></div></div>
 <div class="workspace"><div class="canvas-column"><div class="toolbar"><div class="mode-switch" aria-label="交互模式"><button id="browseBtn" aria-pressed="true">浏览</button><button id="annotateBtn" aria-pressed="false">＋ 标注</button></div><label class="sr-only" for="viewport">预览尺寸</label><select id="viewport"><option value="auto">自适应宽度</option><option value="1440">桌面 · 1440</option><option value="1024">平板 · 1024</option><option value="390">手机 · 390</option><option value="1920">大屏 · 1920</option></select><button id="zoomBtn" type="button" aria-pressed="false" title="以实际像素查看固定尺寸画布">原尺寸</button><span class="scale-label" id="scaleLabel"></span><a class="external" id="openPage" href="orbital.html" target="_blank" rel="noopener">独立打开 ↗</a></div><div class="canvas" id="canvas"><div class="frame-wrap" id="frameWrap"><iframe allowfullscreen id="preview" title="轨道测控大屏预览"></iframe></div></div><div class="canvas-caption"><span id="modeHint">浏览模式 · 可以直接体验页面交互</span><span id="viewportHint">画布 1440 × 900 · 等比例预览</span></div><div class="hint" id="reviewHint">评审建议：先看整体节奏，再看字体、间距与层级，最后体验主要任务。点击「＋ 标注」后，点击页面中的具体元素即可留下意见。</div></div>
@@ -198,6 +202,30 @@ Object.assign(pages, {
     desc:'注视指向、手势确认，两步之间可取消。追踪丢失、周边障碍、晕动不适各有对应降级。',
     colors:['#07080c','#141926','#a48cf0','#5fd3e0'],
     steps:{immersive:'沉浸模式'}
+  },
+  cockpit:{
+    title:'经营驾驶舱',num:'43',file:'cockpit.html',wall:true,
+    desc:'集团、区域两种口径切换，六项指标带迷你趋势，营收分布、效率仪表、经营漏斗与告警共用一份数据。',
+    colors:['#050a14','#0d1a33','#2ee6e0','#3f7cff'],
+    steps:{group:'集团合并'}
+  },
+  shopfloor:{
+    title:'产线监控墙',num:'44',file:'shopfloor.html',wall:true,
+    desc:'七工位状态图、班次产出、OEE 分解、安灯看板与壁厚控制图，异常在图上直标，一屏不滚动。',
+    colors:['#0b0d0a','#12170f','#ffb020','#b6e84a'],
+    steps:{line:'A 线'}
+  },
+  governance:{
+    title:'数据治理台',num:'46',file:'governance.html',
+    desc:'企业应用壳层：深色导航、命令面板、可排序表格、权限按数据建模、受限项拒绝写操作、右侧实时审计轨迹。',
+    colors:['#f7f8fa','#131a24','#1d5fd8','#0d7a6c'],
+    steps:{table:'数据集清单'}
+  },
+  icons:{
+    title:'图标与插画体系',num:'45',file:'icons.html',
+    desc:'30 枚线性图标共用 24 网格与 1.8 描边，含重量校正对照、五组状态图形、插画三档与三种空状态。',
+    colors:['#fbfaf6','#fff','#1f5b4a','#c9622a'],
+    steps:{library:'图标库'}
   },
   homepanel:{
     title:'墙面家居面板',num:'42',file:'homepanel.html',

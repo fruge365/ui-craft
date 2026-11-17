@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050a14">
+<title>衡远 · 集团经营驾驶舱</title>
+<style>
+:root{
+  color-scheme:dark;
+  --void:#050a14;--deep:#071026;--panel:#0a1428;--panel-2:#0d1a33;--edge:#16294a;
+  --paper:#e8f1ff;--mute:#7e94b4;--dim:#54688a;
+  --azure:#3f7cff;--cyan:#2ee6e0;--gold:#f5c451;--coral:#ff6b5e;--lime:#7bdc80;--violet:#9d7bff;
+  font-family:"Inter","HarmonyOS Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--paper);font-synthesis:none;
+  --mono:"Barlow Condensed","IBM Plex Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;min-height:100vh;height:100vh;overflow:hidden;
+  background:
+    radial-gradient(ellipse 70% 46% at 50% -10%,#12295a 0,transparent 62%),
+    radial-gradient(ellipse 46% 34% at 6% 78%,#0b2a3a 0,transparent 60%),
+    radial-gradient(ellipse 40% 30% at 96% 22%,#1c1640 0,transparent 58%),
+    var(--void);
+  overflow-x:hidden;
+}
+/* A faint engineering grid keeps the wall from reading as a poster. */
+body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(#ffffff05 1px,transparent 1px),linear-gradient(90deg,#ffffff05 1px,transparent 1px);
+  background-size:64px 64px;mask-image:radial-gradient(ellipse 80% 70% at 50% 40%,#000 20%,transparent 78%)}
+h1,h2,h3,h4,p,dl,dd{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+
+.wall{position:relative;z-index:1;height:100vh;max-height:100vh;display:grid;grid-template-rows:auto auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr);padding:clamp(8px,1.2vh,16px) clamp(14px,2vw,40px) clamp(6px,.9vh,12px);gap:clamp(6px,.9vh,13px);overflow:clip}
+
+/* ── Header ─────────────────────────────────────── */
+.head{display:flex;align-items:center;justify-content:space-between;gap:20px;position:relative}
+.head::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,#2ee6e055 20%,#3f7cff66 50%,#2ee6e055 80%,transparent)}
+.brandzone{display:flex;align-items:center;gap:clamp(10px,1.2vw,18px);padding-bottom:clamp(8px,1.2vh,14px);min-width:0}
+.crest{width:clamp(34px,3.4vh,46px);aspect-ratio:1;border-radius:11px;display:grid;place-items:center;flex:none;
+  background:linear-gradient(150deg,#2ee6e0,#2f6bff 55%,#6b3bff);box-shadow:0 0 0 1px #ffffff26,0 8px 26px #2f6bff40}
+.crest svg{width:56%;height:56%}
+.title h1{font-size:clamp(18px,2.5vh,30px);letter-spacing:.16em;font-weight:750;line-height:1.1;white-space:nowrap}
+.title p{font-size:clamp(10px,1.35vh,13px);color:var(--mute);letter-spacing:.28em;margin-top:.5em;white-space:nowrap}
+.headmid{flex:1;display:flex;justify-content:center;min-width:0}
+.scope-pills{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.scope-pills button{padding:.42em .8em;border-radius:6px;border:1px solid var(--edge);background:#081226;color:var(--mute);font-size:clamp(10px,1.25vh,12.5px);font-weight:650;letter-spacing:.04em;transition:.15s}
+.scope-pills button:hover{color:var(--paper);border-color:#2b4670}
+.scope-pills button[aria-pressed=true]{background:linear-gradient(#1b3f7d,#12234a);border-color:#3f7cff88;color:#cfe2ff;box-shadow:0 0 0 1px #3f7cff33,0 4px 14px #3f7cff26}
+.headright{display:flex;align-items:center;gap:clamp(10px,1.4vw,22px);padding-bottom:clamp(8px,1.2vh,14px)}
+.stamp{text-align:right;line-height:1.35}
+.stamp b{display:block;font-family:var(--mono);font-size:clamp(19px,2.6vh,30px);letter-spacing:.04em;font-variant-numeric:tabular-nums;color:#dbe9ff}
+.stamp small{display:block;font-size:clamp(9px,1.2vh,11.5px);color:var(--dim);letter-spacing:.1em;margin-top:.35em}
+.live{display:flex;align-items:center;gap:7px;font-size:clamp(9px,1.2vh,11.5px);color:var(--lime);letter-spacing:.1em;font-weight:650;padding:.4em .7em;border:1px solid #2c6a3e;background:#08220f;border-radius:99px}
+.live i{width:6px;height:6px;border-radius:50%;background:var(--lime);box-shadow:0 0 0 3px #7bdc8029;animation:pulse 2.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+/* ── KPI band ───────────────────────────────────── */
+.band{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(6px,.7vw,10px);min-width:0}
+.metric{position:relative;padding:clamp(8px,1.2vh,14px) clamp(9px,1vw,15px) clamp(10px,1.4vh,16px);border-radius:9px;
+  background:linear-gradient(168deg,#0e1d38,#081226 74%);border:1px solid var(--edge);overflow:hidden}
+.metric::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--accent,var(--azure));box-shadow:0 0 12px var(--accent,var(--azure))}
+.metric::after{content:"";position:absolute;inset:0 0 auto;height:52px;
+  background:radial-gradient(ellipse 120% 100% at 12% -34%,var(--accent,var(--azure))26,transparent 70%);pointer-events:none}
+.m-label{font-size:clamp(9px,1.16vh,11.5px);letter-spacing:.1em;color:var(--mute);font-weight:600;position:relative;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.m-row{display:flex;align-items:baseline;justify-content:space-between;gap:6px;margin-top:clamp(4px,.7vh,9px);position:relative}
+.m-val{font-family:var(--mono);font-size:clamp(22px,3.6vh,40px);font-weight:700;line-height:.94;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.m-val em{font-style:normal;font-size:.4em;font-weight:600;color:var(--mute);margin-left:.25em;letter-spacing:.04em}
+.m-delta{font-family:var(--mono);font-size:clamp(10px,1.4vh,13px);font-weight:650;padding:.15em .35em;border-radius:3px;white-space:nowrap}
+.m-delta.up{color:#ffd08a;background:#4a3111}
+.m-delta.down{color:#a5e8a9;background:#0e2f17}
+.m-delta.flat{color:var(--dim);background:#101c30}
+.m-spark{display:block;width:calc(100% + 2px);height:clamp(16px,2.6vh,28px);margin:clamp(5px,.8vh,9px) -1px 0}
+
+/* ── Main grid ──────────────────────────────────── */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.28fr) minmax(0,1fr);gap:clamp(6px,.7vw,11px);min-height:0;min-width:0;overflow:hidden}
+.col{display:grid;gap:clamp(6px,.7vw,11px);min-height:0;min-width:0;align-content:stretch;grid-template-rows:1fr}
+.col:nth-child(1){grid-template-rows:minmax(0,1.45fr) minmax(0,1fr)}
+.col:nth-child(2){grid-template-rows:minmax(0,1.25fr) minmax(0,.85fr) minmax(0,.9fr)}
+.col:nth-child(3){grid-template-rows:minmax(0,1.15fr) minmax(0,1fr)}
+.panel{position:relative;background:linear-gradient(176deg,#0b1730f2,#070f20f2);border:1px solid var(--edge);border-radius:10px;padding:clamp(7px,1vh,12px) clamp(9px,1vw,13px);display:grid;grid-template-rows:auto minmax(0,1fr);min-height:0;overflow:hidden}
+.panel::before{content:"";position:absolute;inset:0 0 auto;height:1px;background:linear-gradient(90deg,transparent,#2ee6e066,#3f7cff55,transparent)}
+.p-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:clamp(5px,.8vh,9px)}
+.p-head h2{font-size:clamp(10.5px,1.35vh,13.5px);letter-spacing:.14em;font-weight:700;display:flex;align-items:center;gap:.55em;white-space:nowrap}
+.p-head h2::before{content:"";width:3px;height:.95em;border-radius:1px;background:linear-gradient(var(--cyan),var(--azure))}
+.p-head .unit{font-size:clamp(8.5px,1.1vh,10.5px);color:var(--dim);letter-spacing:.06em;white-space:nowrap}
+.p-body{min-height:0;position:relative}
+
+/* map */
+.mapwrap{position:relative;border-radius:7px;overflow:hidden;background:radial-gradient(ellipse 74% 70% at 52% 46%,#0e2545,#061020 78%);height:100%;min-height:0}
+.mapwrap svg{width:100%;height:100%;display:block}
+.map-legend{position:absolute;left:8px;bottom:8px;display:grid;gap:4px;font-size:clamp(8px,1.05vh,10px);color:var(--mute);letter-spacing:.04em}
+.map-legend span{display:flex;align-items:center;gap:5px}
+.map-legend i{width:6px;height:6px;border-radius:50%}
+.map-tip{position:absolute;right:8px;top:8px;padding:.35em .6em;border-radius:5px;background:#040a14e0;border:1px solid var(--edge);font-size:clamp(9px,1.15vh,11px);color:#b9cde8;line-height:1.5;text-align:right}
+.map-tip b{color:var(--gold);font-family:var(--mono);font-size:1.18em}
+
+/* bars list */
+.rank{display:grid;gap:clamp(5px,.85vh,9px);align-content:start}
+.rank-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(6px,.7vw,11px);align-items:center;font-size:clamp(9.5px,1.24vh,12px)}
+.rank-row .rk{font-family:var(--mono);color:var(--dim);font-size:1.05em;width:1.5em}
+.rank-row .nm{display:grid;gap:3px;min-width:0}
+.rank-row .nm b{font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.track{height:4px;border-radius:99px;background:#12213a;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--azure));box-shadow:0 0 8px #3f7cff66}
+.rank-row .vl{font-family:var(--mono);font-size:1.1em;font-weight:650;text-align:right;font-variant-numeric:tabular-nums;color:#cfe0f7}
+.rank-row .vl small{font-size:.74em;color:var(--dim);margin-left:.2em;font-weight:500}
+
+/* gauge cluster */
+.gauges{display:grid;grid-template-columns:1fr 1fr;gap:clamp(6px,.7vw,11px);align-content:start}
+.gauge{display:grid;justify-items:center;gap:.35em;padding:clamp(4px,.6vh,8px) 2px}
+.gauge svg{width:100%;max-width:78px;height:auto}
+.gauge .g-val{font-family:var(--mono);font-size:clamp(13px,1.9vh,19px);font-weight:700;line-height:1;margin-top:-.55em;font-variant-numeric:tabular-nums}
+.gauge .g-label{font-size:clamp(8.5px,1.1vh,10.5px);color:var(--mute);letter-spacing:.06em;text-align:center;line-height:1.35}
+
+/* trend chart */
+.trend{position:relative;height:100%;min-height:0;min-width:0}
+.trend svg{width:100%;height:100%;display:block;overflow:visible}
+.trend-legend{display:flex;gap:.9em;font-size:clamp(8.5px,1.05vh,10px);color:var(--mute);align-items:center;flex-wrap:wrap}
+.trend-legend span{display:flex;align-items:center;gap:.35em}
+.trend-legend i{width:9px;height:2px;border-radius:1px}
+
+/* alerts */
+.alerts{display:grid;gap:clamp(4px,.6vh,7px);align-content:start;overflow:auto;scrollbar-width:none;min-height:0}
+.alerts::-webkit-scrollbar{display:none}
+.alert{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:clamp(6px,.7vw,10px);align-items:center;
+  padding:clamp(5px,.75vh,8px) clamp(6px,.6vw,9px);border-radius:6px;background:#0c1a30;border:1px solid #16294a;border-left:2px solid var(--lvl,#f5c451)}
+.alert .ic{width:clamp(16px,2.1vh,21px);aspect-ratio:1;border-radius:5px;display:grid;place-items:center;background:color-mix(in srgb,var(--lvl,#f5c451) 16%,transparent);color:var(--lvl,#f5c451)}
+.alert .ic svg{width:64%;height:64%}
+.alert .tx{min-width:0;font-size:clamp(9.5px,1.22vh,11.5px);line-height:1.4}
+.alert .tx b{display:block;font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert .tx small{display:block;color:var(--dim);margin-top:.12em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.alert .tm{font-family:var(--mono);font-size:clamp(9px,1.15vh,11px);color:var(--dim);font-variant-numeric:tabular-nums}
+
+/* waterfall / funnel */
+.funnel{display:grid;gap:clamp(4px,.65vh,7px);align-content:start}
+.fn-row{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(5px,.6vw,9px);align-items:center;font-size:clamp(9px,1.18vh,11px)}
+.fn-row .lb{color:var(--mute);white-space:nowrap;letter-spacing:.03em}
+.fn-bar{height:clamp(11px,1.5vh,15px);border-radius:3px;background:linear-gradient(90deg,#1c4ea8,#2ee6e0);position:relative;box-shadow:0 0 10px #2ee6e033}
+.fn-row .pv{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:650;color:#cfe0f7}
+.fn-note{font-size:clamp(8.5px,1.05vh,10px);color:var(--dim);letter-spacing:.03em;line-height:1.5;margin-top:2px}
+
+/* table of segments */
+.seg-table{display:grid;gap:0;font-size:clamp(9px,1.18vh,11px);align-content:start;overflow:auto;scrollbar-width:none;min-height:0}
+.seg-table .sr-row{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr));gap:4px;align-items:center;
+  padding:clamp(4px,.62vh,7px) 2px;border-bottom:1px solid #122036}
+.seg-table .sr-row.hd{color:var(--dim);font-size:.92em;letter-spacing:.06em;border-bottom-color:#1a2c48;padding-bottom:.35em}
+.seg-table .sr-row .nm2{display:flex;align-items:center;gap:.5em;min-width:0}
+.seg-table .sr-row .nm2 i{width:5px;height:5px;border-radius:1px;flex:none}
+.seg-table .sr-row .nm2 b{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.seg-table .sr-row>span:not(.nm2){text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;color:#c6d8ee}
+.seg-table .sr-row .neg{color:var(--coral)}
+.seg-table .sr-row .pos{color:var(--lime)}
+
+/* ── Footer ticker ──────────────────────────────── */
+.ticker{display:flex;align-items:center;gap:14px;border-top:1px solid #14233c;padding-top:clamp(5px,.8vh,9px);font-size:clamp(9px,1.15vh,11px);color:var(--dim);letter-spacing:.04em}
+.tick-viewport{flex:1;min-width:0;overflow:clip;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.ticker b{color:var(--cyan);letter-spacing:.16em;font-weight:700;flex:none;font-size:.95em}
+.ticker .run{display:flex;gap:2.4em;white-space:nowrap;animation:slide 42s linear infinite}
+.ticker .run span i{font-style:normal;color:#b9cde8;font-family:var(--mono);margin-left:.3em}
+@keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.ticker .run{animation:none}.live i{animation:none}}
+
+@media(max-width:1200px){
+  .band{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:1fr 1fr}
+  .grid .col:nth-child(3){grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr 1fr}
+}
+@media(max-width:860px){
+  .grid{grid-template-columns:1fr}
+  .grid .col:nth-child(3){grid-template-columns:1fr}
+  .headmid{display:none}
+  .wall{padding:10px 12px}
+  .band{grid-template-columns:1fr 1fr}
+  .title h1{font-size:15px;letter-spacing:.1em}
+  .title p{font-size:9px;letter-spacing:.16em}
+}
+</style>
+</head>
+<body data-review-context="group">
+<main class="wall">
+  <header class="head">
+    <div class="brandzone">
+      <span class="crest" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#050d1a" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 20h18M5.5 20V9l6-5 6 5v11"/><path d="M9.5 20v-5.5h4V20"/>
+        </svg>
+      </span>
+      <div class="title">
+        <h1>衡远控股 · 经营驾驶舱</h1>
+        <p>GROUP OPERATIONS COCKPIT</p>
+      </div>
+    </div>
+    <div class="headmid">
+      <div class="scope-pills" role="group" aria-label="统计范围">
+        <button type="button" data-scope="group" aria-pressed="true" data-review-id="cockpit-scope-group">集团合并</button>
+        <button type="button" data-scope="east" aria-pressed="false" data-review-id="cockpit-scope-east">华东区</button>
+        <button type="button" data-scope="south" aria-pressed="false" data-review-id="cockpit-scope-south">华南区</button>
+        <button type="button" data-scope="north" aria-pressed="false" data-review-id="cockpit-scope-north">华北区</button>
+      </div>
+    </div>
+    <div class="headright">
+      <span class="live"><i aria-hidden="true"></i>实时</span>
+      <div class="stamp"><b id="clock">14:26:41</b><small id="datestamp">2026.11.17 周二 · 数据延迟 38 秒</small></div>
+    </div>
+  </header>
+
+  <section class="band" id="band" aria-label="关键经营指标"></section>
+
+  <div class="grid">
+    <div class="col">
+      <section class="panel" style="grid-row:span 2" data-review-id="cockpit-map">
+        <div class="p-head"><h2>区域营收分布</h2><span class="unit">单位：万元</span></div>
+        <div class="p-body">
+          <div class="mapwrap">
+            <svg viewBox="0 0 300 210" role="img" aria-label="区域营收气泡分布示意">
+              <defs>
+                <radialGradient id="bub"><stop offset="0" stop-color="#2ee6e0" stop-opacity=".55"></stop><stop offset="1" stop-color="#2ee6e0" stop-opacity="0"></stop></radialGradient>
+                <filter id="glow"><feGaussianBlur stdDeviation="2.6" result="b"></feGaussianBlur><feMerge><feMergeNode in="b"></feMergeNode><feMergeNode in="SourceGraphic"></feMergeNode></feMerge></filter>
+              </defs>
+              <g stroke="#22406b" fill="none" stroke-width=".6" opacity=".7">
+                <path d="M22 48 L96 30 L150 44 L206 32 L268 58 L282 118 L246 168 L176 182 L112 172 L58 148 L26 100 Z"></path>
+                <path d="M56 74 L124 66 L170 86 L212 74 L242 112 L206 150 L148 158 L92 140 L62 112 Z" opacity=".65"></path>
+                <path d="M96 30 L112 100 L92 140 M150 44 L170 86 L148 158 M206 32 L212 74 L206 150" opacity=".5"></path>
+              </g>
+              <g id="bubbles"></g>
+            </svg>
+            <div class="map-tip">华东 <b>42.8%</b><br>最高单区域占比</div>
+            <div class="map-legend">
+              <span><i style="background:#2ee6e0"></i>营收规模</span>
+              <span><i style="background:#f5c451"></i>同比正增长</span>
+              <span><i style="background:#ff6b5e"></i>同比下滑</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-rank"><h2>业务板块增速</h2><span class="unit">同比 %</span></div>
+        <div class="p-body"><div class="rank" id="rank"></div></div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-trend"><h2>近 12 月营收与毛利</h2>
+          <span class="trend-legend"><span><i style="background:#3f7cff"></i>营收</span><span><i style="background:#2ee6e0"></i>毛利</span></span>
+        </div>
+        <div class="p-body"><div class="trend" id="trend"></div></div>
+      </section>
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-gauges"><h2>核心效率指标</h2><span class="unit">目标 / 实际</span></div>
+        <div class="p-body"><div class="gauges" id="gauges"></div></div>
+      </section>
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-funnel"><h2>经营漏斗</h2><span class="unit">本期累计</span></div>
+        <div class="p-body">
+          <div class="funnel" id="funnel"></div>
+          <p class="fn-note" id="funnelNote">线索到回款的整体转化 18.4%，低于集团 22% 的目标线 3.6 个百分点。</p>
+        </div>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-alerts"><h2>异常与待办</h2><span class="unit" id="alertCount">6 条</span></div>
+        <div class="p-body"><div class="alerts" id="alerts"></div></div>
+      </section>
+      <section class="panel">
+        <div class="p-head" data-review-id="cockpit-seg"><h2>板块经营明细</h2><span class="unit">营收 / 毛利率 / 同比</span></div>
+        <div class="p-body"><div class="seg-table" id="segTable"></div></div>
+      </section>
+    </div>
+  </div>
+
+  <footer class="ticker" data-review-id="cockpit-ticker">
+    <b>集团快讯</b>
+    <div class="tick-viewport" data-overflow="clip" role="marquee" aria-label="集团快讯滚动播报"><div class="run" id="ticker"></div></div>
+  </footer>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+
+  /* One dataset per scope. Every panel reads from the same object, so the wall
+     can never show a KPI that disagrees with the breakdown underneath it. */
+  const scopes = {
+    group: {
+      label: '集团合并',
+      kpis: [
+        ['营业收入', 418.6, '亿元', '+6.8%', 'up', [361,372,384,391,405,418], '#3f7cff'],
+        ['毛利率', 32.4, '%', '+1.2pt', 'up', [29.8,30.4,31.1,31.6,32.0,32.4], '#2ee6e0'],
+        ['经营性现金流', 56.2, '亿元', '−2.1%', 'down', [62,60,58,57,57.1,56.2], '#f5c451'],
+        ['在手订单', 512, '亿元', '+9.4%', 'up', [430,452,470,488,500,512], '#9d7bff'],
+        ['人均产出', 186, '万元', '+3.5%', 'up', [170,174,178,181,184,186], '#7bdc80'],
+        ['应收周转', 68, '天', '−4 天', 'up', [79,76,73,71,69,68], '#ff6b5e']
+      ],
+      bubbles: [['华东',74,86,118,'up'],['华南',58,132,92,'up'],['华北',44,58,84,'down'],['西南',38,150,64,'up'],['海外',30,108,48,'down']],
+      segments: [['工业装备',142.4,0.352,'+8.2'],['工程服务',96.8,0.284,'+3.1'],['精密材料',78.2,0.401,'+11.6'],['数字业务',62.4,0.226,'−2.4'],['海外贸易',38.8,0.187,'−6.9']],
+      funnel: [['有效线索',12420],['技术交流',6840],['方案投标',3920],['中标签约',2286],['回款到账',2104]],
+      funnelNote: '线索到回款的整体转化 16.9%，低于集团 22% 的目标线 5.1 个百分点。',
+      gauges: [['产能利用率',84,95,'%'],['订单交付准时',92,95,'%'],['库存周转',5.8,6.5,'次'],['研发投入占比',4.6,5.2,'%']],
+      alerts: [
+        ['high','华南区 3 台在役设备超期未检','编号 HR-2081 / 2084 / 2090 · 安全合规','14:21'],
+        ['mid','精密材料毛利率环比降 1.8pt','原料涨价未同步传导至售价','13:58'],
+        ['mid','数字业务在手订单连续两月下滑','环比 −4.2%，需评估资源投入','12:40'],
+        ['low','华东仓储周转天数高于目标 6 天','A3 库区呆滞料占比 18%','11:12'],
+        ['low','海外贸易应收逾期 90 天以上 4 笔','合计 1.84 亿元，已进入催收','09:36'],
+        ['low','工程服务人力缺口 12 人','华南两个项目需要现场工程师','08:52']
+      ],
+      ticker: [
+        '集团合并营收', '418.6 亿元', '华东区完成率', '103.4%', '在手订单同比', '+9.4%',
+        '本月新签', '42.8 亿元', '现金余额', '128.4 亿元', '合规待处理', '3 项'
+      ]
+    },
+    east: {
+      label: '华东区',
+      kpis: [
+        ['营业收入', 179.2, '亿元', '+9.2%', 'up', [148,155,161,168,174,179], '#3f7cff'],
+        ['毛利率', 34.8, '%', '+1.8pt', 'up', [31.2,32.0,33.0,33.8,34.4,34.8], '#2ee6e0'],
+        ['经营性现金流', 24.6, '亿元', '+4.1%', 'up', [21,22,23,23.8,24.2,24.6], '#f5c451'],
+        ['在手订单', 218, '亿元', '+12.6%', 'up', [172,184,196,204,212,218], '#9d7bff'],
+        ['人均产出', 204, '万元', '+5.2%', 'up', [186,190,195,199,202,204], '#7bdc80'],
+        ['应收周转', 61, '天', '−6 天', 'up', [74,71,68,65,63,61], '#ff6b5e']
+      ],
+      bubbles: [['上海',92,72,124,'up'],['苏州',64,98,96,'up'],['杭州',52,124,72,'up'],['南京',38,88,58,'up'],['合肥',28,132,40,'down']],
+      segments: [['工业装备',64.2,0.368,'+11.4'],['工程服务',42.6,0.302,'+5.8'],['精密材料',36.4,0.418,'+14.2'],['数字业务',24.8,0.241,'+1.2'],['海外贸易',11.2,0.196,'−3.1']],
+      funnel: [['有效线索',5480],['技术交流',3120],['方案投标',1840],['中标签约',1146],['回款到账',1068]],
+      funnelNote: '华东区线索到回款转化 19.5%，高于集团目标线，但投标环节流失率仍在上升。',
+      gauges: [['产能利用率',91,95,'%'],['订单交付准时',94,95,'%'],['库存周转',6.4,6.5,'次'],['研发投入占比',5.1,5.2,'%']],
+      alerts: [
+        ['high','苏州工厂 2 号线节拍低于目标 8%','近 3 个班次连续未达标','14:18'],
+        ['mid','精密材料 A3 库区呆滞料占比 18%','已挂账 6 个月以上','13:22'],
+        ['low','南京项目现场工程师缺口 4 人','影响下周两个交付节点','10:05']
+      ],
+      ticker: ['华东营收', '179.2 亿元', '完成率', '103.4%', '新签', '18.6 亿元', '在建项目', '27 个']
+    },
+    south: {
+      label: '华南区',
+      kpis: [
+        ['营业收入', 96.4, '亿元', '+3.4%', 'up', [86,89,91,93,95,96], '#3f7cff'],
+        ['毛利率', 28.6, '%', '−0.8pt', 'down', [30.2,30.0,29.4,29.1,28.9,28.6], '#2ee6e0'],
+        ['经营性现金流', 12.8, '亿元', '−8.6%', 'down', [16,15,14.6,14,13.4,12.8], '#f5c451'],
+        ['在手订单', 118, '亿元', '+4.2%', 'up', [104,108,111,114,116,118], '#9d7bff'],
+        ['人均产出', 168, '万元', '−1.2%', 'down', [174,173,172,171,169,168], '#7bdc80'],
+        ['应收周转', 81, '天', '+5 天', 'down', [74,76,77,79,80,81], '#ff6b5e']
+      ],
+      bubbles: [['广州',68,96,104,'up'],['深圳',74,118,112,'up'],['东莞',44,88,72,'down'],['佛山',32,104,52,'down'],['厦门',24,140,36,'up']],
+      segments: [['工业装备',34.8,0.318,'+5.6'],['工程服务',22.4,0.264,'−1.8'],['精密材料',18.6,0.376,'+8.4'],['数字业务',14.2,0.218,'−7.2'],['海外贸易',6.4,0.164,'−12.8']],
+      funnel: [['有效线索',3120],['技术交流',1680],['方案投标',920],['中标签约',512],['回款到账',468]],
+      funnelNote: '回款到账比签约少 44 单，逾期集中在海外贸易与工程服务两个板块。',
+      gauges: [['产能利用率',76,95,'%'],['订单交付准时',86,95,'%'],['库存周转',4.6,6.5,'次'],['研发投入占比',3.8,5.2,'%']],
+      alerts: [
+        ['high','3 台在役设备超期未检','编号 HR-2081 / 2084 / 2090','14:21'],
+        ['high','海外贸易应收逾期 90 天以上 4 笔','合计 1.84 亿元','13:40'],
+        ['mid','数字业务在手订单环比 −4.2%','连续两月下滑','12:40'],
+        ['low','东莞仓库存周转 4.6 次，低于目标','呆滞料占 22%','09:18']
+      ],
+      ticker: ['华南营收', '96.4 亿元', '完成率', '96.1%', '新签', '9.4 亿元', '逾期应收', '1.84 亿元']
+    },
+    north: {
+      label: '华北区',
+      kpis: [
+        ['营业收入', 82.6, '亿元', '−1.8%', 'down', [92,90,88,86,84,82], '#3f7cff'],
+        ['毛利率', 30.2, '%', '+0.4pt', 'up', [29.2,29.4,29.7,29.9,30.0,30.2], '#2ee6e0'],
+        ['经营性现金流', 9.4, '亿元', '−12.4%', 'down', [14,13,11.8,10.8,9.9,9.4], '#f5c451'],
+        ['在手订单', 96, '亿元', '−3.6%', 'down', [108,106,102,100,98,96], '#9d7bff'],
+        ['人均产出', 152, '万元', '−4.8%', 'down', [168,164,160,157,154,152], '#7bdc80'],
+        ['应收周转', 94, '天', '+11 天', 'down', [80,84,87,90,92,94], '#ff6b5e']
+      ],
+      bubbles: [['北京',88,58,118,'down'],['天津',46,84,74,'down'],['沈阳',28,116,44,'down'],['青岛',34,72,56,'up'],['西安',26,140,38,'up']],
+      segments: [['工业装备',28.4,0.318,'−4.2'],['工程服务',24.6,0.256,'−6.8'],['精密材料',14.2,0.362,'+2.4'],['数字业务',10.8,0.198,'−9.4'],['海外贸易',4.6,0.142,'−14.2']],
+      funnel: [['有效线索',2160],['技术交流',1120],['方案投标',640],['中标签约',342],['回款到账',286]],
+      funnelNote: '华北区回款到账仅占签约 83.6%，是四个区域里最低的一档。',
+      gauges: [['产能利用率',68,95,'%'],['订单交付准时',81,95,'%'],['库存周转',4.1,6.5,'次'],['研发投入占比',3.4,5.2,'%']],
+      alerts: [
+        ['high','应收周转 94 天，超出目标 24 天','集中在两家大型国企客户','14:02'],
+        ['mid','在手订单连续三季度下滑','同比 −3.6%','11:46'],
+        ['low','沈阳工厂产能利用率 68%','低于盈亏平衡点 6 个百分点','09:52']
+      ],
+      ticker: ['华北营收', '82.6 亿元', '完成率', '88.2%', '新签', '6.2 亿元', '应收周转', '94 天']
+    }
+  };
+
+  const alertLevel = { high: '#ff6b5e', mid: '#f5c451', low: '#5b7ba6' };
+  const ICONS = {
+    high: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3 2.6 20h18.8L12 3Z" stroke-linejoin="round"/><path d="M12 9.5v4.5"/><circle cx="12" cy="17.4" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    mid: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 7.4v5.4"/><circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></svg>',
+    low: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><circle cx="12" cy="12" r="9.2"/><path d="M12 11v5.4"/><circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"/></svg>'
+  };
+
+  function sparkline(values, color) {
+    const w = 200, h = 28, pad = 2;
+    const max = Math.max(...values), min = Math.min(...values);
+    const span = max - min || 1;
+    const pts = values.map((v, i) => {
+      const x = pad + i * (w - pad * 2) / (values.length - 1);
+      const y = h - pad - (v - min) / span * (h - pad * 2);
+      return x.toFixed(1) + ',' + y.toFixed(1);
+    });
+    const id = 'sg' + Math.random().toString(36).slice(2, 8);
+    return `<svg class="m-spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="${color}" stop-opacity=".38"></stop>
+        <stop offset="1" stop-color="${color}" stop-opacity="0"></stop></linearGradient></defs>
+      <path d="M${pts[0].replace(',', ' ')} L${pts.join(' L')} L${w},${h} L0,${h} Z" fill="url(#${id})"></path>
+      <polyline points="${pts.join(' ')}" fill="none" stroke="${color}" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"></polyline>
+      <circle cx="${pts[pts.length - 1].split(',')[0]}" cy="${pts[pts.length - 1].split(',')[1]}" r="2.3" fill="${color}"></circle>
+    </svg>`;
+  }
+
+  function drawBand(data) {
+    $('band').innerHTML = data.kpis.map(([label, value, unit, delta, dir, series, color]) => `
+      <article class="metric" style="--accent:${color}">
+        <p class="m-label">${label}</p>
+        <div class="m-row">
+          <span class="m-val">${value}<em>${unit}</em></span>
+          <span class="m-delta ${dir}">${delta}</span>
+        </div>
+        ${sparkline(series, color)}
+      </article>`).join('');
+  }
+
+  function drawBubbles(data) {
+    const g = document.getElementById('bubbles');
+    g.innerHTML = data.bubbles.map(([name, x, y, size, trend]) => {
+      const r = 4 + size / 11;
+      const color = trend === 'up' ? '#2ee6e0' : '#ff6b5e';
+      const ring = trend === 'up' ? '#f5c451' : '#ff6b5e';
+      return `<g filter="url(#glow)">
+        <circle cx="${x}" cy="${y}" r="${r * 2.1}" fill="url(#bub)" opacity=".5"></circle>
+        <circle cx="${x}" cy="${y}" r="${r}" fill="#0a1a2e" stroke="${color}" stroke-width="1.3" opacity=".95"></circle>
+        <circle cx="${x}" cy="${y}" r="${r * .52}" fill="${ring}" opacity=".82"></circle>
+        <text x="${x}" y="${y - r - 5}" fill="#9db8d8" font-size="6.4" text-anchor="middle" font-family="Inter,sans-serif">${name}</text>
+      </g>`;
+    }).join('');
+  }
+
+  function drawRank(data) {
+    const max = Math.max(...data.segments.map(s => Math.abs(parseFloat(s[3]))));
+    $('rank').innerHTML = [...data.segments]
+      .sort((a, b) => parseFloat(b[3]) - parseFloat(a[3]))
+      .map(([name, , , yoy], i) => {
+        const value = parseFloat(yoy);
+        const width = Math.abs(value) / max * 100;
+        const color = value >= 0 ? 'linear-gradient(90deg,#2ee6e0,#3f7cff)' : 'linear-gradient(90deg,#ff6b5e,#c2402a)';
+        return `<div class="rank-row">
+          <span class="rk">${String(i + 1).padStart(2, '0')}</span>
+          <span class="nm"><b>${name}</b><span class="track"><i style="width:${width.toFixed(1)}%;background:${color};box-shadow:0 0 8px ${value >= 0 ? '#3f7cff66' : '#ff6b5e66'}"></i></span></span>
+          <span class="vl" style="color:${value >= 0 ? '#a5e8a9' : '#ff9a90'}">${yoy}<small>%</small></span>
+        </div>`;
+      }).join('');
+  }
+
+  function drawTrend() {
+    const months = ['12月', '1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月'];
+    const revenue = [28.4, 26.1, 24.8, 31.2, 33.6, 34.8, 36.2, 35.4, 37.8, 39.2, 41.6, 42.8];
+    const gross = [8.6, 7.9, 7.4, 9.8, 10.6, 11.2, 11.8, 11.5, 12.4, 13.1, 14.0, 14.6];
+    const w = 100, h = 44;
+    const max = Math.max(...revenue) * 1.12;
+    const x = i => (i / (months.length - 1)) * w;
+    const y = v => h - (v / max) * h;
+    const line = arr => arr.map((v, i) => `${x(i).toFixed(2)},${y(v).toFixed(2)}`).join(' ');
+    const area = arr => `M0,${h} L${line(arr).split(' ').join(' L')} L${w},${h} Z`;
+    $('trend').innerHTML = `<svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" role="img" aria-label="近 12 月营收与毛利趋势">
+      <defs>
+        <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3f7cff" stop-opacity=".42"></stop><stop offset="1" stop-color="#3f7cff" stop-opacity="0"></stop></linearGradient>
+        <linearGradient id="grossFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2ee6e0" stop-opacity=".34"></stop><stop offset="1" stop-color="#2ee6e0" stop-opacity="0"></stop></linearGradient>
+      </defs>
+      ${[0.25, 0.5, 0.75].map(r => `<line x1="0" y1="${(h * r).toFixed(1)}" x2="${w}" y2="${(h * r).toFixed(1)}" stroke="#16294a" stroke-width=".35"></line>`).join('')}
+      <path d="${area(revenue)}" fill="url(#revFill)"></path>
+      <path d="${area(gross)}" fill="url(#grossFill)"></path>
+      <polyline points="${line(revenue)}" fill="none" stroke="#3f7cff" stroke-width="1.1" stroke-linejoin="round"></polyline>
+      <polyline points="${line(gross)}" fill="none" stroke="#2ee6e0" stroke-width="1.1" stroke-linejoin="round"></polyline>
+      <circle cx="${x(11)}" cy="${y(revenue[11])}" r="1.1" fill="#3f7cff"></circle>
+      <circle cx="${x(11)}" cy="${y(gross[11])}" r="1.1" fill="#2ee6e0"></circle>
+    </svg>`;
+  }
+
+  function drawGauges(data) {
+    $('gauges').innerHTML = data.gauges.map(([label, actual, target, unit]) => {
+      const ratio = Math.min(1, actual / target);
+      const dash = 251.3;
+      const good = ratio >= 0.98 ? '#7bdc80' : ratio >= 0.9 ? '#f5c451' : '#ff6b5e';
+      return `<div class="gauge">
+        <svg viewBox="0 0 100 100" aria-hidden="true">
+          <circle cx="50" cy="50" r="40" fill="none" stroke="#12213a" stroke-width="9"></circle>
+          <circle cx="50" cy="50" r="40" fill="none" stroke="${good}" stroke-width="9" stroke-linecap="round"
+            stroke-dasharray="${dash}" stroke-dashoffset="${(dash * (1 - ratio)).toFixed(1)}" transform="rotate(-90 50 50)"></circle>
+        </svg>
+        <b class="g-val" style="color:${good}">${actual}<span style="font-size:.55em;color:#7e94b4">${unit}</span></b>
+        <span class="g-label">${label}<br>目标 ${target}${unit}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function drawFunnel(data) {
+    const top = data.funnel[0][1];
+    $('funnel').innerHTML = data.funnel.map(([label, value]) => {
+      const pct = value / top * 100;
+      return `<div class="fn-row">
+        <span class="lb">${label}</span>
+        <span class="fn-bar" style="width:${pct.toFixed(1)}%;min-width:8px"></span>
+        <span class="pv">${value.toLocaleString('zh-CN')}</span>
+      </div>`;
+    }).join('');
+    $('funnelNote').textContent = data.funnelNote;
+  }
+
+  function drawAlerts(data) {
+    $('alertCount').textContent = data.alerts.length + ' 条';
+    $('alerts').innerHTML = data.alerts.map(([level, title, detail, time]) => `
+      <article class="alert" style="--lvl:${alertLevel[level]}">
+        <span class="ic" aria-hidden="true">${ICONS[level]}</span>
+        <span class="tx"><b>${title}</b><small>${detail}</small></span>
+        <span class="tm">${time}</span>
+      </article>`).join('');
+  }
+
+  function drawSegments(data) {
+    const rows = data.segments.map(([name, rev, gross, yoy]) => {
+      const neg = parseFloat(yoy) < 0;
+      return `<div class="sr-row">
+        <span class="nm2"><i style="background:${neg ? '#ff6b5e' : '#2ee6e0'}"></i><b>${name}</b></span>
+        <span>${rev.toFixed(1)}</span>
+        <span>${(gross * 100).toFixed(1)}%</span>
+        <span class="${neg ? 'neg' : 'pos'}">${yoy}%</span>
+      </div>`;
+    }).join('');
+    $('segTable').innerHTML = `<div class="sr-row hd"><span class="nm2">板块</span><span>营收</span><span>毛利率</span><span>同比</span></div>` + rows;
+  }
+
+  function drawTicker(data) {
+    const items = data.ticker.map((text, i) =>
+      i % 2 === 0 ? `<span>${text}<i>${data.ticker[i + 1]}</i></span>` : '').filter(Boolean).join('');
+    $('ticker').innerHTML = items + items; // duplicated so the loop seam is invisible
+  }
+
+  function render(scope) {
+    const data = scopes[scope];
+    document.querySelectorAll('[data-scope]').forEach(btn =>
+      btn.setAttribute('aria-pressed', String(btn.dataset.scope === scope)));
+    drawBand(data); drawBubbles(data); drawRank(data); drawTrend();
+    drawGauges(data); drawFunnel(data); drawAlerts(data); drawSegments(data); drawTicker(data);
+    $('live').textContent = data.label + '：营收 ' + data.kpis[0][1] + ' 亿元，' +
+      data.alerts.length + ' 条待处理，' + data.funnelNote;
+  }
+
+  document.querySelectorAll('[data-scope]').forEach(btn =>
+    btn.addEventListener('click', () => render(btn.dataset.scope)));
+
+  const pad = n => String(n).padStart(2, '0');
+  const week = ['日', '一', '二', '三', '四', '五', '六'];
+  function tick() {
+    const now = new Date();
+    $('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()) + ':' + pad(now.getSeconds());
+    $('datestamp').textContent = now.getFullYear() + '.' + pad(now.getMonth() + 1) + '.' + pad(now.getDate()) +
+      ' 周' + week[now.getDay()] + ' · 数据延迟 38 秒';
+  }
+  tick(); setInterval(tick, 1000);
+  render('group');
+})();
+</script>
+</body>
+</html>

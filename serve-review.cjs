@@ -13,7 +13,8 @@ const pages = new Set([
   'bloom.html', 'blueprint.html', 'splitline.html', 'sprout.html',
   'television.html', 'kiosk.html', 'pda.html', 'pos.html', 'vehicle.html',
   'watch.html', 'homepanel.html', 'arglass.html', 'vr.html', 'esl.html',
-  'dualmonitor.html', 'tablet.html', 'signage.html', 'foldable.html'
+  'dualmonitor.html', 'tablet.html', 'signage.html', 'foldable.html',
+  'cockpit.html', 'shopfloor.html', 'icons.html', 'governance.html'
 ]);
 
 function parsePort(value = '4173') {

@@ -10,7 +10,7 @@ const { createReviewServer, parsePort } = require('../serve-review.cjs');
 
 const root = path.resolve(__dirname, '..');
 const review = path.join(root, 'html-review');
-const samples = ['arglass', 'assets', 'atlas', 'bigscreen', 'bloom', 'blueprint', 'cues', 'culture', 'departures', 'depot', 'dualmonitor', 'editions', 'esl', 'field-app', 'foldable', 'handover', 'homepanel', 'intake', 'kiosk', 'library', 'materials', 'mobility', 'orbital', 'pda', 'platform', 'policy-diff', 'pos', 'programme', 'proofroom', 'reader', 'repair-mini', 'scheduling', 'signage', 'splitline', 'sprout', 'style-lab', 'tablet', 'television', 'vehicle', 'vr', 'watch', 'website'];
+const samples = ['arglass', 'assets', 'atlas', 'bigscreen', 'bloom', 'blueprint', 'cockpit', 'cues', 'culture', 'departures', 'depot', 'dualmonitor', 'editions', 'esl', 'field-app', 'foldable', 'governance', 'handover', 'homepanel', 'icons', 'intake', 'kiosk', 'library', 'materials', 'mobility', 'orbital', 'pda', 'platform', 'policy-diff', 'pos', 'programme', 'proofroom', 'reader', 'repair-mini', 'scheduling', 'shopfloor', 'signage', 'splitline', 'sprout', 'style-lab', 'tablet', 'television', 'vehicle', 'vr', 'watch', 'website'];
 const expected = ['index', ...samples].map(name => name + '.html').sort();
 let server;
 let port;

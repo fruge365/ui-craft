@@ -2,9 +2,11 @@
 
 给 AI 编程助手使用的中文前端设计技能。告诉它谁会用这个页面、在哪种屏幕上用、最常做什么，它会据此选择布局、字阶、配色和交互，并在你的项目中实现。
 
-覆盖 16 类设备形态：指挥大屏、公共信息屏、客厅电视、竖屏数字标牌、自助终端、收银双屏、手持终端、电子价签、腕表、车机与 HUD、AR 眼镜、VR 头显、双屏工位、平板分屏、折叠屏、家居面板；以及官网、业务系统、App 和微信小程序。
+覆盖 18 类设备形态与场景：企业经营驾驶舱、产线监控墙、指挥大屏、公共信息屏、客厅电视、竖屏数字标牌、自助终端、收银双屏、手持终端、电子价签、腕表、车机与 HUD、AR 眼镜、VR 头显、双屏工位、平板分屏、折叠屏、家居面板；以及企业应用壳层、图标与插画体系、官网、业务系统、App 和微信小程序。
 
-[选择开发工具](#按平台安装和使用) · [设备矩阵](#设备矩阵) · [风格速览](#风格速览) · [在线评审台](https://fruge365.github.io/ui-craft/) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.1.0/ui-craft-v11.1.0.zip)
+每个样页都由设备的真实约束驱动，不是把同一个界面换个配色。同一批界面里，驾驶舱用深蓝黑高对比、自助机用高明度大热区、腕表用圆屏内切安全区、电子价签用一位元灰阶、折叠屏在形态切换时保住选中项。
+
+[选择开发工具](#按平台安装和使用) · [设备矩阵](#设备矩阵) · [风格速览](#风格速览) · [在线评审台](https://fruge365.github.io/ui-craft/) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.2.0/ui-craft-v11.2.0.zip)
 
 ## 设备矩阵
 
@@ -12,6 +14,11 @@
 
 | 设备 / 场景 | 关键约束 | 样页 |
 | --- | --- | --- |
+| 企业驾驶舱 | 口径显式且全屏同源、KPI 带趋势微图、漏斗标出流失、1920 与 2560 单屏不滚动 | [衡远](https://fruge365.github.io/ui-craft/cockpit.html) |
+| 产线监控墙 | 工位状态图、班次产出双条、OEE 三分、控制图带 UCL/LCL、异常在图上直标 | [铸线](https://fruge365.github.io/ui-craft/shopfloor.html) |
+| 企业应用壳层 | 导航按权限渲染、命令面板 ⌘K、可排序表格、受限项拒绝写操作、右侧实时审计 | [枢机](https://fruge365.github.io/ui-craft/governance.html) |
+| 运营控制台 | 指标随筛选实时计算、完成率环、状态构成、粘性表头、批量核对与撤销 | [北线](https://fruge365.github.io/ui-craft/assets.html) |
+| 图标与插画体系 | 24 网格 + 1.8 描边、视觉重量校正、状态图形与色成对、插画分三档、三种空状态不共用 | [格致](https://fruge365.github.io/ui-craft/icons.html) |
 | 指挥大屏 · 能源墙 | 远距读数、缺报与零值可区分、单位与时间口径 | [凌日](https://fruge365.github.io/ui-craft/orbital.html) · [江湾](https://fruge365.github.io/ui-craft/bigscreen.html) |
 | 客运信息屏 | 几秒内读出班次、闸口与改闸 | [渡口](https://fruge365.github.io/ui-craft/departures.html) |
 | 客厅电视 | 十英尺字阶、只用方向键、暗环境、overscan 安全区 | [燕居](https://fruge365.github.io/ui-craft/television.html) |
@@ -35,6 +42,20 @@
 ## 风格速览
 
 点击截图可打开页面。想在自己的项目中使用某种方向，可以把图下的设计描述与业务需求一起发给技能。
+
+### 企业大屏与运营台
+
+| **集团经营驾驶舱 · 衡远** | **产线监控墙 · 铸线** |
+| --- | --- |
+| [![深蓝黑驾驶舱，六项指标带迷你趋势、区域气泡图、效率环与告警列表](docs/images/cockpit.png)](https://fruge365.github.io/ui-craft/cockpit.html) | [![深墨绿产线屏，七工位状态图、班次产出双条、OEE 环与壁厚控制图](docs/images/shopfloor.png)](https://fruge365.github.io/ui-craft/shopfloor.html) |
+| 集团与区域两种口径切换，全部面板同源刷新。六项指标带趋势微图与同比方向，漏斗标出每段流失。 | 停机的工位在图上直接变灰打叉，超温节点显示实测值。班次时钟与交班倒计时常驻。 |
+
+| **数据治理台 · 枢机** | **设备运行控制台 · 北线** |
+| --- | --- |
+| [![深色导航加浅色内容区，表格带权限列，右侧是实时审计轨迹](docs/images/governance.png)](https://fruge365.github.io/ui-craft/governance.html) | [![深色运营控制台，四张指标卡带火花线、完成率环、状态构成与粘性表头表格](docs/images/assets-console.png)](https://fruge365.github.io/ui-craft/assets.html) |
+| 权限按数据建模，受限行拒绝写操作并给出原因。⌘K 同时搜命令与对象，每个写操作实时进审计。 | 指标随筛选范围实时重算，改动一个条件全部联动。批量核对先列出将加入与将跳过的项。 |
+
+### 设备与工业界面
 
 | **客厅电视 · 燕居** | **自助挂号机 · 和济** |
 | --- | --- |
@@ -66,7 +87,12 @@
 | [![折叠屏展开双列，中间一条折痕，左侧展品列表右侧详情](docs/images/foldable.png)](https://fruge365.github.io/ui-craft/foldable.html) | [![深色铜饰面板，三个房间旋钮与情景列表](docs/images/homepanel.png)](https://fruge365.github.io/ui-craft/homepanel.html) |
 | 合起单列、展开双列。切换形态不丢选中项与滚动位置，折痕处不放交互。 | 实测温度与设定温度分开显示，情景切换要说出影响了哪几个房间。 |
 
-| **电梯厅标牌 · 厅刊** | **电子价签 · 架签** |
+| **图标与插画体系 · 格致** | **电梯厅标牌 · 厅刊** |
+| --- | --- |
+| [![浅色图标样张，30 枚线性图标网格、重量校正对照、插画三档与三种空状态](docs/images/icons.png)](https://fruge365.github.io/ui-craft/icons.html) | [![竖屏标牌，大标题、三条日程与底部二维码带](docs/images/signage.png)](https://fruge365.github.io/ui-craft/signage.html) |
+| 30 枚图标共用 24 网格与 1.8 描边，圆形按墨量放大 6%。状态图形与色成对定义，单色打印仍可辨。 | 十几秒里读出下一场的时间、名称与楼层。动态字段只换值不换位置。 |
+
+| **电子价签 · 架签** | **折叠屏 · 展签** |
 | --- | --- |
 | [![竖屏标牌，大标题、三条日程与底部二维码带](docs/images/signage.png)](https://fruge365.github.io/ui-craft/signage.html) | [![灰底货架上的纸质价签，促销价与单位价并排](docs/images/esl.png)](https://fruge365.github.io/ui-craft/esl.html) |
 | 十几秒里读出下一场的时间、名称与楼层。动态字段只换值不换位置。 | 一位元灰阶没有动画和悬停，价格最大、单位价其次，其余能读即可。 |
@@ -120,7 +146,7 @@
 <summary><strong>Codex</strong> · 用 <code>$</code> 点名技能</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent codex
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent codex
 ```
 
 在 Codex 对话中输入 `$`，选择 `ui-craft`，也可以直接发送下面这条需求。
@@ -137,7 +163,7 @@ $ui-craft 为港口做一张 1920×1080 的离港大屏。乘客站在三米外�
 <summary><strong>Claude Code</strong> · 用 <code>/ui-craft</code> 调用</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent claude-code
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent claude-code
 ```
 
 在 Claude Code 对话中输入技能名和需求。
@@ -154,7 +180,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent claude-code
 <summary><strong>Cursor</strong> · 在 Agent 输入框中选择技能</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent cursor
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent cursor
 ```
 
 打开 Cursor Agent，输入 `/` 并选择 `ui-craft`，接着输入“把材料目录做成一本饰面样册。用真实纹理作为主图，保留材质和色调筛选，手机上也能比较两个候选。”
@@ -167,7 +193,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent cursor
 <summary><strong>GitHub Copilot</strong> · 适用于 VS Code Chat 和 Copilot CLI</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent github-copilot
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent github-copilot
 ```
 
 在 VS Code Chat 的 Agent 模式或 Copilot CLI 中输入技能名和需求。
@@ -184,7 +210,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent github-copilot
 <summary><strong>Gemini CLI</strong> · 用 <code>/skills list</code> 查看，在需求中点名</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent gemini-cli
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent gemini-cli
 ```
 
 在 Gemini CLI 中输入 `/skills list`，看到 `ui-craft` 后发送“使用 ui-craft 做一个室内乐周官网。用海报式标题，按日期排节目，让观众能收藏跨日场次。”首次激活时按客户端提示继续。
@@ -197,7 +223,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent gemini-cli
 <summary><strong>OpenCode</strong> · 在需求中指定技能名</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent opencode
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent opencode
 ```
 
 在 OpenCode 对话中发送“使用 ui-craft 设计城市建筑导览。宽屏把地图与地点索引并排，手机切换视图时保留刚刚选中的建筑。”Agent 会按需加载技能。
@@ -212,13 +238,13 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent opencode
 **国际版**
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent trae
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent trae
 ```
 
 **国内版**
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent trae-cn
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent trae-cn
 ```
 
 在 TRAE 的智能体对话中发送“用 ui-craft 技能做一个微信报修小程序。访客扫码后能看到房间位置、选择问题并提交，操作区要适合单手使用。”
@@ -231,7 +257,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent trae-cn
 <summary><strong>Qwen Code</strong> · 用 <code>/ui-craft</code> 调用</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.1.0 --agent qwen-code
+gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent qwen-code
 ```
 
 在 Qwen Code 输入 `/skills` 可看到已安装的技能。要开始设计，可直接输入技能名和需求。
@@ -283,13 +309,17 @@ npm start
 - **形态保持**：折叠屏、分屏、旋转后必须保住选中项与滚动位置。
 - **降级路径**：追踪丢失、周边障碍、晕动、断网、打印失败，每种都要有可见的替代动作。
 - **状态分离**：驻车与行车、实测与设定、焦点与选中，混在一起就是设计缺陷。
+- **口径同源**：大屏上的每个数字都写着统计范围、时间口径与数据延迟；切换口径时全部面板一起变，不允许只换 KPI。
+- **权限可见**：导航按权限渲染，受限项拒绝写操作并给出原因与申请入口，而不是点进去撞 403。
+- **图形语法**：图标共用网格与描边，圆形按墨量补偿；状态图形与状态色成对定义，任一单独失效仍可辨。
+- **插画分档**：说明性、叙事性、数据性三档的画风与尺寸不同；「没数据」「没权限」「加载失败」不能共用一张图。
 
-`skills/ui-craft/references/` 下按场景分开写，共 22 篇，装进项目后按当前任务加载对应的一篇就够。
+`skills/ui-craft/references/` 下按场景分开写，共 25 篇，装进项目后按当前任务加载对应的一篇就够。
 
 ## 仓库结构
 
 ```text
-html-review/            评审台与 42 个独立样页，发布到 GitHub Pages
+html-review/            评审台与 46 个独立样页，发布到 GitHub Pages
 skills/ui-craft/        技能本体：SKILL.md、references/、assets/tokens.css
 docs/images/            样页截图
 scripts/                发布测试与开发用探针
@@ -302,7 +332,7 @@ serve-review.cjs        本地评审服务
 
 | 发布平台 | 如何使用 |
 | --- | --- |
-| [GitHub Releases](https://github.com/fruge365/ui-craft/releases/tag/v11.1.0) | 下载 `ui-craft-v11.1.0.zip`，解压后把整个 `ui-craft` 文件夹复制到对应平台的技能目录。以 Codex 为例，入口应在 `.agents/skills/ui-craft/SKILL.md`。保留包内的 `SKILL.md`、`references/` 和 `assets/`。 |
+| [GitHub Releases](https://github.com/fruge365/ui-craft/releases/tag/v11.2.0) | 下载 `ui-craft-v11.2.0.zip`，解压后把整个 `ui-craft` 文件夹复制到对应平台的技能目录。以 Codex 为例，入口应在 `.agents/skills/ui-craft/SKILL.md`。保留包内的 `SKILL.md`、`references/` 和 `assets/`。 |
 | [skills.sh](https://www.skills.sh/fruge365/ui-craft/ui-craft) | 在目标项目执行 `npx skills add fruge365/ui-craft --skill ui-craft`，按提示选开发工具。 |
 | [Agent Skill Hub](https://agentskillhub.dev/u/fruge365/sk/ui-craft) | 打开条目，复制 **Install command** 中的 `npx skhub add fruge365/ui-craft`，在目标项目执行。 |
 
