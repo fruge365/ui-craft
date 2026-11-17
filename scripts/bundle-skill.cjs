@@ -6,7 +6,7 @@ const path = require('node:path');
 const zlib = require('node:zlib');
 
 const root = path.resolve(__dirname, '..', 'skills', 'ui-craft');
-const target = path.resolve(__dirname, '..', 'dist', 'ui-craft-v11.2.0.zip');
+const target = path.resolve(__dirname, '..', 'dist', 'ui-craft-v11.3.0.zip');
 
 function walk(dir, base = '') {
   const out = [];

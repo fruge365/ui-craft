@@ -6,7 +6,7 @@
 
 每个样页都由设备的真实约束驱动，不是把同一个界面换个配色。同一批界面里，驾驶舱用深蓝黑高对比、自助机用高明度大热区、腕表用圆屏内切安全区、电子价签用一位元灰阶、折叠屏在形态切换时保住选中项。
 
-[选择开发工具](#按平台安装和使用) · [设备矩阵](#设备矩阵) · [风格速览](#风格速览) · [在线评审台](https://fruge365.github.io/ui-craft/) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.2.0/ui-craft-v11.2.0.zip)
+[选择开发工具](#按平台安装和使用) · [设备矩阵](#设备矩阵) · [风格速览](#风格速览) · [在线评审台](https://fruge365.github.io/ui-craft/) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.3.0/ui-craft-v11.3.0.zip)
 
 ## 设备矩阵
 
@@ -146,7 +146,7 @@
 <summary><strong>Codex</strong> · 用 <code>$</code> 点名技能</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent codex
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent codex
 ```
 
 在 Codex 对话中输入 `$`，选择 `ui-craft`，也可以直接发送下面这条需求。
@@ -163,7 +163,7 @@ $ui-craft 为港口做一张 1920×1080 的离港大屏。乘客站在三米外�
 <summary><strong>Claude Code</strong> · 用 <code>/ui-craft</code> 调用</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent claude-code
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent claude-code
 ```
 
 在 Claude Code 对话中输入技能名和需求。
@@ -180,7 +180,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent claude-code
 <summary><strong>Cursor</strong> · 在 Agent 输入框中选择技能</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent cursor
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent cursor
 ```
 
 打开 Cursor Agent，输入 `/` 并选择 `ui-craft`，接着输入“把材料目录做成一本饰面样册。用真实纹理作为主图，保留材质和色调筛选，手机上也能比较两个候选。”
@@ -193,7 +193,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent cursor
 <summary><strong>GitHub Copilot</strong> · 适用于 VS Code Chat 和 Copilot CLI</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent github-copilot
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent github-copilot
 ```
 
 在 VS Code Chat 的 Agent 模式或 Copilot CLI 中输入技能名和需求。
@@ -210,7 +210,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent github-copilot
 <summary><strong>Gemini CLI</strong> · 用 <code>/skills list</code> 查看，在需求中点名</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent gemini-cli
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent gemini-cli
 ```
 
 在 Gemini CLI 中输入 `/skills list`，看到 `ui-craft` 后发送“使用 ui-craft 做一个室内乐周官网。用海报式标题，按日期排节目，让观众能收藏跨日场次。”首次激活时按客户端提示继续。
@@ -223,7 +223,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent gemini-cli
 <summary><strong>OpenCode</strong> · 在需求中指定技能名</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent opencode
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent opencode
 ```
 
 在 OpenCode 对话中发送“使用 ui-craft 设计城市建筑导览。宽屏把地图与地点索引并排，手机切换视图时保留刚刚选中的建筑。”Agent 会按需加载技能。
@@ -238,13 +238,13 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent opencode
 **国际版**
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent trae
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent trae
 ```
 
 **国内版**
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent trae-cn
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent trae-cn
 ```
 
 在 TRAE 的智能体对话中发送“用 ui-craft 技能做一个微信报修小程序。访客扫码后能看到房间位置、选择问题并提交，操作区要适合单手使用。”
@@ -257,7 +257,7 @@ gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent trae-cn
 <summary><strong>Qwen Code</strong> · 用 <code>/ui-craft</code> 调用</summary>
 
 ```sh
-gh skill install fruge365/ui-craft ui-craft@v11.2.0 --agent qwen-code
+gh skill install fruge365/ui-craft ui-craft@v11.3.0 --agent qwen-code
 ```
 
 在 Qwen Code 输入 `/skills` 可看到已安装的技能。要开始设计，可直接输入技能名和需求。
@@ -289,7 +289,11 @@ npx skills add fruge365/ui-craft --skill ui-craft --agent windsurf --copy
 
 ## 在线评审台
 
-打开 [fruge365.github.io/ui-craft](https://fruge365.github.io/ui-craft/) 可以在浏览器里逐页体验全部样页，切换 390 / 1024 / 1440 / 1920 四种画布，并在任意元素上留标注、打视觉评分、导出 JSON 或 Markdown 评审单。
+打开 [fruge365.github.io/ui-craft](https://fruge365.github.io/ui-craft/) 可以在浏览器里逐页体验 46 个样页，切换 390 / 1024 / 1440 / 1920 四种画布，并在任意元素上留标注、打视觉评分、导出 JSON 或 Markdown 评审单。
+
+评审台本身用深色外壳刻意压低存在感：被评审的作品是屏幕上唯一的亮面。顶栏只留一个主操作，导入导出收进「更多」菜单。
+
+![深色评审台，左侧样页索引、中央大幅预览与右侧方向说明](docs/images/review-shell.png)
 
 本地启动同一个评审台：
 
@@ -332,7 +336,7 @@ serve-review.cjs        本地评审服务
 
 | 发布平台 | 如何使用 |
 | --- | --- |
-| [GitHub Releases](https://github.com/fruge365/ui-craft/releases/tag/v11.2.0) | 下载 `ui-craft-v11.2.0.zip`，解压后把整个 `ui-craft` 文件夹复制到对应平台的技能目录。以 Codex 为例，入口应在 `.agents/skills/ui-craft/SKILL.md`。保留包内的 `SKILL.md`、`references/` 和 `assets/`。 |
+| [GitHub Releases](https://github.com/fruge365/ui-craft/releases/tag/v11.3.0) | 下载 `ui-craft-v11.3.0.zip`，解压后把整个 `ui-craft` 文件夹复制到对应平台的技能目录。以 Codex 为例，入口应在 `.agents/skills/ui-craft/SKILL.md`。保留包内的 `SKILL.md`、`references/` 和 `assets/`。 |
 | [skills.sh](https://www.skills.sh/fruge365/ui-craft/ui-craft) | 在目标项目执行 `npx skills add fruge365/ui-craft --skill ui-craft`，按提示选开发工具。 |
 | [Agent Skill Hub](https://agentskillhub.dev/u/fruge365/sk/ui-craft) | 打开条目，复制 **Install command** 中的 `npx skhub add fruge365/ui-craft`，在目标项目执行。 |
 
