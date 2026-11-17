@@ -1,6 +1,6 @@
 {
   "name": "ui-craft",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "private": true,
   "description": "UI/UX design skill for televisions, kiosks, POS, handhelds, wearables, car HUDs, AR/VR, multi-screen workstations, foldables, home panels, dashboards, websites and mobile interfaces, with an interactive HTML gallery.",
   "engines": {
@@ -14,6 +14,7 @@
     "test:comparison": "node scripts/comparison-browser.cjs",
     "probe:layout": "node scripts/layout-probe.cjs",
     "probe:interaction": "node scripts/interaction-probe.cjs",
-    "shots": "node scripts/capture-shots.cjs"
+    "shots": "node scripts/capture-shots.cjs",
+    "bundle": "node scripts/bundle-skill.cjs"
   }
 }

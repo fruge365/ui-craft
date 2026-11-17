@@ -10,3 +10,6 @@ Thumbs.db
 # Browser exports can contain private review notes.
 ui-craft-review-*.json
 ui-craft-review-*.md
+
+# Built skill archive
+dist/
