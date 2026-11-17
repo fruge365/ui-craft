@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#07080c">
+<title>沉积 · VR 头显界面</title>
+<style>
+:root{--void:#07080c;--deep:#0c0f16;--panel:#141926;--line:#26303f;--paper:#e9eef7;--mute:#8e9bb0;--violet:#a48cf0;--cyan:#5fd3e0;--rose:#ef7fa6;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 40%,#141b28,#05060a 66%);min-height:100vh;padding:clamp(10px,2vw,28px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.rig{width:min(1240px,100%);display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.72fr);gap:clamp(14px,2vw,30px);align-items:start}
+@media(max-width:980px){.rig{grid-template-columns:1fr}}
+/* Stereo layout inside one view: the two eye buffers are drawn side by side,
+   with the world content pushed to the centre of each buffer, not of the screen. */
+.viewport{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:
+  radial-gradient(ellipse 60% 74% at 50% 52%,#1d2a3f 0,#0b1018 58%,#05070b 100%);
+  box-shadow:0 24px 60px #000b,inset 0 0 100px #0008;display:grid;grid-template-columns:1fr 1fr;gap:2px;padding:2px}
+.eye{position:relative;overflow:hidden;background:radial-gradient(ellipse 76% 68% at 50% 54%,#24344c 0,transparent 72%)}
+.eye::after{content:"";position:absolute;inset:0;border-radius:2px;box-shadow:inset 0 0 46px #000a;pointer-events:none}
+.eye.dim{filter:brightness(.4) saturate(.3)}
+.lens{position:absolute;inset:9% 12%;border:1px dashed #8e9bb033;border-radius:20px;pointer-events:none}
+.lens::after{content:"安心区 · 92°";position:absolute;left:50%;bottom:-1.7em;transform:translateX(-50%);font-size:9px;letter-spacing:.16em;color:#8e9bb066;white-space:nowrap}
+.scene{position:absolute;inset:14% 10% 20%}
+.layers{position:absolute;inset:0;display:grid;place-items:center}
+.slab{position:absolute;width:62%;aspect-ratio:3/2;border-radius:6px;background:linear-gradient(150deg,#3b4a63,#1f2a3a 58%,#2c3a2e);border:1px solid #ffffff1f;box-shadow:0 14px 30px #0008}
+.slab[data-depth="0"]{transform:translate(-2%,4%) scale(.82);opacity:.5;filter:blur(.6px)}
+.slab[data-depth="1"]{transform:translate(2%,-2%) scale(.94);opacity:.78}
+.slab[data-depth="2"]{transform:scale(1);opacity:1}
+.slab::after{content:"";position:absolute;inset:0;border-radius:6px;background:repeating-linear-gradient(102deg,#ffffff09 0 2px,transparent 2px 9px),radial-gradient(circle at 68% 26%,#5fd3e029,transparent 46%)}
+.layer-label{position:absolute;left:6%;top:6%;font-size:clamp(8px,.68vw,10px);letter-spacing:.14em;color:#bfe3ea;background:#060a0eb8;border:1px solid #5fd3e03d;padding:.2em .45em;border-radius:2px;z-index:2}
+.target{position:absolute;left:50%;top:46%;width:clamp(44px,5vw,64px);aspect-ratio:1;transform:translate(-50%,-50%);border:2px solid var(--violet);border-radius:50%;background:#a48cf01a;box-shadow:0 0 22px #a48cf055;display:grid;place-items:center;z-index:3}
+.target::before,.target::after{content:"";position:absolute;background:var(--violet)}
+.target::before{width:calc(100% + 14px);height:1px}
+.target::after{height:calc(100% + 14px);width:1px}
+.target b{font:700 clamp(8px,.7vw,10.5px)/1 "IBM Plex Mono",monospace;color:#d9cfff;letter-spacing:.06em;background:#0a0713c7;padding:.28em .4em;white-space:nowrap}
+.hud{position:absolute;inset:auto 0 clamp(10px,1.6vw,22px);display:flex;justify-content:center;gap:clamp(6px,.8vw,12px);z-index:4}
+.hud button{padding:.52em .9em;border-radius:99px;border:1px solid #a48cf04d;background:#0b0a14d9;color:#ddd6ff;font-size:clamp(10px,.82vw,12.5px);font-weight:700;min-height:44px;min-width:64px;backdrop-filter:blur(6px)}
+.hud button[aria-pressed=true]{background:var(--violet);color:#120c26;border-color:var(--violet)}
+.passthrough{position:absolute;right:clamp(8px,1.2vw,16px);top:clamp(8px,1.2vw,16px);z-index:5;font-size:clamp(9px,.74vw,11px);letter-spacing:.08em;color:#ffd9a3;border:1px solid #f0b24a66;background:#0b0a0cd9;padding:.4em .6em;border-radius:4px;max-width:11em;line-height:1.4}
+.passthrough[hidden]{display:none}
+.panel{display:grid;gap:clamp(10px,1.4vw,18px);align-content:start}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:clamp(12px,1.8vh,20px) clamp(13px,1.6vw,22px)}
+.card h1{font-size:clamp(16px,1.5vw,22px);letter-spacing:-.01em;line-height:1.25}
+.card .lede{font-size:clamp(11px,.9vw,13px);color:var(--mute);line-height:1.7;margin-top:.6em}
+.card h3{font-size:clamp(9px,.78vw,11px);letter-spacing:.18em;color:#7f8ea4;font-weight:750;margin-bottom:.75em}
+.dl{display:grid;grid-template-columns:auto 1fr;gap:.4em .8em;font-size:clamp(10px,.84vw,12.5px);line-height:1.55}
+.dl dt{color:#7f8ea4;font-weight:650}
+.dl dd{color:#cfd9e8}
+.risk{display:grid;gap:.5em}
+.risk div{display:grid;grid-template-columns:auto 1fr;gap:.6em;font-size:clamp(10px,.84vw,12.5px);line-height:1.6;color:#b9c5d6}
+.risk i{width:.5em;height:.5em;border-radius:50%;margin-top:.5em;background:var(--violet)}
+.risk i.warn{background:var(--rose)}
+.meter{display:grid;gap:.35em;font-size:clamp(10px,.82vw,12px);color:#a9b6c8}
+.meter .row{display:grid;grid-template-columns:1fr auto;gap:.5em}
+.meter .bar{height:4px;border-radius:99px;background:#1d2634;overflow:hidden;grid-column:1/-1}
+.meter .bar i{display:block;height:100%;background:var(--cyan)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="immersive">
+<main class="rig">
+  <section class="viewport" aria-label="双目 VR 视场模拟">
+    <div class="eye" id="eyeL">
+      <span class="lens" aria-hidden="true"></span>
+      <div class="scene">
+        <div class="layers">
+          <div class="slab" data-depth="0"></div>
+          <div class="slab" data-depth="1"></div>
+          <div class="slab" data-depth="2"><span class="layer-label">地层 03 · 河相沉积</span></div>
+        </div>
+        <div class="target" data-review-id="vr-target"><b>抓取</b></div>
+      </div>
+    </div>
+    <div class="eye" id="eyeR">
+      <span class="lens" aria-hidden="true"></span>
+      <div class="scene">
+        <div class="layers">
+          <div class="slab" data-depth="0"></div>
+          <div class="slab" data-depth="1"></div>
+          <div class="slab" data-depth="2"><span class="layer-label">地层 03 · 河相沉积</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="passthrough" id="pt" hidden>透视视野开启 · 周边障碍可见<br>请在空旷处使用</p>
+    <div class="hud" role="group" aria-label="沉浸模式">
+      <button type="button" data-mode="immersive" aria-pressed="true" data-review-id="vr-mode-immersive">沉浸</button>
+      <button type="button" data-mode="passthrough" aria-pressed="false" data-review-id="vr-mode-passthrough">透视</button>
+      <button type="button" data-mode="seated" aria-pressed="false" data-review-id="vr-mode-seated">坐姿</button>
+    </div>
+  </section>
+  <aside class="panel">
+    <div class="card">
+      <h1>把空间操作拆成「注视 + 手势」两步</h1>
+      <p class="lede">头显里没有鼠标。所有可操作对象先用射线或注视指向，再用捏合或扳机确认，两步之间留出可取消的间隙。</p>
+      <dl class="dl" style="margin-top:.9em">
+        <dt>视场</dt><dd>单眼约 100° · 中心 92° 为舒适区</dd>
+        <dt>目标</dt><dd>最小 3° 视角，约 2 m 处 10 cm</dd>
+        <dt>深度</dt><dd>三层，前层可交互，后层仅作参考</dd>
+        <dt>文字</dt><dd>1.5 m 处不小于 24 px 等效字号</dd>
+      </dl>
+    </div>
+    <div class="card">
+      <h3>必须处理的三种状态</h3>
+      <div class="risk">
+        <div><i></i><span>手部追踪丢失：目标框转为虚线，提示改用扳机。</span></div>
+        <div><i class="warn"></i><span>周边有障碍：自动降级为透视，暂停沉浸内容。</span></div>
+        <div><i></i><span>晕动不适：坐姿模式降低视差，关闭自由移动。</span></div>
+      </div>
+      <div class="meter" style="margin-top:1em">
+        <div class="row"><span>帧率预算</span><span>90 Hz · 已用 74%</span><div class="bar"><i style="width:74%"></i></div></div>
+        <div class="row"><span>注视舒适区占用</span><span>2 / 3 层</span><div class="bar"><i style="width:66%"></i></div></div>
+      </div>
+    </div>
+    <p class="card" id="live" role="status" aria-live="polite" style="font-size:clamp(10px,.84vw,12.5px);line-height:1.7;color:#a9b6c8">当前：沉浸模式。目标「地层 03」可抓取，捏合确认。</p>
+  </aside>
+</main>
+<p class="sr" id="sr" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const live = document.getElementById('live');
+  const pt = document.getElementById('pt');
+  const eyes = [document.getElementById('eyeL'), document.getElementById('eyeR')];
+  const modes = {
+    immersive: ['沉浸模式。目标「地层 03」可抓取，捏合确认。', false],
+    passthrough: ['透视模式。周边障碍以灰度显示，沉浸内容降至半透明。', true],
+    seated: ['坐姿模式。关闭自由移动，仅保留视线与手势，视差降低。', false]
+  };
+  document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
+    const mode = button.dataset.mode;
+    document.querySelectorAll('[data-mode]').forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+    const [text, show] = modes[mode];
+    live.textContent = text;
+    pt.hidden = !show;
+    eyes.forEach(eye => eye.classList.toggle('dim', show));
+    document.querySelectorAll('.slab').forEach(slab => {
+      slab.style.opacity = mode === 'passthrough' ? '.35' : '';
+    });
+  }));
+  document.querySelector('[data-review-id="vr-target"]').addEventListener('click', event => {
+    event.preventDefault();
+    live.textContent = '已抓取「地层 03」。再捏合一次可放下；手指移出目标框即取消。';
+  });
+})();
+</script>
+</body>
+</html>

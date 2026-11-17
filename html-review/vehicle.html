@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#08090b">
+<title>行野 · 车机与抬头显示</title>
+<style>
+:root{--void:#08090b;--dash:#12151a;--card:#1a1f26;--line:#2c333c;--paper:#eef1f4;--mute:#9aa5b1;--amber:#f5a524;--teal:#4fd1c5;--danger:#e8543f;font-family:"HarmonyOS Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--void);min-height:100vh;display:grid;place-items:center;padding:clamp(10px,2vw,30px)}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.cockpit{width:min(1240px,100%);display:grid;gap:clamp(10px,1.4vw,20px)}
+.hud{position:relative;border-radius:12px;background:linear-gradient(180deg,#0a0c10,#050709 70%,#0b0f0d);border:1px solid #1c2229;overflow:hidden;padding:clamp(12px,2vh,26px) clamp(16px,2.4vw,40px);min-height:clamp(150px,20vh,214px);display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:clamp(14px,2.4vw,40px)}
+.hud::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,#ffffff06 0 1px,transparent 1px 3px);pointer-events:none}
+.hud .speed{display:flex;align-items:baseline;gap:.14em;line-height:1}
+.hud .speed b{font:700 clamp(58px,8.2vw,132px)/.84 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:-.045em;font-variant-numeric:tabular-nums;color:#eaf6ff;text-shadow:0 0 26px #4fd1c540}
+.hud .speed span{font-size:clamp(14px,1.2vw,22px);color:var(--mute);font-weight:600}
+.hud .limit{display:grid;place-items:center;gap:.2em}
+.hud .limit i{width:clamp(46px,4.6vw,74px);height:clamp(46px,4.6vw,74px);border-radius:50%;border:4px solid var(--danger);display:grid;place-items:center;font:800 clamp(19px,2vw,31px)/1 "Barlow Condensed",sans-serif;color:#fff;font-style:normal;background:#12161a}
+.hud .limit small{font-size:clamp(10px,.78vw,13px);color:var(--mute);letter-spacing:.1em}
+.hud .nav{min-width:0}
+.hud .nav p{font-size:clamp(13px,1.06vw,19px);color:var(--teal);letter-spacing:.05em;font-weight:650}
+.hud .nav h2{font-size:clamp(20px,2vw,34px);line-height:1.2;margin-top:.24em;font-weight:750;letter-spacing:-.01em}
+.hud .nav small{display:block;margin-top:.4em;font-size:clamp(12px,.94vw,17px);color:var(--mute);line-height:1.5}
+.hud .turn{display:flex;align-items:center;gap:clamp(10px,1.4vw,22px);color:var(--teal)}
+.hud .turn i{width:clamp(38px,4vw,66px);aspect-ratio:1;background:currentColor;clip-path:polygon(100% 50%,44% 50%,44% 74%,0 44%,44% 14%,44% 50%)}
+.hud .turn b{font:700 clamp(24px,2.6vw,44px)/1 "Barlow Condensed",sans-serif;letter-spacing:-.02em}
+.dash{background:var(--dash);border:1px solid #1e242c;border-radius:16px;padding:clamp(14px,2vh,26px) clamp(14px,2.2vw,32px);display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:clamp(12px,1.8vw,28px)}
+.now{background:var(--card);border-radius:12px;padding:clamp(14px,1.8vh,24px);display:grid;gap:1em;border:1px solid #232a33}
+.now .head{display:flex;align-items:center;justify-content:space-between;gap:1em}
+.now .head h3{font-size:clamp(13px,1vw,17px);letter-spacing:.14em;color:var(--mute);font-weight:650}
+.tag{font-size:clamp(11px,.82vw,14px);padding:.24em .7em;border-radius:99px;background:#24303a;color:#a9c4d6;font-weight:650;letter-spacing:.04em}
+.track{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(10px,1.2vw,20px);align-items:center}
+.cover{width:clamp(64px,6.4vw,104px);aspect-ratio:1;border-radius:8px;background:linear-gradient(140deg,#2f4038,#1d2a24 60%,#3d3122);position:relative;overflow:hidden}
+.cover::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(78deg,#ffffff12 0 2px,transparent 2px 9px)}
+.track b{display:block;font-size:clamp(16px,1.34vw,24px);font-weight:750;letter-spacing:-.01em}
+.track small{display:block;color:var(--mute);font-size:clamp(12px,.94vw,17px);margin-top:.3em}
+.bar{margin-top:.9em;height:5px;border-radius:99px;background:#2b323b;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 38% 0 0;background:var(--teal)}
+.time-row{display:flex;justify-content:space-between;font-size:clamp(11px,.84vw,14px);color:var(--mute);margin-top:.5em;font-variant-numeric:tabular-nums}
+.ctl{display:flex;align-items:center;justify-content:center;gap:clamp(8px,1.2vw,18px);margin-top:.4em}
+.ctl button{width:clamp(46px,4.4vw,62px);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;background:#232a33;border:1px solid #323b46;transition:background .12s}
+.ctl button:hover{background:#2c3540}
+.ctl .big{width:clamp(58px,5.4vw,76px);background:var(--paper);color:#14181d;border-color:var(--paper)}
+.ctl .big:hover{background:#fff}
+.ctl i{display:block;background:currentColor}
+.ic-play{width:0;height:0;border-top:.42em solid transparent;border-bottom:.42em solid transparent;border-left:.66em solid;margin-left:.12em;font-size:clamp(20px,2vw,30px)}
+.ic-pause{width:.5em;height:.82em;font-size:clamp(20px,2vw,30px);box-shadow:.5em 0 0 currentColor;transform:translateX(-.25em)}
+.ic-next{width:0;height:0;border-top:.36em solid transparent;border-bottom:.36em solid transparent;border-left:.52em solid;box-shadow:-.42em 0 0 -.0em currentColor;font-size:clamp(18px,1.8vw,26px)}
+.ic-prev{transform:scaleX(-1)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1vw,14px);align-content:start}
+.card{background:var(--card);border:1px solid #232a33;border-radius:12px;padding:clamp(12px,1.5vh,20px);min-height:0;display:grid;gap:.5em;text-align:left;transition:border-color .12s,background .12s}
+.card:hover,.card:focus-visible{border-color:#465261;background:#1e242c}
+.card h3{font-size:clamp(12px,.9vw,15px);letter-spacing:.1em;color:var(--mute);font-weight:650}
+.card b{font-size:clamp(19px,1.9vw,30px);font-weight:750;letter-spacing:-.02em;line-height:1.14}
+.card small{font-size:clamp(11px,.86vw,15px);color:var(--mute);line-height:1.45}
+.card .warn{color:var(--amber)}
+.card .ok{color:var(--teal)}
+.strip{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1em;padding:clamp(8px,1.2vh,14px) clamp(12px,1.4vw,20px);background:#0f1318;border-radius:10px;border:1px solid #1d242c;font-size:clamp(12px,.94vw,17px);color:var(--mute);flex-wrap:wrap}
+.strip .locked{display:flex;align-items:center;gap:.55em;color:var(--amber);font-weight:650}
+.strip .locked i{width:.72em;height:.72em;border-radius:50%;background:currentColor}
+.why{font-size:clamp(11px,.84vw,14px);line-height:1.5;color:#7f8b98;max-width:64ch}
+.actions{display:flex;gap:.6em;flex-wrap:wrap}
+.actions button{font-size:clamp(12px,.92vw,16px);font-weight:700;padding:.6em 1.1em;border-radius:8px;border:1px solid #39434f;background:#20283200;color:#cdd7e2;min-height:44px;min-width:56px}
+.actions button[aria-pressed=true]{background:var(--teal);color:#062521;border-color:var(--teal)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:880px){.dash{grid-template-columns:1fr}.hud{grid-template-columns:auto auto 1fr;gap:12px}.hud .limit{order:3;grid-column:1/-1;justify-self:start;display:flex;align-items:center;gap:.6em}.hud .limit i{width:38px;height:38px;border-width:3px;font-size:16px}.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.hud{min-height:0}.hud .nav h2{font-size:17px}.track{grid-template-columns:auto 1fr}.cover{width:52px}.ctl{justify-content:flex-start}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="parked">
+<main class="cockpit">
+  <section class="hud" aria-label="抬头显示模拟">
+    <div class="speed"><b id="speed">62</b><span>km/h</span></div>
+    <div class="nav">
+      <p>前方 400 米 · 逐次变道</p>
+      <h2>沿滨江路直行，进入左转专用道</h2>
+      <small>下一个出口：环城北线 · 距 3.4 公里</small>
+    </div>
+    <div class="turn"><i aria-hidden="true"></i><b>400<small style="font-size:.4em">m</small></b></div>
+    <div class="limit"><i aria-label="限速 60">60</i><small>限速</small></div>
+  </section>
+  <section class="dash">
+    <div class="now">
+      <div class="head"><h3>正在播放</h3><span class="tag" id="mode-tag">驻车 · 可操作</span></div>
+      <div class="track">
+        <span class="cover" aria-hidden="true"></span>
+        <div>
+          <b>夜行列车</b>
+          <small>沈禾 · 专辑《长夜将尽》</small>
+          <div class="bar" role="progressbar" aria-label="播放进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62"><i></i></div>
+          <div class="time-row"><span>02:43</span><span>04:58</span></div>
+        </div>
+      </div>
+      <div class="ctl">
+        <button type="button" aria-label="上一首"><i class="ic-next ic-prev"></i></button>
+        <button type="button" class="big" id="play" aria-label="暂停"><i class="ic-pause"></i></button>
+        <button type="button" aria-label="下一首"><i class="ic-next"></i></button>
+      </div>
+      <div class="strip">
+        <span class="locked" id="lock"><i aria-hidden="true"></i>行车中：仅保留音量与语音指令</span>
+        <div class="actions" role="group" aria-label="车辆状态"><button type="button" data-state="parked" aria-pressed="true">驻车</button><button type="button" data-state="driving" aria-pressed="false">行车</button></div>
+      </div>
+      <p class="why" id="why">驻车时允许完整操作。切换到行车后，屏幕只保留一屏可读的信息，其他控件收起并要求语音指令——这是驾驶分心的硬性限制，不是偏好设置。</p>
+    </div>
+    <div class="grid">
+      <button class="card" type="button" data-review-id="car-range"><h3>续航</h3><b>318 <small style="font-size:.5em">km</small></b><small class="ok">预计可到目的地，余 14%</small></button>
+      <button class="card" type="button" data-review-id="car-tyre"><h3>胎压</h3><b>2.4 / 2.4</b><small class="warn">右后 2.1 bar · 偏低</small></button>
+      <button class="card" type="button" data-review-id="car-charge"><h3>最近充电</h3><b>3.2 km</b><small>滨江西路站 · 4 个空闲</small></button>
+      <button class="card" type="button" data-review-id="car-cabin"><h3>座舱</h3><b>22 °C</b><small>内循环 · 空气 优</small></button>
+      <div class="card" style="grid-column:1/-1"><h3>驾驶辅助</h3><b style="font-size:clamp(15px,1.4vw,22px)">自适应巡航 · 车道保持</b><small class="warn">摄像头视野受限 2 分钟，辅助已降级。请保持手动驾驶。</small></div>
+    </div>
+  </section>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const live = document.getElementById('live');
+  const tag = document.getElementById('mode-tag');
+  const lock = document.getElementById('lock');
+  const why = document.getElementById('why');
+  const buttons = [...document.querySelectorAll('[data-state]')];
+  const play = document.getElementById('play');
+  const allowed = document.querySelectorAll('.ctl button, .grid .card');
+  let playing = true;
+  function setMode(mode) {
+    buttons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.state === mode)));
+    const driving = mode === 'driving';
+    tag.textContent = driving ? '行车 · 受限' : '驻车 · 可操作';
+    lock.innerHTML = driving
+      ? '<i aria-hidden="true"></i>行车中：仅保留音量与语音指令'
+      : '<i aria-hidden="true" style="background:#4fd1c5"></i>驻车中：所有控件可用';
+    lock.style.color = driving ? 'var(--amber)' : 'var(--teal)';
+    allowed.forEach(element => {
+      element.disabled = driving;
+      element.setAttribute('aria-disabled', String(driving));
+    });
+    why.textContent = driving
+      ? '行车状态下控件已置灰并阻断点击。保留的一屏信息只包含速度、限速、下一个转向与续航；拖动、翻页、长列表都被收起，避免手离开方向盘。'
+      : '驻车时允许完整操作。切换到行车后，屏幕只保留一屏可读的信息，其他控件收起并要求语音指令——这是驾驶分心的硬性限制，不是偏好设置。';
+    live.textContent = driving ? '已切换到行车状态，控件已锁定。' : '已切换到驻车状态，控件可用。';
+  }
+  buttons.forEach(button => button.addEventListener('click', () => setMode(button.dataset.state)));
+  play.addEventListener('click', () => {
+    if (play.disabled) return;
+    playing = !playing;
+    play.replaceChildren();
+    const icon = document.createElement('i');
+    icon.className = playing ? 'ic-pause' : 'ic-play';
+    play.append(icon);
+    play.setAttribute('aria-label', playing ? '暂停' : '播放');
+    live.textContent = playing ? '继续播放。' : '已暂停。';
+  });
+  // A slow speed drift keeps the HUD honest when it is left open for a while.
+  let speed = 62;
+  setInterval(() => {
+    speed = Math.max(48, Math.min(74, speed + (Math.random() < .5 ? -1 : 1)));
+    document.getElementById('speed').textContent = speed;
+  }, 4200);
+  setMode('parked');
+})();
+</script>
+</body>
+</html>

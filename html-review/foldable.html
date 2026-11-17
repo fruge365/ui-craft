@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f7f4ee">
+<title>展签 · 折叠屏形态切换</title>
+<style>
+:root{--paper:#f7f4ee;--card:#fffdf8;--ink:#1f1d19;--sub:#61605a;--line:#d9d4c7;--indigo:#2c3f7a;--indigo-soft:#e6e9f6;--plum:#7a2f45;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(165deg,#dcd7cb,#c7c1b3);min-height:100vh;padding:clamp(10px,2vw,30px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.wrap{width:min(1240px,100%);display:grid;gap:clamp(10px,1.4vw,18px)}
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:1em;flex-wrap:wrap;background:#2a2925;border-radius:12px 12px 4px 4px;padding:clamp(9px,1.2vh,14px) clamp(12px,1.6vw,22px);color:#efe9da}
+.toolbar h1{font-size:clamp(13px,1.06vw,16px);font-weight:700;letter-spacing:.04em}
+.toolbar .seg{display:flex;gap:.35em;background:#1c1b18;padding:.28em;border-radius:8px}
+.toolbar .seg button{padding:.5em .95em;border-radius:6px;font-size:clamp(11px,.9vw,13px);font-weight:700;color:#b8b2a4;min-height:44px}
+.toolbar .seg button[aria-pressed=true]{background:#efe9da;color:#1c1b18}
+.toolbar .state{font-size:clamp(10px,.8vw,12px);color:#a9a394;letter-spacing:.06em}
+.toolbar .state b{color:#efe9da;font-weight:700}
+.stage{display:grid;grid-template-columns:auto minmax(250px,.62fr);gap:clamp(14px,2vw,32px);align-items:start;justify-content:center}
+@media(max-width:940px){.stage{grid-template-columns:1fr}}
+/* Fold phones change both width and aspect: everything here must reflow at the
+   hinge without dropping the visitor's place in the artwork list. */
+.device{position:relative;background:#151512;border-radius:16px;padding:9px;box-shadow:0 22px 46px #1f1c1440;transition:width .3s ease,height .3s ease;width:clamp(300px,42vw,392px);margin:auto}
+.device[data-form=open]{width:min(790px,100%)}
+.device[data-form=tablet]{width:min(880px,100%)}
+.screen{background:var(--paper);border-radius:9px;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;height:min(660px,72vh)}
+.hinge{position:absolute;top:9px;bottom:9px;left:50%;width:2px;background:linear-gradient(#ffffff10,#ffffff42,#ffffff10);pointer-events:none;opacity:0;transition:opacity .3s}
+.device[data-form=open] .hinge{opacity:1}
+.pane-grid{display:grid;grid-template-columns:1fr;min-height:0}
+.device[data-form=open] .pane-grid{grid-template-columns:1fr 1fr}
+.device[data-form=tablet] .pane-grid{grid-template-columns:1.15fr 1fr}
+.appbar{display:flex;align-items:center;justify-content:space-between;gap:.7em;padding:clamp(10px,1.4vh,15px) clamp(12px,1.4vw,20px);border-bottom:1px solid var(--line);background:#fffdf8}
+.appbar h2{font-size:clamp(13px,1.1vw,16px);font-weight:750;letter-spacing:.02em}
+.appbar .crumb{font-size:clamp(10px,.8vw,12px);color:var(--sub);letter-spacing:.04em}
+.listpane{overflow:auto;min-height:0;border-right:1px solid var(--line);scrollbar-width:thin}
+.device:not([data-form=open]):not([data-form=tablet]) .listpane{border-right:0}
+.exhibit{display:grid;grid-template-columns:auto 1fr auto;gap:.75em;align-items:center;width:100%;text-align:left;padding:clamp(9px,1.3vh,14px) clamp(12px,1.4vw,20px);border-bottom:1px solid #ece7db}
+.exhibit .no{width:2.1em;height:2.1em;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font:700 .8em/1 "Barlow Condensed",sans-serif;color:var(--sub);flex:none}
+.exhibit b{display:block;font-size:clamp(12px,1vw,15px);font-weight:700;line-height:1.3}
+.exhibit small{display:block;font-size:clamp(10px,.8vw,12px);color:var(--sub);margin-top:.2em;line-height:1.4}
+.exhibit .flag{font-size:clamp(9px,.72vw,11px);letter-spacing:.06em;color:var(--plum);border:1px solid #e0cfd4;background:#f9eff1;padding:.18em .4em;border-radius:2px;white-space:nowrap}
+.exhibit[aria-pressed=true]{background:var(--indigo-soft)}
+.exhibit[aria-pressed=true] .no{border-color:var(--indigo);color:var(--indigo);background:#fff}
+.detail{display:none;overflow:auto;min-height:0;border-left:0}
+.device[data-form=open] .detail,.device[data-form=tablet] .detail{display:block}
+.device[data-form=open] .listpane,.device[data-form=tablet] .listpane{display:block}
+.device:not([data-form=open]):not([data-form=tablet]) .detail{display:none}
+.detail .art{aspect-ratio:4/3;position:relative;background:linear-gradient(150deg,#6d7a58,#3a4636 55%,#4c3a2a);overflow:hidden}
+.detail .art::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 64% 30%,#e8d9a64d,transparent 46%),repeating-linear-gradient(112deg,#00000014 0 2px,transparent 2px 10px)}
+.detail .art span{position:absolute;left:.8em;bottom:.7em;color:#f5efd9;font-size:clamp(9px,.74vw,11px);letter-spacing:.12em;z-index:1}
+.detail .text{padding:clamp(11px,1.6vh,18px) clamp(12px,1.5vw,22px);display:grid;gap:.5em}
+.detail h3{font-size:clamp(15px,1.34vw,21px);font-weight:750;line-height:1.25;letter-spacing:-.01em}
+.detail .meta{font-size:clamp(10px,.8vw,12px);color:var(--sub);line-height:1.6}
+.detail p{font-size:clamp(11px,.88vw,13px);line-height:1.8;color:#38352e}
+.detail .chips{display:flex;gap:.35em;flex-wrap:wrap}
+.detail .chips span{font-size:clamp(9px,.74vw,11px);padding:.22em .55em;border-radius:99px;background:#f0ece0;color:#5c594f}
+.note{padding:clamp(9px,1.3vh,14px) clamp(12px,1.5vw,22px);border-top:1px solid var(--line);background:#f4f0e5;font-size:clamp(10px,.82vw,12px);line-height:1.6;color:#5f5c52}
+.note b{color:var(--ink);font-weight:700}
+.appfoot{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:.6em clamp(12px,1.4vw,20px);border-top:1px solid var(--line);background:#fffdf8;font-size:clamp(9px,.76vw,11px);color:var(--sub);letter-spacing:.03em;flex-wrap:wrap}
+.appfoot b{color:var(--indigo);font-weight:700}
+.side{display:grid;gap:clamp(10px,1.4vw,18px);align-content:start}
+.panel{background:#fbf8f1;border:1px solid #d3cec0;border-radius:10px;padding:clamp(12px,1.8vw,20px)}
+.panel h3{font-size:clamp(10px,.82vw,12px);letter-spacing:.16em;color:#6c695f;font-weight:750;margin-bottom:.8em}
+.panel dl{display:grid;grid-template-columns:auto 1fr;gap:.4em .8em;font-size:clamp(10px,.84vw,12.5px);line-height:1.55}
+.panel dt{color:#6c695f;font-weight:650}
+.panel dd{color:#2c2a24;font-variant-numeric:tabular-nums}
+.panel p{font-size:clamp(10px,.84vw,12.5px);line-height:1.7;color:#52504a;margin-top:.6em}
+.panel p b{color:var(--ink)}
+.steps{display:grid;gap:.35em;font-size:clamp(10px,.84vw,12.5px);line-height:1.55;color:#52504a;counter-reset:s}
+.steps li{list-style:none;display:grid;grid-template-columns:auto 1fr;gap:.55em}
+.steps li::before{counter-increment:s;content:counter(s);width:1.4em;height:1.4em;border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font-size:.82em;font-weight:700;margin-top:.1em}
+.steps li.on{color:var(--ink);font-weight:650}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="list">
+<main class="wrap">
+  <div class="toolbar">
+    <h1>折叠屏 · 形态切换与阅读接续</h1>
+    <div class="seg" role="group" aria-label="设备形态">
+      <button type="button" data-form="closed" aria-pressed="false">合起 · 6.4″</button>
+      <button type="button" data-form="open" aria-pressed="true">展开 · 7.9″</button>
+      <button type="button" data-form="tablet" aria-pressed="false">平板展开 · 9.4″</button>
+    </div>
+    <span class="state">当前 <b id="form-name">展开</b> · 选中 <b id="sel-name">展品 03</b></span>
+  </div>
+  <div class="stage">
+    <div class="device" data-form="open" id="device">
+      <span class="hinge" aria-hidden="true"></span>
+      <div class="screen">
+        <div class="appbar"><div><h2>河岸展 · 五件</h2><p class="crumb">建筑与水利 · 二层东厅</p></div></div>
+        <div class="pane-grid">
+          <div class="listpane" id="list" aria-label="展品列表">
+            <button class="exhibit" type="button" data-id="01" aria-pressed="false" data-review-id="fold-item-01"><span class="no">01</span><span><b>旧闸门绞盘</b><small>铸铁 · 1908 · 二层东厅</small></span></button>
+            <button class="exhibit" type="button" data-id="02" aria-pressed="false" data-review-id="fold-item-02"><span class="no">02</span><span><b>测绘手簿</b><small>纸本 · 1953 · 二层东厅</small></span></button>
+            <button class="exhibit" type="button" data-id="03" aria-pressed="true" data-review-id="fold-item-03"><span class="no">03</span><span><b>干砌石护岸断面</b><small>实测图 · 2024 · 二层东厅</small></span><span class="flag">重点</span></button>
+            <button class="exhibit" type="button" data-id="04" aria-pressed="false" data-review-id="fold-item-04"><span class="no">04</span><span><b>汛期巡查记录册</b><small>纸本 · 1987—2002</small></span></button>
+            <button class="exhibit" type="button" data-id="05" aria-pressed="false" data-review-id="fold-item-05"><span class="no">05</span><span><b>排水口模型</b><small>3D 打印 · 1:20</small></span></button>
+          </div>
+          <div class="detail" id="detail" aria-live="polite">
+            <div class="art"><span>展品 03 · 实测断面</span></div>
+            <div class="text">
+              <h3 id="d-title">干砌石护岸断面</h3>
+              <p class="meta" id="d-meta">实测图 · 2024 · 展柜 03</p>
+              <p id="d-body">按第 14 号桩实测的横断面，标注了石层错台与勾缝范围。断面比例 1:20，可直接与旧闸门绞盘的位置对照。</p>
+              <div class="chips" id="d-chips"><span>可放大</span><span>含尺寸标注</span><span>可对照 01</span></div>
+            </div>
+            <p class="note"><b>保持位置。</b>从合起状态打开时，列表滚动位置与选中的展品都保留，右侧详情直接出现，不需要重新进入。</p>
+          </div>
+        </div>
+        <div class="appfoot"><span id="foot-state">展开形态：列表与详情并排</span><span>铰链区域 <b>不放置可点内容</b></span></div>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="panel">
+        <h3>形态与布局</h3>
+        <dl>
+          <dt>合起</dt><dd>单列列表，点开展品进入详情</dd>
+          <dt>展开</dt><dd>双列并排，右键详情常驻</dd>
+          <dt>平板</dt><dd>详情加宽，正文更易读</dd>
+          <dt>折痕</dt><dd>约 34 px 不打字、不压按钮</dd>
+        </dl>
+        <p><b>切换不改状态。</b>形态变化只重排视图，选中的展品、滚动位置和已展开的说明都保持不变。</p>
+      </div>
+      <div class="panel">
+        <h3>验证清单</h3>
+        <ol class="steps" id="steps">
+          <li class="on">合起时点第 3 件，记下列表位置</li>
+          <li>不返回，直接展开设备</li>
+          <li>确认仍是第 3 件，且列表未跳回顶部</li>
+          <li>再切平板，正文行宽不超过 34 em</li>
+        </ol>
+        <p id="live" role="status" aria-live="polite">当前形态：展开。详情常驻在右列。</p>
+      </div>
+    </aside>
+  </div>
+</main>
+<script>
+(() => {
+  'use strict';
+  const names = { closed: '合起', open: '展开', tablet: '平板展开' };
+  const foots = {
+    closed: '合起形态：单列列表，点击进入详情',
+    open: '展开形态：列表与详情并排',
+    tablet: '平板展开：详情加宽，正文行宽受限'
+  };
+  const data = {
+    '01': ['旧闸门绞盘', '铸铁 · 1908 · 展柜 01', '闸门升降用的手摇绞盘，齿轮为可换式，现场保留了两组备件。', ['可旋转', '含铭牌', '与 03 对照']],
+    '02': ['测绘手簿', '纸本 · 1953 · 展柜 02', '记录河岸改线前后的桩号变化，夹有六张手绘草图。', ['纸面可翻', '含草图']],
+    '03': ['干砌石护岸断面', '实测图 · 2024 · 展柜 03', '按第 14 号桩实测的横断面，标注了石层错台与勾缝范围。断面比例 1:20，可直接与旧闸门绞盘的位置对照。', ['可放大', '含尺寸标注', '可对照 01']],
+    '04': ['汛期巡查记录册', '纸本 · 1987—2002', '十六年间的汛期巡查手写记录，按年份装订，可见清理频次的变化。', ['按年查阅', '含签名字迹']],
+    '05': ['排水口模型', '3D 打印 · 1:20', '弯道内侧排水口的加固做法，可拆分为三段观察内部构造。', ['可拆分', '1:20']]
+  };
+  const device = document.getElementById('device');
+  const live = document.getElementById('live');
+  const items = [...document.querySelectorAll('.exhibit')];
+  let selected = '03';
+  let form = 'open';
+  function paintDetail() {
+    const [title, meta, body, chips] = data[selected];
+    document.getElementById('d-title').textContent = title;
+    document.getElementById('d-meta').textContent = meta;
+    document.getElementById('d-body').textContent = body;
+    const box = document.getElementById('d-chips');
+    box.replaceChildren(...chips.map(text => { const span = document.createElement('span'); span.textContent = text; return span; }));
+    document.querySelector('.detail .art span').textContent = '展品 ' + selected + ' · ' + title;
+    document.getElementById('sel-name').textContent = '展品 ' + selected;
+  }
+  function setForm(next) {
+    form = next;
+    device.dataset.form = next;
+    document.querySelectorAll('[data-form]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.form === next)));
+    document.getElementById('form-name').textContent = names[next];
+    document.getElementById('foot-state').textContent = foots[next];
+    const steps = document.querySelectorAll('#steps li');
+    steps.forEach((step, i) => step.classList.toggle('on', i <= ({ closed: 0, open: 2, tablet: 3 })[next]));
+    live.textContent = '当前形态：' + names[next] + '。仍选中展品 ' + selected + '，列表位置已保留。';
+    const active = document.querySelector('[aria-pressed="true"].exhibit');
+    if (active) active.scrollIntoView({ block: 'nearest' });
+  }
+  items.forEach(item => item.addEventListener('click', () => {
+    selected = item.dataset.id;
+    items.forEach(other => other.setAttribute('aria-pressed', String(other === item)));
+    paintDetail();
+    /* On the closed screen the detail lives behind the list, so opening the item
+       is the only way to read it. Expanding swaps to the two-pane layout. */
+    if (form === 'closed') {
+      live.textContent = '已选中展品 ' + selected + '，合起状态下展开设备即可看到详情。';
+      setForm('open');
+      return;
+    }
+    live.textContent = '已选中展品 ' + selected + '，详情已更新。';
+  }));
+  document.querySelectorAll('[data-form]').forEach(button => button.addEventListener('click', () => setForm(button.dataset.form)));
+  paintDetail();
+})();
+</script>
+</body>
+</html>

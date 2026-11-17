@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b0f10">
+<title>眺望 · AR 眼镜视场</title>
+<style>
+:root{--void:#0b0f10;--glass:#0f1517;--haze:#e8fff6;--mint:#7ef2cf;--amber:#ffc66d;--rose:#ff8f7a;--ink:#0d1214;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--haze);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:var(--void);min-height:100vh;display:grid;place-items:center;padding:clamp(12px,2.4vw,34px)}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.viewport{width:min(1120px,100%);display:grid;gap:clamp(10px,1.5vw,18px)}
+/* The monocular field of view is deliberately narrow: content outside the
+   safe rectangle would sit at the edge of the wearer's vision and be unreadable. */
+.fov{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:
+  radial-gradient(ellipse 78% 62% at 50% 46%,#9fc2b8 0,transparent 68%),
+  linear-gradient(176deg,#8fa9a4,#6d8180 46%,#3f4e4e);box-shadow:0 24px 60px #000a,inset 0 0 90px #05100e99}
+.fov::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(96deg,#ffffff06 0 2px,transparent 2px 7px),
+  radial-gradient(circle at 22% 18%,#ffffff24,transparent 40%)}
+.horizon{position:absolute;left:0;right:0;top:58%;height:1px;background:#e8fff629;box-shadow:0 0 24px #7ef2cf2e}
+.ground{position:absolute;inset:58% 0 0;background:linear-gradient(#2e3a36,#1d2523);opacity:.92}
+.ground::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(88deg,#ffffff0a 0 1px,transparent 1px 46px)}
+.safe-area{position:absolute;inset:11% 13%;border:1px dashed #7ef2cf33;border-radius:10px;pointer-events:none}
+.safe-area::after{content:"可视安全区";position:absolute;left:0;bottom:-1.7em;font-size:10px;letter-spacing:.2em;color:#7ef2cf66}
+.hud-top{position:absolute;inset:clamp(10px,1.6vw,22px) clamp(12px,1.8vw,26px) auto;display:flex;align-items:flex-start;justify-content:space-between;gap:1em;z-index:2}
+.pill{display:inline-flex;align-items:center;gap:.5em;padding:.4em .85em;border-radius:99px;background:#0b1214cc;border:1px solid #7ef2cf3d;font-size:clamp(11px,.86vw,14px);color:var(--mint);letter-spacing:.06em;backdrop-filter:blur(6px)}
+.pill i{width:.5em;height:.5em;border-radius:50%;background:var(--mint);box-shadow:0 0 8px var(--mint)}
+.plate{background:#0b1214c7;border:1px solid #ffffff1f;border-radius:10px;padding:.6em .9em;font-size:clamp(10px,.78vw,12px);color:#bfe8db;line-height:1.6;text-align:right;backdrop-filter:blur(6px)}
+.plate b{display:block;color:var(--haze);font-size:1.3em;font-weight:700;font-variant-numeric:tabular-nums}
+.marker{position:absolute;z-index:3;transform:translate(-50%,-50%);display:grid;gap:.55em;justify-items:center;width:min(330px,62%)}
+.marker .anchor{width:14px;height:14px;border:2px solid var(--mint);border-radius:50%;box-shadow:0 0 0 5px #7ef2cf24;background:#0b12141a}
+.marker[data-target=doorway]{left:58%;top:46%}
+.marker[data-target=shelf]{left:30%;top:53%}
+.card{width:100%;background:#0a1113e8;border:1px solid #7ef2cf47;border-radius:12px;padding:.75em .95em;box-shadow:0 12px 30px #0007;backdrop-filter:blur(10px)}
+.card h3{font-size:clamp(13px,1.1vw,17px);font-weight:700;letter-spacing:.01em;display:flex;align-items:center;justify-content:space-between;gap:.6em}
+.card h3 span{font-size:clamp(9px,.74vw,11px);letter-spacing:.14em;color:var(--mint);font-weight:600;padding:.2em .5em;border:1px solid #7ef2cf4d;border-radius:3px}
+.card p{font-size:clamp(11px,.86vw,13px);color:#a9d6c9;line-height:1.55;margin-top:.4em}
+.card .facts{display:flex;gap:.9em;margin-top:.55em;font-size:clamp(10px,.8vw,12px);color:var(--mint);font-variant-numeric:tabular-nums}
+.marker[data-target=doorway] .card{border-color:#ffc66d6b}
+.marker[data-target=doorway] .card h3 span{color:var(--amber);border-color:#ffc66d59}
+.marker[data-target=doorway] .anchor{border-color:var(--amber);box-shadow:0 0 0 5px #ffc66d21}
+.prompt{position:absolute;left:50%;bottom:clamp(12px,2vw,26px);transform:translateX(-50%);z-index:4;display:flex;gap:.55em;flex-wrap:wrap;justify-content:center}
+.prompt button{padding:.6em 1.15em;border-radius:99px;border:1px solid #7ef2cf40;background:#0a1113d9;color:#d9fff4;font-size:clamp(11px,.88vw,14px);font-weight:650;min-height:44px;backdrop-filter:blur(6px);transition:background .12s}
+.prompt button:hover{background:#7ef2cf1f}
+.prompt button[aria-pressed=true]{background:var(--mint);color:#062521;border-color:var(--mint)}
+.readout{position:absolute;left:clamp(12px,1.8vw,26px);bottom:clamp(12px,2vw,26px);z-index:2;font-size:clamp(10px,.8vw,12px);color:#bfe8db;line-height:1.7;letter-spacing:.04em}
+.readout b{color:var(--amber)}
+.dock{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:clamp(12px,1.8vw,26px);background:var(--glass);border:1px solid #1e2a2c;border-radius:14px;padding:clamp(14px,2vh,24px) clamp(16px,2vw,28px)}
+@media(max-width:860px){.dock{grid-template-columns:1fr}.marker{width:min(260px,72%)}.marker[data-target=shelf]{display:none}.readout{display:none}}
+.dock h2{font-size:clamp(14px,1.16vw,18px);letter-spacing:.04em;font-weight:700;color:#dffaf2}
+.dock p{margin-top:.6em;font-size:clamp(11px,.9vw,13px);color:#93b6ab;line-height:1.7}
+.dock dl{display:grid;grid-template-columns:auto 1fr;gap:.4em .9em;margin-top:.9em;font-size:clamp(11px,.88vw,13px);line-height:1.55}
+.dock dt{color:#7d9d94;font-weight:650}
+.dock dd{color:#cfe8df}
+.legend{display:grid;gap:.45em;margin-top:.5em}
+.legend div{display:grid;grid-template-columns:auto 1fr;gap:.6em;font-size:clamp(11px,.88vw,13px);line-height:1.5;color:#a8cabf}
+.legend i{width:.6em;height:.6em;border-radius:50%;margin-top:.45em}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="guide">
+<main class="viewport">
+  <section class="fov" aria-label="AR 眼镜第一人称视场">
+    <span class="horizon" aria-hidden="true"></span>
+    <span class="ground" aria-hidden="true"></span>
+    <span class="safe-area" aria-hidden="true"></span>
+    <div class="hud-top">
+      <span class="pill"><i aria-hidden="true"></i>导览中 · 层站 2F</span>
+      <div class="plate"><b>14:26</b>电量 62% · 单眼 640×480</div>
+    </div>
+    <article class="marker" data-target="doorway" data-review-id="ar-target-door">
+      <span class="anchor" aria-hidden="true"></span>
+      <div class="card">
+        <h3>东侧安全出口<span>距 12 m</span></h3>
+        <p>沿右手走廊直行，门禁在门内侧。人群密度中等，当前可通行。</p>
+        <div class="facts"><span>步行 18 秒</span><span>限高 2.2 m</span></div>
+      </div>
+    </article>
+    <article class="marker" data-target="shelf" data-review-id="ar-target-shelf">
+      <span class="anchor" aria-hidden="true"></span>
+      <div class="card">
+        <h3>展品 07 · 铸钟模<span>距 4 m</span></h3>
+        <p>清代铸钟用外模残件。手指指向展签可朗读文字，语音说「展开」可看剖面。</p>
+        <div class="facts"><span>语音可用</span><span>已看 2 / 5</span></div>
+      </div>
+    </article>
+    <div class="prompt" role="group" aria-label="手势与语音动作">
+      <button type="button" data-act="guide" aria-pressed="true" data-review-id="ar-act-guide">继续导览</button>
+      <button type="button" data-act="focus" aria-pressed="false" data-review-id="ar-act-focus">聚焦展品</button>
+      <button type="button" data-act="voice" data-review-id="ar-act-voice">语音</button>
+    </div>
+    <div class="readout">手势区 <b>抬掌 20 cm</b> · 识别距离 30—80 cm<br>视场 42° 对角 · 内容贴边会被裁切</div>
+  </section>
+  <section class="dock">
+    <div>
+      <h2>为什么只放两块卡片</h2>
+      <p>单眼显示、视场有限的眼镜最容易犯的错误是把手机界面搬过去。这里每块卡片只回答「往哪走」和「这是什么」，超过两行的说明改为语音播报。</p>
+      <dl>
+        <dt>锚定</dt><dd>卡片挂在真实物体上，转身后重新出现于同一物体，不跟随视线固定</dd>
+        <dt>手势</dt><dd>抬掌选择、捏合确认；识别失败时回落为语音，两种方式都可完成全部动作</dd>
+        <dt>亮度</dt><dd>户外强光下降低背景透明度，卡片底色加深到 90% 以上以保证对比</dd>
+      </dl>
+    </div>
+    <div>
+      <h2>状态说明</h2>
+      <div class="legend">
+        <div><i style="background:#7ef2cf"></i><span>薄荷色 = 可交互目标，与视线方向一致</span></div>
+        <div><i style="background:#ffc66d"></i><span>琥珀色 = 需要注意的通行条件（门禁、限高）</span></div>
+        <div><i style="background:#ff8f7a"></i><span>珊瑚色 = 拒绝或识别失败，须改用语音</span></div>
+      </div>
+      <p id="live" role="status" aria-live="polite">当前动作：继续导览。指向的展品按编号朗读。</p>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+  'use strict';
+  const live = document.getElementById('live');
+  const acts = [...document.querySelectorAll('[data-act]')];
+  const shelf = document.querySelector('[data-target="shelf"]');
+  const door = document.querySelector('[data-target="doorway"]');
+  acts.forEach(button => button.addEventListener('click', () => {
+    const act = button.dataset.act;
+    if (act === 'voice') {
+      live.textContent = '语音已开启：说「下一步」继续导览，说「展开」查看展品剖面，说「出口」高亮安全出口。';
+      return;
+    }
+    acts.forEach(other => { if (other !== button) other.setAttribute('aria-pressed', 'false'); });
+    const on = button.getAttribute('aria-pressed') === 'true';
+    button.setAttribute('aria-pressed', String(!on));
+    if (act === 'focus') {
+      shelf.style.transform = on ? '' : 'translate(-50%,-50%) scale(.94)';
+      shelf.style.opacity = on ? '1' : '.55';
+      door.style.opacity = on ? '1' : '.35';
+      live.textContent = on ? '已退出聚焦，两块卡片同时可见。' : '聚焦展品 07：出口卡片淡化，避免两处文字互相干扰。';
+    }
+    if (act === 'guide') {
+      live.textContent = on ? '已暂停导览，仅显示当前两块目标。' : '继续导览：下一处目标为西侧扶梯，距 28 米。';
+    }
+  }));
+})();
+</script>
+</body>
+</html>

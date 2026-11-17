@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f2efe6">
+<title>厅刊 · 电梯厅数字标牌</title>
+<style>
+:root{--board:#f4f1e8;--ink:#12130f;--sub:#565a4f;--rule:#c9c6b9;--red:#c2402a;--olive:#3d5240;--gold:#d7a93f;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:#1b1c18;min-height:100vh;display:grid;place-items:center;padding:clamp(8px,1.6vw,22px)}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.frame{width:min(1080px,100%);background:#0f100d;border-radius:10px;padding:10px;box-shadow:0 24px 60px #000c}
+/* Portrait sign in a lift lobby: viewers read it while waiting, so the whole
+   screen is one composition that must survive being seen from 3 m away. */
+.board{aspect-ratio:9/16;max-height:calc(100vh - 44px);margin:auto;background:var(--board);overflow:hidden;position:relative;display:grid;grid-template-rows:auto auto 1fr auto;padding:clamp(18px,3.2vh,42px) clamp(18px,3vw,46px);gap:clamp(10px,1.8vh,26px)}
+.mast{display:flex;align-items:flex-start;justify-content:space-between;gap:1em;border-bottom:3px solid var(--ink);padding-bottom:clamp(8px,1.2vh,16px)}
+.mast .logo{font-size:clamp(20px,2.6vh,30px);font-weight:900;letter-spacing:.2em;line-height:1}
+.mast .logo small{display:block;font-size:.36em;letter-spacing:.34em;font-weight:700;color:var(--sub);margin-top:.9em}
+.mast .clock{text-align:right;line-height:1}
+.mast .clock b{font:800 clamp(28px,5.2vh,62px)/.9 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.mast .clock small{display:block;font-size:clamp(9px,1.3vh,13px);letter-spacing:.18em;color:var(--sub);font-weight:650;margin-top:.7em}
+.hero{display:grid;gap:clamp(6px,1vh,12px)}
+.hero .kicker{font-size:clamp(11px,1.7vh,16px);letter-spacing:.24em;font-weight:750;color:var(--red)}
+.hero h1{font-size:clamp(30px,6.2vh,72px);line-height:1.04;letter-spacing:-.035em;font-weight:900}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p{font-size:clamp(12px,1.9vh,19px);color:var(--sub);line-height:1.55;max-width:18em;margin-top:.3em}
+.list{border-top:2px solid var(--ink);margin-top:clamp(4px,.8vh,10px);display:grid;align-content:start}
+.item{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(10px,2vw,24px);align-items:baseline;padding:clamp(8px,1.5vh,18px) 0;border-bottom:1px solid var(--rule)}
+.item .at{font:750 clamp(17px,3.4vh,34px)/1 "Barlow Condensed",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:var(--ink);min-width:3.2em}
+.item .what b{display:block;font-size:clamp(13px,2.2vh,22px);font-weight:750;line-height:1.25}
+.item .what small{display:block;font-size:clamp(10px,1.6vh,15px);color:var(--sub);margin-top:.28em;line-height:1.4}
+.item .where{font-size:clamp(10px,1.6vh,15px);font-weight:700;color:var(--olive);letter-spacing:.06em;white-space:nowrap;align-self:center}
+.item[data-live=true] .at{color:var(--red)}
+.item[data-live=true] .where{color:var(--red)}
+.item[data-live=true] .what b::after{content:"· 进行中";color:var(--red);font-weight:700;margin-left:.4em;font-size:.72em;letter-spacing:.06em}
+.strip{display:flex;align-items:center;justify-content:space-between;gap:1em;background:var(--ink);color:var(--board);padding:clamp(9px,1.6vh,18px) clamp(12px,2vw,24px);border-radius:3px;flex-wrap:wrap}
+.strip .qr{display:flex;align-items:center;gap:.8em;font-size:clamp(10px,1.55vh,15px);line-height:1.4;font-weight:650}
+.strip .qr i{width:clamp(34px,5.4vh,58px);height:clamp(34px,5.4vh,58px);background:repeating-conic-gradient(from 0deg,var(--board) 0 25%,transparent 0 50%) 0 0/8px 8px;border:3px solid var(--board);flex:none}
+.strip .next{font-size:clamp(10px,1.55vh,15px);text-align:right;line-height:1.5;color:#d6d3c6;letter-spacing:.03em}
+.strip .next b{color:var(--gold);font-weight:800}
+.dots{position:absolute;left:0;right:0;bottom:0;height:5px;display:flex}
+.dots i{flex:1;background:#d9d6c9}
+.dots i.on{background:var(--red)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-aspect-ratio:3/4){.board{aspect-ratio:auto;height:calc(100vh - 30px)}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body data-review-context="schedule">
+<main class="frame">
+  <div class="board">
+    <div class="mast">
+      <div class="logo">厅刊<small>PEOPLE'S HALL · 公共日程</small></div>
+      <div class="clock"><b id="clock">09:14</b><small>11 月 17 日 星期二</small></div>
+    </div>
+    <section class="hero">
+      <p class="kicker" id="kicker">今日 3 场 · 全部免费</p>
+      <h1 id="hero">上午的<em>公开课</em><br>与傍晚的放映</h1>
+      <p id="lead">三场活动都在二层多功能厅，提前 10 分钟入场。座位先到先得，不需要预约。</p>
+    </section>
+    <section class="list" id="list" aria-label="今日日程">
+      <article class="item" data-live="true" data-review-id="signage-item-1"><span class="at">09:30</span><div class="what"><b>老城排水系统改造</b><small>主讲：市政设计院 · 周勉 / 约 70 分钟</small></div><span class="where">二层 · 多功能厅</span></article>
+      <article class="item" data-live="false" data-review-id="signage-item-2"><span class="at">14:00</span><div class="what"><b>河岸养护与汛期巡查</b><small>主讲：养护二组 · 现场问答 20 分钟</small></div><span class="where">二层 · 多功能厅</span></article>
+      <article class="item" data-live="false" data-review-id="signage-item-3"><span class="at">18:30</span><div class="what"><b>纪录片放映《潮间带》</b><small>52 分钟 · 片后 15 分钟交流</small></div><span class="where">一层 · 放映室</span></article>
+    </section>
+    <div class="strip">
+      <div class="qr"><i aria-hidden="true"></i><span>查看全部场次<br>与场地示意</span></div>
+      <div class="next">下一场 <b id="next-at">14:00</b><br><span id="next-what">河岸养护与汛期巡查</span></div>
+    </div>
+    <div class="dots" aria-hidden="true"><i class="on"></i><i></i><i></i></div>
+  </div>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const schedule = [
+    { at: '09:30', what: '老城排水系统改造', room: '二层 · 多功能厅' },
+    { at: '14:00', what: '河岸养护与汛期巡查', room: '二层 · 多功能厅' },
+    { at: '18:30', what: '纪录片放映《潮间带》', room: '一层 · 放映室' }
+  ];
+  const live = document.getElementById('live');
+  const items = [...document.querySelectorAll('.item')];
+  const pad = n => String(n).padStart(2, '0');
+  function minutes(value) {
+    const [h, m] = value.split(':').map(Number);
+    return h * 60 + m;
+  }
+  function refresh() {
+    const now = new Date();
+    document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+    const clock = now.getHours() * 60 + now.getMinutes();
+    let next = schedule.find(item => minutes(item.at) > clock) || schedule[0];
+    items.forEach((item, index) => {
+      const start = minutes(schedule[index].at);
+      const liveNow = clock >= start && clock < start + 75;
+      item.dataset.live = String(liveNow);
+    });
+    document.getElementById('next-at').textContent = next.at;
+    document.getElementById('next-what').textContent = next.what;
+    document.getElementById('kicker').textContent = '今日 3 场 · 全部免费';
+    live.textContent = '下一场 ' + next.at + '，' + next.what + '，' + next.room + '。';
+  }
+  refresh(); setInterval(refresh, 15000);
+})();
+</script>
+</body>
+</html>

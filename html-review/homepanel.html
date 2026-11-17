@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#14110e">
+<title>栖居 · 墙面控制面板</title>
+<style>
+:root{--wall:#14110e;--plate:#231e19;--well:#100d0b;--brass:#c9a06a;--brass-dim:#8a6c45;--paper:#f3ece0;--mute:#9c9083;--warm:#f0b45c;--cool:#7fb3c9;--off:#4a423a;font-family:"Songti SC","Noto Serif SC","Microsoft YaHei",serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 90% 70% at 20% 0%,#2a221a,#100d0b 58%);min-height:100vh;display:grid;place-items:center;padding:clamp(14px,3vw,40px)}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.panel{width:min(1020px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.62fr);gap:clamp(16px,2.6vw,44px);background:linear-gradient(168deg,#241f19,#1a1613);border-radius:6px;padding:clamp(18px,3vw,44px);box-shadow:0 30px 70px #000a,inset 0 1px #ffffff14}
+@media(max-width:860px){.panel{grid-template-columns:1fr}}
+.head{grid-column:1/-1;display:flex;align-items:flex-end;justify-content:space-between;gap:1em;padding-bottom:clamp(12px,1.8vh,22px);border-bottom:1px solid #3a3129}
+.head h1{font-size:clamp(24px,2.9vw,40px);letter-spacing:.02em;font-weight:600;line-height:1.16}
+.head h1 small{display:block;font-size:.34em;letter-spacing:.34em;color:var(--brass);margin-bottom:.9em;font-family:"Noto Sans SC",sans-serif;font-weight:600}
+.meta{text-align:right;color:var(--mute);font-size:clamp(11px,.9vw,14px);line-height:1.7;font-family:"Noto Sans SC",sans-serif}
+.meta b{color:var(--paper);font-weight:600;font-size:1.4em;display:block;letter-spacing:.01em;font-variant-numeric:tabular-nums}
+.rooms{display:grid;gap:clamp(10px,1.5vh,18px);align-content:start}
+.room{background:linear-gradient(180deg,#2c251e,#221c17);border:1px solid #3c332a;border-radius:4px;padding:clamp(12px,1.7vh,20px) clamp(13px,1.8vw,22px);box-shadow:inset 0 1px #ffffff0f}
+.room-head{display:flex;align-items:center;justify-content:space-between;gap:1em}
+.room-head h2{font-size:clamp(16px,1.44vw,22px);font-weight:600;letter-spacing:.06em;font-family:"Noto Sans SC",sans-serif}
+.room-head span{font-size:clamp(11px,.86vw,13px);color:var(--mute);font-family:"Noto Sans SC",sans-serif;font-variant-numeric:tabular-nums}
+.room-head span.hot{color:var(--warm)}
+.dial-row{display:flex;align-items:center;gap:clamp(10px,1.4vw,18px);margin-top:clamp(9px,1.3vh,15px)}
+.dial{position:relative;width:clamp(50px,5.4vw,68px);aspect-ratio:1;border-radius:50%;border:2px solid #4a3f34;background:conic-gradient(from 210deg,var(--brass) var(--fill,0deg),#3a3129 0);display:grid;place-items:center;flex:none}
+.dial::before{content:"";position:absolute;inset:5px;border-radius:50%;background:linear-gradient(#2c251e,#1c1713);border:1px solid #0d0b09}
+.dial b{position:relative;font-family:"Noto Sans SC",sans-serif;font-size:clamp(13px,1.16vw,17px);font-weight:700;font-variant-numeric:tabular-nums}
+.dial-buttons{display:grid;grid-template-columns:repeat(3,auto);gap:.35em;margin-left:auto}
+.dial-buttons button,.toggle{border:1px solid #4a3f34;border-radius:3px;min-width:2.75em;min-height:44px;display:grid;place-items:center;font-family:"Noto Sans SC",sans-serif;font-size:clamp(13px,1.06vw,16px);font-weight:700;color:#cbbda9;background:#1d1813;transition:background .12s,color .12s}
+.dial-buttons button:hover{background:#332a22;color:var(--paper)}
+.dial-buttons button:active{background:var(--brass-dim);color:#120f0c}
+.toggle{width:2.75em}
+.toggle[aria-pressed=true]{background:var(--warm);border-color:var(--warm);color:#1d1408}
+.toggle[aria-pressed=true].cool{background:var(--cool);border-color:var(--cool);color:#08161b}
+.scene-tag{font-family:"Noto Sans SC",sans-serif;font-size:clamp(10px,.8vw,12px);color:var(--brass);letter-spacing:.16em;margin-top:.7em;display:block}
+.aside{display:grid;align-content:start;gap:clamp(14px,2vh,24px)}
+.scenes h3,.aside h3{font-family:"Noto Sans SC",sans-serif;font-size:clamp(11px,.9vw,13px);letter-spacing:.2em;color:var(--mute);font-weight:600;padding-bottom:.7em;border-bottom:1px solid #332b23}
+.scene-list{display:grid;gap:.4em;margin-top:.9em}
+.scene{display:grid;grid-template-columns:auto 1fr auto;gap:.8em;align-items:center;padding:.7em .8em;border-radius:3px;border:1px solid transparent;font-family:"Noto Sans SC",sans-serif}
+.scene:hover{border-color:#4a3f34;background:#ffffff08}
+.scene[aria-pressed=true]{border-color:var(--brass);background:#c9a06a14}
+.scene i{width:.62em;height:.62em;border-radius:50%;background:var(--brass-dim)}
+.scene[aria-pressed=true] i{background:var(--warm);box-shadow:0 0 10px var(--warm)}
+.scene b{font-size:clamp(13px,1.06vw,16px);font-weight:600}
+.scene small{font-size:clamp(10px,.82vw,12px);color:var(--mute);display:block;margin-top:.14em}
+.scene .cnt{font-size:clamp(10px,.82vw,12px);color:var(--mute);letter-spacing:.06em}
+.note{border-left:2px solid var(--brass-dim);padding-left:.9em;font-family:"Noto Sans SC",sans-serif;font-size:clamp(11px,.9vw,13px);line-height:1.7;color:#a99c8d}
+.note b{color:var(--paper);font-weight:650}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:2px solid var(--brass);outline-offset:3px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="evening">
+<main class="panel">
+  <header class="head">
+    <h1><small>QIJU · WALL</small>一楼控制</h1>
+    <div class="meta"><b id="clock">19:42</b>周四 · 室外 9 °C<br>面板位置：门厅东墙</div>
+  </header>
+  <section class="rooms" aria-label="房间控制">
+    <article class="room" data-review-id="home-room-living">
+      <div class="room-head"><h2>起居室</h2><span id="living-temp" class="hot">22.5 °C</span></div>
+      <div class="dial-row">
+        <div class="dial" id="living-dial" aria-hidden="true"><b id="living-set">22</b></div>
+        <div>
+          <button class="toggle" type="button" data-light="living" aria-pressed="true" aria-label="起居室灯光">灯</button>
+          <span class="scene-tag" id="living-light">暖光 · 40%</span>
+        </div>
+        <div class="dial-buttons" role="group" aria-label="起居室温度调节">
+          <button type="button" data-step="-1" data-room="living" aria-label="降低 1 度">−</button>
+          <button type="button" data-step="1" data-room="living" aria-label="升高 1 度">＋</button>
+          <button type="button" data-room="living" data-power="true" aria-label="起居室空调开关">开关</button>
+        </div>
+      </div>
+    </article>
+    <article class="room" data-review-id="home-room-study">
+      <div class="room-head"><h2>书房</h2><span>20.0 °C</span></div>
+      <div class="dial-row">
+        <div class="dial" id="study-dial" aria-hidden="true"><b id="study-set">21</b></div>
+        <div>
+          <button class="toggle" type="button" data-light="study" aria-pressed="false" aria-label="书房灯光">灯</button>
+          <span class="scene-tag" id="study-light">已关</span>
+        </div>
+        <div class="dial-buttons" role="group" aria-label="书房温度调节">
+          <button type="button" data-step="-1" data-room="study" aria-label="降低 1 度">−</button>
+          <button type="button" data-step="1" data-room="study" aria-label="升高 1 度">＋</button>
+          <button type="button" data-room="study" data-power="true" aria-label="书房空调开关">开关</button>
+        </div>
+      </div>
+    </article>
+    <article class="room" data-review-id="home-room-bath">
+      <div class="room-head"><h2>卫浴</h2><span class="hot" id="bath-temp">24.0 °C</span></div>
+      <div class="dial-row">
+        <div class="dial" id="bath-dial" aria-hidden="true"><b id="bath-set">24</b></div>
+        <div>
+          <button class="toggle cool" type="button" data-light="bath" aria-pressed="true" aria-label="卫浴排风">排风</button>
+          <span class="scene-tag" id="bath-light">低速 · 已开 12 分</span>
+        </div>
+        <div class="dial-buttons" role="group" aria-label="卫浴地暖调节">
+          <button type="button" data-step="-1" data-room="bath" aria-label="降低 1 度">−</button>
+          <button type="button" data-step="1" data-room="bath" aria-label="升高 1 度">＋</button>
+          <button type="button" data-room="bath" data-power="true" aria-label="地暖开关">开关</button>
+        </div>
+      </div>
+    </article>
+  </section>
+  <aside class="aside">
+    <div class="scenes">
+      <h3>情景</h3>
+      <div class="scene-list" role="group" aria-label="全屋情景">
+        <button class="scene" type="button" data-scene="evening" aria-pressed="true"><i aria-hidden="true"></i><span><b>傍晚归家</b><small>起居室与门厅暖光 40%，卫浴排风</small></span><span class="cnt">6 项</span></button>
+        <button class="scene" type="button" data-scene="reading"><i aria-hidden="true"></i><span><b>阅读时间</b><small>书房台灯 80%，其他房间保持</small></span><span class="cnt">2 项</span></button>
+        <button class="scene" type="button" data-scene="away"><i aria-hidden="true"></i><span><b>离家</b><small>全部灯光关闭，空调转为节能</small></span><span class="cnt">9 项</span></button>
+      </div>
+    </div>
+    <p class="note"><b>面板口径。</b>房间里显示的是实测温度，旋钮上是设定温度——两者相差 0.5 °C 以内时不额外提示，超过则在房间名后标出偏差。所有操作立即生效，不提供撤销。</p>
+    <p class="note" id="live" role="status" aria-live="polite">当前情景：傍晚归家。</p>
+  </aside>
+</main>
+<script>
+(() => {
+  'use strict';
+  const nodes = {
+    living: { set: 22, dial: document.getElementById('living-dial'), label: document.getElementById('living-set') },
+    study: { set: 21, dial: document.getElementById('study-dial'), label: document.getElementById('study-set') },
+    bath: { set: 24, dial: document.getElementById('bath-dial'), label: document.getElementById('bath-set') }
+  };
+  const live = document.getElementById('live');
+  const lights = { living: true, study: false, bath: true };
+  const lightText = { living: '暖光 · 40%', study: '已关', bath: '低速 · 已开 12 分' };
+  const names = { living: '起居室', study: '书房', bath: '卫浴' };
+  function paintRoom(key) {
+    const node = nodes[key];
+    node.label.textContent = node.set;
+    const degrees = Math.max(0, Math.min(320, (node.set - 16) * 32));
+    node.dial.style.setProperty('--fill', degrees + 'deg');
+    const button = document.querySelector('[data-light="' + key + '"]');
+    button.setAttribute('aria-pressed', String(lights[key]));
+    document.getElementById(key + '-light').textContent = lightText[key];
+  }
+  Object.keys(nodes).forEach(paintRoom);
+  document.querySelectorAll('[data-room][data-step]').forEach(button => {
+    button.addEventListener('click', () => {
+      const key = button.dataset.room;
+      const node = nodes[key];
+      node.set = Math.max(16, Math.min(26, node.set + Number(button.dataset.step)));
+      paintRoom(key);
+      live.textContent = names[key] + '设定温度已调至 ' + node.set + ' 度。';
+    });
+  });
+  document.querySelectorAll('[data-room][data-power]').forEach(button => {
+    button.addEventListener('click', () => {
+      live.textContent = names[button.dataset.room] + ' 空调已切换（模拟）。';
+    });
+  });
+  document.querySelectorAll('[data-light]').forEach(button => {
+    button.addEventListener('click', () => {
+      const key = button.dataset.light;
+      lights[key] = !lights[key];
+      lightText[key] = lights[key] ? (key === 'bath' ? '低速 · 已开' : '暖光 · 40%') : (key === 'bath' ? '排风已关' : '已关');
+      paintRoom(key);
+      live.textContent = names[key] + (key === 'bath' ? '排风' : '灯光') + (lights[key] ? '已打开。' : '已关闭。');
+    });
+  });
+  document.querySelectorAll('[data-scene]').forEach(button => {
+    button.addEventListener('click', () => {
+      document.querySelectorAll('[data-scene]').forEach(other => other.setAttribute('aria-pressed', 'false'));
+      button.setAttribute('aria-pressed', 'true');
+      const scene = button.dataset.scene;
+      if (scene === 'reading') { lights.study = true; lightText.study = '台灯 · 80%'; }
+      if (scene === 'away') { Object.keys(lights).forEach(key => { lights[key] = false; lightText[key] = '已关'; }); }
+      if (scene === 'evening') { lights.living = true; lights.bath = true; lightText.living = '暖光 · 40%'; lightText.bath = '低速 · 已开'; }
+      Object.keys(nodes).forEach(paintRoom);
+      live.textContent = '当前情景：' + button.querySelector('b').textContent + '。已更新的房间：' + Object.keys(lights).filter(key => lights[key]).map(key => names[key]).join('、') + '。';
+    });
+  });
+  const pad = n => String(n).padStart(2, '0');
+  const tick = () => {
+    const now = new Date();
+    document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  };
+  tick(); setInterval(tick, 20000);
+})();
+</script>
+</body>
+</html>

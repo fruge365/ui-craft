@@ -37,6 +37,26 @@
 <button class="page-tab" data-page="orbital" aria-pressed="true"><span class="num">23</span><span><strong>轨道测控大屏</strong><span>凌日 · 指挥大厅</span></span><b class="count" id="count-orbital">0</b></button>
 <button class="page-tab" data-page="departures" aria-pressed="false"><span class="num">24</span><span><strong>客运信息大屏</strong><span>渡口 · 船班与闸口</span></span><b class="count" id="count-departures">0</b></button>
 <button class="page-tab" data-page="bigscreen" aria-pressed="false"><span class="num">03</span><span><strong>能源监控大屏</strong><span>江湾能源运行中心</span></span><b class="count" id="count-bigscreen">0</b></button>
+<button class="page-tab" data-page="signage" aria-pressed="false"><span class="num">39</span><span><strong>电梯厅标牌</strong><span>厅刊 · 竖屏日程</span></span><b class="count" id="count-signage">0</b></button>
+<button class="page-tab" data-page="television" aria-pressed="false"><span class="num">29</span><span><strong>客厅电视</strong><span>燕居 · 遥控焦点</span></span><b class="count" id="count-television">0</b></button>
+</div>
+<div class="sample-group" data-sample-group="终端与现场设备"><h2>终端与现场设备</h2>
+<button class="page-tab" data-page="kiosk" aria-pressed="false"><span class="num">30</span><span><strong>自助挂号机</strong><span>和济 · 门诊终端</span></span><b class="count" id="count-kiosk">0</b></button>
+<button class="page-tab" data-page="pda" aria-pressed="false"><span class="num">31</span><span><strong>手持终端</strong><span>仓位 · 扫描与手套</span></span><b class="count" id="count-pda">0</b></button>
+<button class="page-tab" data-page="pos" aria-pressed="false"><span class="num">32</span><span><strong>收银台双屏</strong><span>台口 · 主屏与副屏</span></span><b class="count" id="count-pos">0</b></button>
+<button class="page-tab" data-page="esl" aria-pressed="false"><span class="num">36</span><span><strong>电子价签</strong><span>架签 · 墨水屏</span></span><b class="count" id="count-esl">0</b></button>
+<button class="page-tab" data-page="dualmonitor" aria-pressed="false"><span class="num">37</span><span><strong>双屏工位</strong><span>值守 · 主屏与辅屏</span></span><b class="count" id="count-dualmonitor">0</b></button>
+</div>
+<div class="sample-group" data-sample-group="移动与可穿戴"><h2>移动与可穿戴</h2>
+<button class="page-tab" data-page="watch" aria-pressed="false"><span class="num">33</span><span><strong>腕表训练</strong><span>拾野 · 一瞥可读</span></span><b class="count" id="count-watch">0</b></button>
+<button class="page-tab" data-page="foldable" aria-pressed="false"><span class="num">40</span><span><strong>折叠屏</strong><span>展签 · 形态切换</span></span><b class="count" id="count-foldable">0</b></button>
+<button class="page-tab" data-page="tablet" aria-pressed="false"><span class="num">38</span><span><strong>平板分屏</strong><span>案头 · 批注与定位</span></span><b class="count" id="count-tablet">0</b></button>
+</div>
+<div class="sample-group" data-sample-group="座舱与空间计算"><h2>座舱与空间计算</h2>
+<button class="page-tab" data-page="vehicle" aria-pressed="false"><span class="num">34</span><span><strong>车机与 HUD</strong><span>行野 · 驻车与行车</span></span><b class="count" id="count-vehicle">0</b></button>
+<button class="page-tab" data-page="arglass" aria-pressed="false"><span class="num">35</span><span><strong>AR 眼镜</strong><span>眺望 · 窄视场导览</span></span><b class="count" id="count-arglass">0</b></button>
+<button class="page-tab" data-page="vr" aria-pressed="false"><span class="num">41</span><span><strong>VR 头显</strong><span>沉积 · 双目空间操作</span></span><b class="count" id="count-vr">0</b></button>
+<button class="page-tab" data-page="homepanel" aria-pressed="false"><span class="num">42</span><span><strong>墙面家居面板</strong><span>栖居 · 门厅控制</span></span><b class="count" id="count-homepanel">0</b></button>
 </div>
 <div class="sample-group" data-sample-group="视觉风格"><h2>视觉风格</h2>
 <button class="page-tab" data-page="bloom" aria-pressed="false"><span class="num">25</span><span><strong>当季花束订阅</strong><span>花序 · 花艺画册</span></span><b class="count" id="count-bloom">0</b></button>
@@ -100,6 +120,90 @@ Object.assign(pages, {
     title:'专注计时器',num:'28',file:'sprout.html',
     desc:'在像素温室选择一段专注时长，开始、暂停、继续；完成后窗台会多一朵花。',
     colors:['#9ae5ce','#b9a2f1','#ff966d','#32284b']
+  },
+  television:{
+    title:'客厅电视',num:'29',file:'television.html',wall:true,
+    desc:'三米外读大标题与封面。方向键换行、左右选片，确认打开详情，返回回到片单首行。',
+    colors:['#0e100f','#171a18','#f0b64c','#8fb37a'],
+    steps:{browse:'片单浏览'}
+  },
+  kiosk:{
+    title:'自助挂号机',num:'30',file:'kiosk.html',
+    desc:'在强光与站立状态下选时段、核对证件。已满时段置灰并说明替代去处，不让人停在死路。',
+    colors:['#ffffff','#f1f4f5','#00697e','#8a3d10'],
+    steps:{pick:'选择时段'}
+  },
+  pda:{
+    title:'手持终端',num:'31',file:'pda.html',
+    desc:'戴手套扫码盘点。编码一次扫错要有明确回执，重复扫描不累加，差异行始终标出。',
+    colors:['#1b1c17','#dfe3d0','#33591f','#f08f00'],
+    steps:{count:'货位盘点'}
+  },
+  pos:{
+    title:'收银台双屏',num:'32',file:'pos.html',
+    desc:'主屏给店员看明细与快捷操作，副屏只给顾客看金额、件数与支付方式，两边数字同源。',
+    colors:['#101418','#f7f9f9','#59d8a8','#f0b24a'],
+    steps:{till:'收银台面'}
+  },
+  watch:{
+    title:'腕表训练',num:'33',file:'watch.html',mobile:true,
+    desc:'跑步中抬腕一秒。三个数字、两个动作，边缘 12% 不放可点区域，误触不做破坏性操作。',
+    colors:['#0a0b0c','#2b3035','#c8f04a','#ff7043'],
+    steps:{tracking:'训练中'}
+  },
+  vehicle:{
+    title:'车机与 HUD',num:'34',file:'vehicle.html',
+    desc:'驻车时可完整操作，行车时只留速度、限速、下一转向与续航。切换状态要能看出控件为何不可用。',
+    colors:['#08090b','#12151a','#4fd1c5','#f5a524'],
+    steps:{parked:'驻车'}
+  },
+  arglass:{
+    title:'AR 眼镜',num:'35',file:'arglass.html',
+    desc:'窄视场只放两块卡片。内容锚定真实物体，手势失败可回落语音，贴边内容一律让开。',
+    colors:['#0b0f10','#0f1517','#7ef2cf','#ffc66d'],
+    steps:{guide:'导览中'}
+  },
+  esl:{
+    title:'电子价签',num:'36',file:'esl.html',
+    desc:'1.2 米外读价格与单位价。电子纸无灰阶动画，刷新闪屏，价签只写必要信息。',
+    colors:['#efeee8','#e4e3dc','#17181a','#8a2f20'],
+    steps:{shelf:'货架价签'}
+  },
+  dualmonitor:{
+    title:'双屏工位',num:'37',file:'dualmonitor.html',
+    desc:'主屏排程与辅屏参考各司其职。辅屏只读，定位回主屏，一条操作只留一处审计记录。',
+    colors:['#0a0f0d','#121a16','#a8e06a','#e9a94b'],
+    steps:{monitor:'双屏值守'}
+  },
+  tablet:{
+    title:'平板分屏',num:'38',file:'tablet.html',
+    desc:'正文与批注并排，选句即挂批注，点批注能回原句。宽文视图仍保留追加入口。',
+    colors:['#f7f4ee','#fffdf8','#2c3f7a','#b4402f'],
+    steps:{review:'批注审阅'}
+  },
+  signage:{
+    title:'电梯厅标牌',num:'39',file:'signage.html',mobile:true,
+    desc:'竖屏一屏一件事。等电梯的十几秒里读出下一场的时间、名称与楼层，动态字段只换值不换位置。',
+    colors:['#f4f1e8','#12130f','#c2402a','#3d5240'],
+    steps:{schedule:'今日日程'}
+  },
+  foldable:{
+    title:'折叠屏',num:'40',file:'foldable.html',mobile:true,
+    desc:'合起单列、展开双列。形态变了不丢选中项与滚动位置，折痕附近不放可点内容。',
+    colors:['#f7f4ee','#e6e9f6','#2c3f7a','#7a2f45'],
+    steps:{list:'展品列表'}
+  },
+  vr:{
+    title:'VR 头显',num:'41',file:'vr.html',
+    desc:'注视指向、手势确认，两步之间可取消。追踪丢失、周边障碍、晕动不适各有对应降级。',
+    colors:['#07080c','#141926','#a48cf0','#5fd3e0'],
+    steps:{immersive:'沉浸模式'}
+  },
+  homepanel:{
+    title:'墙面家居面板',num:'42',file:'homepanel.html',
+    desc:'低亮度走廊里看清实测与设定温度之差。旋钮旁边就是加减，情景切换写明影响了哪些房间。',
+    colors:['#14110e','#231e19','#f0b45c','#c9a06a'],
+    steps:{evening:'傍晚归家'}
   },
   orbital:{
     title:'轨道测控大屏',num:'23',file:'orbital.html',wall:true,

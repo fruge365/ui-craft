@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0a0b0c">
+<title>拾野 · 腕上训练</title>
+<style>
+:root{--void:#0a0b0c;--steel:#2b3035;--steel-light:#3f464d;--paper:#f7f7f4;--mute:#98a2ab;--lime:#c8f04a;--ember:#ff7043;--sky:#5ac8fa;font-family:"SF Pro Text","HarmonyOS Sans SC","Microsoft YaHei",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at 50% 12%,#1a1e22,#0a0b0c 62%);min-height:100vh;display:grid;place-items:center;padding:22px}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.stage{display:grid;grid-template-columns:auto minmax(260px,320px);gap:clamp(20px,3vw,52px);align-items:center}
+@media(max-width:820px){.stage{grid-template-columns:1fr;justify-items:center;gap:20px}}
+.watch{position:relative;width:min(320px,86vw);aspect-ratio:1;border-radius:50%;background:linear-gradient(150deg,#4a525a,#22272c 42%,#151a1e);padding:11px;box-shadow:0 28px 60px #000c,inset 0 2px 3px #ffffff2e}
+.crown{position:absolute;right:-9px;top:33%;width:8px;height:13%;border-radius:3px;background:linear-gradient(#5b646c,#343a40);box-shadow:0 34px 0 -1px #464e56}
+.face{position:relative;width:100%;height:100%;border-radius:50%;background:#000;overflow:hidden;display:grid;place-items:center}
+.face::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 40px #000a;pointer-events:none}
+/* Everything meaningful lives inside the inscribed square: a circle at 390px wide
+   clips the corners, so nothing critical sits within 12% of the edge. */
+.safe{width:76%;display:grid;gap:.55em;justify-items:center;text-align:center}
+.ring{position:absolute;inset:7%;border-radius:50%;pointer-events:none}
+.ring circle{fill:none;stroke-linecap:round}
+.state{font-size:clamp(11px,.86vw,13px);letter-spacing:.18em;color:var(--lime);font-weight:700}
+.hero{font:700 clamp(46px,5.4vw,62px)/.9 "SF Pro Rounded","Barlow Condensed",system-ui,sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.hero small{font-size:.34em;letter-spacing:.02em;font-weight:650;color:var(--mute);display:block;margin-top:.5em}
+.grid3{display:grid;grid-template-columns:1fr 1fr;gap:.5em .8em;width:100%;margin-top:.3em}
+.metric{display:grid;gap:.1em}
+.metric b{font:700 clamp(15px,1.5vw,19px)/1 "SF Pro Rounded",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.metric span{font-size:clamp(9px,.72vw,11px);letter-spacing:.1em;color:var(--mute);font-weight:650}
+.metric.accent b{color:var(--ember)}
+.actions{display:flex;gap:.5em;justify-content:center;margin-top:.5em}
+.actions button{border-radius:99px;font-size:clamp(10px,.84vw,12px);font-weight:750;padding:.62em 1.1em;min-height:44px;min-width:64px;background:#ffffff1a;color:#eef2f5}
+.actions button.pause{background:var(--lime);color:#0a0b0c}
+.panel{min-width:0;display:grid;gap:1.1em}
+.panel h1{font-size:clamp(22px,2.6vw,34px);letter-spacing:-.02em;line-height:1.16}
+.panel .lede{color:var(--mute);font-size:clamp(13px,1.06vw,16px);line-height:1.65;max-width:34em}
+.spec{display:grid;gap:.5em;border-top:1px solid #262c32;padding-top:1em}
+.spec div{display:grid;grid-template-columns:5.4em 1fr;gap:.8em;font-size:clamp(12px,.94vw,14px);line-height:1.5}
+.spec dt{color:var(--mute);font-weight:650}
+.spec dd{color:#dfe5ea}
+.note{background:#131719;border:1px solid #262c32;border-radius:10px;padding:.9em 1em;font-size:clamp(11px,.88vw,13px);line-height:1.6;color:#a8b3bc}
+.note b{color:var(--lime);font-weight:750}
+.laps{display:grid;gap:.35em;font-variant-numeric:tabular-nums}
+.laps div{display:grid;grid-template-columns:2.4em 1fr auto;gap:.6em;font-size:clamp(12px,.94vw,14px);padding:.42em .7em;border-radius:6px;background:#ffffff08}
+.laps div[data-active=true]{background:#c8f04a1f;color:var(--lime)}
+.laps span{color:var(--mute);font-weight:650}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="tracking">
+<main class="stage">
+  <div class="watch" aria-label="腕表模拟">
+    <span class="crown" aria-hidden="true"></span>
+    <div class="face">
+      <svg class="ring" viewBox="0 0 100 100" aria-hidden="true">
+        <circle cx="50" cy="50" r="44" stroke="#ffffff14" stroke-width="3.4"></circle>
+        <circle id="arc" cx="50" cy="50" r="44" stroke="#c8f04a" stroke-width="3.4"
+          stroke-dasharray="276.5" stroke-dashoffset="76" transform="rotate(-90 50 50)"></circle>
+      </svg>
+      <div class="safe">
+        <span class="state" id="state">进行中 · 第 3 公里</span>
+        <p class="hero" id="kdist">2.84<small>公里 · 配速 5′42″</small></p>
+        <div class="grid3">
+          <div class="metric"><b id="hr">148</b><span>心率 bpm</span></div>
+          <div class="metric accent"><b id="time">16:12</b><span>用时</span></div>
+          <div class="metric"><b id="cadence">176</b><span>步频</span></div>
+          <div class="metric"><b id="zone">Z3</b><span>强度区间</span></div>
+        </div>
+        <div class="actions">
+          <button type="button" class="pause" id="pause" data-review-id="watch-pause">暂停</button>
+          <button type="button" id="lap" data-review-id="watch-lap">计圈</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <section class="panel">
+    <div>
+      <h1>一瞥可读的腕上界面</h1>
+      <p class="lede">跑步时手腕只抬起一秒多。这块表面只保留三个可读数字和两个动作，其余信息在 App 内回看。</p>
+    </div>
+    <dl class="spec">
+      <dt>表壳</dt><dd>44 mm 圆屏 · 有效安全区为内切正方形（约 76% 宽度）</dd>
+      <dt>触控</dt><dd>边缘 12% 不放置可点区域；主按钮热区 ≥ 44 pt</dd>
+      <dt>常亮</dt><dd>抬起即亮，息屏后仅保留时间；心率与进度不常驻</dd>
+      <dt>操作</dt><dd>暂停与计圈支持触控和侧键双击</dd>
+    </dl>
+    <div class="note"><b>为什么只有两个动作。</b>运动中被误触的概率远高于停下来的场景。删除、结束、分享都放到滑动与长按之后，避免跑动中手腕蹭到就结束训练。</div>
+    <div class="laps" aria-label="分段记录">
+      <div data-active="false"><span>1</span><b>1.00 km</b><span>5′48″</span></div>
+      <div data-active="false"><span>2</span><b>1.00 km</b><span>5′39″</span></div>
+      <div data-active="true"><span>3</span><b>0.84 km</b><span>进行中</span></div>
+    </div>
+  </section>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const live = document.getElementById('live');
+  const arc = document.getElementById('arc');
+  const state = document.getElementById('state');
+  const pause = document.getElementById('pause');
+  const circumference = 276.5;
+  let running = true;
+  let seconds = 16 * 60 + 12;
+  let distance = 2.84;
+  let laps = 2;
+  const pad = n => String(n).padStart(2, '0');
+  function paint() {
+    const km = Math.floor(distance);
+    const metres = Math.round((distance - km) * 1000);
+    document.getElementById('kdist').innerHTML = km + '.' + pad(Math.floor(metres / 10)) +
+      '<small>公里 · 配速 5′42″</small>';
+    document.getElementById('time').textContent = Math.floor(seconds / 60) + ':' + pad(seconds % 60);
+    state.textContent = running ? '进行中 · 第 ' + (laps + 1) + ' 公里' : '已暂停 · 长按结束';
+    arc.style.strokeDashoffset = String(circumference * (1 - (distance % 1 || 0.02)));
+    arc.style.stroke = running ? '#c8f04a' : '#ff7043';
+  }
+  pause.addEventListener('click', () => {
+    running = !running;
+    pause.textContent = running ? '暂停' : '继续';
+    pause.classList.toggle('pause', running);
+    live.textContent = running ? '继续训练。' : '训练已暂停，长按可结束。';
+    paint();
+  });
+  document.getElementById('lap').addEventListener('click', () => {
+    if (!running) { live.textContent = '训练暂停时不计圈。'; return; }
+    laps += 1;
+    const rows = document.querySelector('.laps');
+    const row = document.createElement('div');
+    row.innerHTML = '<span>' + laps + '</span><b>' + (distance % 1).toFixed(2) + ' km</b><span>已计</span>';
+    rows.append(row);
+    live.textContent = '已记录第 ' + laps + ' 圈。';
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === ' ' && event.target === document.body) {
+      event.preventDefault(); pause.click();
+    }
+  });
+  setInterval(() => {
+    if (!running) return;
+    seconds += 1;
+    distance += 0.0029;
+    if (seconds % 7 === 0) {
+      document.getElementById('hr').textContent = String(144 + Math.round(Math.random() * 9));
+    }
+    paint();
+  }, 1000);
+  paint();
+})();
+</script>
+</body>
+</html>

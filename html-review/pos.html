@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101418">
+<title>台口 · 收银台与顾客副屏</title>
+<style>
+:root{--void:#101418;--deck:#171d22;--key:#222a31;--key-hi:#2c363f;--line:#2f3a43;--paper:#f4f6f7;--mute:#8d9aa5;--mint:#59d8a8;--amber:#f0b24a;--blue:#58a6d8;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 90% 70% at 30% -10%,#1b232a,#0b0e11 60%);min-height:100vh;padding:clamp(10px,2vw,28px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.counter{width:min(1300px,100%);display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,.7fr);gap:clamp(12px,1.8vw,26px);align-items:start}
+@media(max-width:1000px){.counter{grid-template-columns:1fr}}
+.reg{background:var(--deck);border:1px solid #232c34;border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}
+.reg-top{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:clamp(10px,1.4vh,16px) clamp(12px,1.5vw,22px);border-bottom:1px solid #232c34;background:#131a1f}
+.reg-top .who{font-size:clamp(11px,.9vw,13px);letter-spacing:.06em;color:var(--mute)}
+.reg-top h1{font-size:clamp(13px,1.1vw,16px);font-weight:750;letter-spacing:.02em;margin-top:.2em;color:var(--paper)}
+.reg-top .shift{text-align:right;font-size:clamp(10px,.8vw,12px);color:var(--mute);line-height:1.6}
+.reg-top .shift b{color:var(--mint);font-weight:700}
+.body{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,.62fr);min-height:0}
+@media(max-width:760px){.body{grid-template-columns:1fr}}
+/* The operator scans more than types, so the line list owns the space and the
+   numeric pad collapses to the few keys a misuse-prone action still needs. */
+.lines{overflow:auto;min-height:0;max-height:clamp(280px,46vh,520px);scrollbar-width:thin}
+.lines h2{position:sticky;top:0;background:#131a1f;font-size:clamp(9px,.76vw,11px);letter-spacing:.16em;color:#73838f;font-weight:750;padding:.7em clamp(12px,1.4vw,18px);border-bottom:1px solid #232c34}
+.line{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:.7em;align-items:center;padding:clamp(8px,1.2vh,13px) clamp(12px,1.4vw,18px);border-bottom:1px solid #1e262d;font-size:clamp(11px,.9vw,13.5px)}
+.line b{display:block;font-weight:700;color:#dfe7ec;line-height:1.35}
+.line small{display:block;font-size:clamp(9px,.74vw,11px);color:var(--mute);margin-top:.15em;letter-spacing:.03em}
+.line .qty{font:700 clamp(13px,1.1vw,16px)/1 "Barlow Condensed",sans-serif;color:#c3d3dd;font-variant-numeric:tabular-nums}
+.line .amt{font:700 clamp(13px,1.1vw,16px)/1 "Barlow Condensed",sans-serif;color:#eaf2f6;min-width:4.2em;text-align:right;font-variant-numeric:tabular-nums}
+.line[data-last=true]{background:#1a242b}
+.scan{margin:clamp(9px,1.3vh,15px) clamp(12px,1.4vw,18px) 0;display:grid;grid-template-columns:1fr auto;gap:.5em}
+.scan input{font:700 clamp(13px,1.1vw,16px)/1 "IBM Plex Mono",Consolas,monospace;letter-spacing:.12em;padding:.72em .8em;border-radius:6px;border:1px solid #33414c;background:#0c1116;color:#dff0e8;width:100%;min-height:44px}
+.scan input:focus{outline:2px solid var(--mint);outline-offset:1px}
+.scan button{padding:.72em 1.05em;border-radius:6px;background:#26333b;color:#dbe7ee;font-size:clamp(10px,.84vw,12.5px);font-weight:700;border:1px solid #35434e;min-height:44px;min-width:56px}
+.keys{padding:clamp(9px,1.3vh,15px) clamp(12px,1.4vw,18px) clamp(12px,1.6vh,18px);display:grid;grid-template-columns:repeat(3,1fr);gap:.4em;align-content:start}
+.keys button{min-height:clamp(40px,5vh,54px);border-radius:7px;background:var(--key);border:1px solid #303b44;color:#cfdde6;font-size:clamp(12px,1vw,15px);font-weight:700;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.keys button:hover{background:var(--key-hi)}
+.keys .wide{grid-column:span 3}
+.keys .pay{background:#2c6a52;border-color:#3d8466;color:#eafaf2}
+.keys .void{background:#5a2b26;border-color:#7a3b34;color:#f6e3df}
+.totals{border-top:1px solid #232c34;background:#131a1f;padding:clamp(10px,1.4vh,16px) clamp(12px,1.5vw,22px);display:grid;gap:.45em;font-size:clamp(11px,.88vw,13px)}
+.totals div{display:flex;justify-content:space-between;gap:1em;color:var(--mute)}
+.totals div.grand{color:#f2f8fb;font-size:clamp(14px,1.2vw,18px);font-weight:750;border-top:1px solid #2a343c;padding-top:.5em;margin-top:.2em}
+.totals div.grand b{font:750 clamp(19px,1.7vw,26px)/1 "Barlow Condensed",sans-serif;color:var(--mint);letter-spacing:-.01em}
+.totals div span b{color:#cfdce4;font-weight:700}
+/* Customer-facing panel: money and confirmation only, mirrored from the till. */
+.cust{background:#f7f9f9;color:#161b1e;border-radius:14px;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto;box-shadow:0 18px 40px #0006}
+.cust-top{padding:clamp(10px,1.4vh,15px) clamp(12px,1.5vw,20px);border-bottom:1px solid #dbe2e4;display:flex;align-items:center;justify-content:space-between;gap:.7em}
+.cust-top b{font-size:clamp(11px,.9vw,13px);letter-spacing:.14em;color:#5b6a72;font-weight:750}
+.cust-top span{font-size:clamp(9px,.74vw,11px);color:#8b979d;letter-spacing:.04em}
+.cust-body{padding:clamp(12px,2vh,24px) clamp(12px,1.5vw,20px);display:grid;gap:.8em;align-content:start}
+.cust-body .sum{display:grid;gap:.3em}
+.cust-body .sum span{font-size:clamp(10px,.84vw,12px);color:#6b7981;letter-spacing:.06em}
+.cust-body .sum b{font:800 clamp(34px,5.2vh,64px)/1 "Barlow Condensed",sans-serif;letter-spacing:-.03em;font-variant-numeric:tabular-nums;color:#12171a}
+.cust-body .sum small{font-size:clamp(9px,.76vw,11px);color:#7d8990;letter-spacing:.04em}
+.cust-body .items{display:grid;gap:.3em;font-size:clamp(10px,.86vw,12.5px);color:#3c4a52;border-top:1px dashed #cfd8db;padding-top:.65em}
+.cust-body .items div{display:flex;justify-content:space-between;gap:.6em;font-variant-numeric:tabular-nums}
+.cust-body .ways{display:grid;grid-template-columns:1fr 1fr;gap:.4em;margin-top:.3em}
+.cust-body .ways button{border:1px solid #cfd8db;border-radius:6px;padding:.6em .4em;font-size:clamp(10px,.86vw,12.5px);font-weight:700;color:#33424a;min-height:44px;text-align:center}
+.cust-body .ways button[aria-pressed=true]{background:#12171a;color:#f4f8f9;border-color:#12171a}
+.cust-foot{padding:.6em clamp(12px,1.5vw,20px);border-top:1px solid #dbe2e4;font-size:clamp(9px,.74vw,11px);color:#7d8990;line-height:1.55}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:2px solid var(--mint);outline-offset:2px}
+.cust :focus-visible{outline-color:#161b1e}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="till">
+<main class="counter">
+  <section class="reg" aria-label="收银台主屏">
+    <header class="reg-top">
+      <div><p class="who">收银台 02 · 张玲</p><h1>本单 · 三件商品</h1></div>
+      <div class="shift">班次 B · 08:30 — 17:00<br><b>已完成 24 单</b></div>
+    </header>
+    <div class="body">
+      <div class="lines" id="lines" aria-label="本单明细">
+        <h2>商品</h2>
+      </div>
+      <div>
+        <div class="scan">
+          <label class="sr" for="code">扫描或输入条码</label>
+          <input id="code" placeholder="扫描条码" maxlength="13" autocomplete="off" spellcheck="false">
+          <button type="button" id="addline" data-review-id="pos-add">加入</button>
+        </div>
+        <div class="keys" role="group" aria-label="收银快捷键">
+          <button type="button">7</button><button type="button">8</button><button type="button">9</button>
+          <button type="button">4</button><button type="button">5</button><button type="button">6</button>
+          <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+          <button type="button">×</button><button type="button">0</button><button type="button">⌫</button>
+          <button type="button" class="wide">数量</button>
+          <button type="button" class="pay" data-review-id="pos-pay">收款</button>
+          <button type="button" class="void" data-review-id="pos-void">作废整单</button>
+        </div>
+      </div>
+    </div>
+    <div class="totals">
+      <div><span>小计 <b id="subtotal">¥103.00</b></span><span>4 件</span></div>
+      <div><span>会员折扣</span><span>− <b id="discount">¥4.00</b></span></div>
+      <div><span>应收</span><span>¥99.00</span></div>
+      <div class="grand"><span>顾客需付</span><b id="grand">¥99.00</b></div>
+    </div>
+  </section>
+  <section class="cust" aria-label="顾客副屏">
+    <div class="cust-top"><b>顾客价目</b><span id="cust-clock">09:41</span></div>
+    <div class="cust-body">
+      <div class="sum"><span>本次应付</span><b id="cust-total">99.00</b><small>已含会员折扣 −4.00</small></div>
+      <div class="items" id="cust-items">
+        <div><span>热敏标签纸 ×2</span><span>36.00</span></div>
+        <div><span>蜂窝纸袋 ×1</span><span>21.00</span></div>
+        <div><span>防水封签 ×1</span><span>40.00</span></div>
+      </div>
+      <div class="ways" role="group" aria-label="顾客选择支付方式">
+        <button type="button" data-way="code" aria-pressed="true" data-review-id="pos-way-code">扫码支付</button>
+        <button type="button" data-way="card" aria-pressed="false" data-review-id="pos-way-card">刷卡</button>
+      </div>
+    </div>
+    <p class="cust-foot">副屏只显示金额、件数与支付方式。商品名与价格已同步主屏，顾客可核对后付款。</p>
+  </section>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const catalog = {
+    '2431080012001': ['热敏标签纸 40×30', 18.00],
+    '2431110008005': ['蜂窝纸袋 中号', 21.00],
+    '2432020002009': ['一次性防水封签', 46.00],
+    '2432050003007': ['打包带 15mm', 12.50]
+  };
+  const live = document.getElementById('live');
+  const lines = document.getElementById('lines');
+  const code = document.getElementById('code');
+  const grand = document.getElementById('grand');
+  const custTotal = document.getElementById('cust-total');
+  let items = [
+    { name: '热敏标签纸 40×30', price: 18.00, qty: 2, code: '2431080012001' },
+    { name: '蜂窝纸袋 中号', price: 21.00, qty: 1, code: '2431110008005' },
+    { name: '一次性防水封签', price: 46.00, qty: 1, code: '2432020002009' }
+  ];
+  let way = 'code';
+  const money = value => '¥' + value.toFixed(2);
+  function render() {
+    const rows = items.map((item, index) => {
+      const row = document.createElement('div');
+      row.className = 'line';
+      row.dataset.last = String(index === items.length - 1);
+      const left = document.createElement('div');
+      left.innerHTML = '<b>' + item.name + '</b><small>' + item.code + '</small>';
+      const qty = document.createElement('span'); qty.className = 'qty'; qty.textContent = '×' + item.qty;
+      const amt = document.createElement('span'); amt.className = 'amt'; amt.textContent = money(item.price * item.qty);
+      row.append(left, qty, amt);
+      return row;
+    });
+    const head = document.createElement('h2');
+    head.textContent = '商品 · ' + items.reduce((sum, item) => sum + item.qty, 0) + ' 件';
+    lines.replaceChildren(head, ...rows);
+    const sub = items.reduce((sum, item) => sum + item.price * item.qty, 0);
+    const discount = items.length ? 4 : 0;
+    const total = Math.max(0, sub - discount);
+    document.getElementById('subtotal').textContent = money(sub);
+    document.getElementById('discount').textContent = money(discount);
+    grand.textContent = money(total);
+    custTotal.textContent = total.toFixed(2);
+    document.getElementById('cust-items').replaceChildren(...items.map(item => {
+      const row = document.createElement('div');
+      row.innerHTML = '<span>' + item.name + ' ×' + item.qty + '</span><span>' + (item.price * item.qty).toFixed(2) + '</span>';
+      return row;
+    }));
+  }
+  function addItem() {
+    const value = code.value.trim();
+    const found = catalog[value];
+    if (!found) {
+      live.textContent = value ? '条码 ' + value + ' 不在本店商品表内。' : '请输入或扫描条码。';
+      code.select();
+      return;
+    }
+    const existing = items.find(item => item.code === value);
+    if (existing) existing.qty += 1;
+    else items.push({ name: found[0], price: found[1], qty: 1, code: value });
+    code.value = '';
+    render();
+    live.textContent = '已加入 ' + found[0] + '，顾客副屏金额同步更新。';
+    code.focus();
+  }
+  document.getElementById('addline').addEventListener('click', addItem);
+  code.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); addItem(); } });
+  document.querySelector('[data-review-id="pos-pay"]').addEventListener('click', () => {
+    live.textContent = '已发起收款 ' + grand.textContent + '，等待顾客在副屏确认' + (way === 'code' ? '扫码' : '刷卡') + '（模拟）。';
+  });
+  document.querySelector('[data-review-id="pos-void"]').addEventListener('click', () => {
+    if (!items.length) { live.textContent = '本单已为空。'; return; }
+    items = [];
+    render();
+    live.textContent = '整单已作废，顾客副屏金额归零。';
+  });
+  document.querySelectorAll('[data-way]').forEach(button => button.addEventListener('click', () => {
+    way = button.dataset.way;
+    document.querySelectorAll('[data-way]').forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+    live.textContent = '顾客选择' + (way === 'code' ? '扫码支付' : '刷卡') + '，主屏收款按钮随之切换。';
+  }));
+  const pad = n => String(n).padStart(2, '0');
+  const tick = () => { const now = new Date(); document.getElementById('cust-clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()); };
+  tick(); setInterval(tick, 20000);
+  render();
+})();
+</script>
+</body>
+</html>

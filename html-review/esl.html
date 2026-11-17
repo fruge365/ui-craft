@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#d8d8d2">
+<title>架签 · 电子价签与墨水屏</title>
+<style>
+:root{--stone:#8e8f87;--stone-dark:#6d6e67;--paper:#efeee8;--paper-2:#e4e3dc;--ink:#17181a;--grey:#55564f;--red:#8a2f20;--red-soft:#f3e7e3;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(#c9cac2,#bfc0b8 62%,#b2b3ab);color:var(--ink);min-height:100vh;padding:clamp(14px,3vw,44px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.wrap{width:min(1160px,100%);display:grid;gap:clamp(14px,2.2vw,32px)}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:1em;flex-wrap:wrap}
+.head h1{font-size:clamp(26px,3vw,44px);letter-spacing:-.02em;font-weight:800;line-height:1.1}
+.head p{color:var(--grey);font-size:clamp(12px,1vw,15px);line-height:1.6;max-width:38em;margin-top:.5em}
+.head .stamp{font-size:clamp(10px,.8vw,12px);letter-spacing:.16em;color:var(--grey);border:1px solid var(--stone);padding:.5em .8em;border-radius:3px;white-space:nowrap}
+.stage{display:grid;grid-template-columns:minmax(0,1fr) minmax(270px,.66fr);gap:clamp(14px,2.2vw,34px);align-items:start}
+@media(max-width:880px){.stage{grid-template-columns:1fr}}
+/* Shelf rail with three tags in a warm-grey field: the tags must read from
+   1.2 m at eye level, so the price dominates and the unit price is secondary. */
+.shelf{background:repeating-linear-gradient(#b7b8b0 0 5px,#a9aaa2 5px 7px);padding:clamp(12px,1.8vw,24px);border-radius:4px;box-shadow:inset 0 2px 8px #0000001f,0 6px 16px #0000001a}
+.tags{display:grid;gap:clamp(8px,1.1vw,14px)}
+.tag{background:var(--paper);border:1px solid #c9c8c0;border-radius:2px;padding:clamp(10px,1.4vw,16px) clamp(12px,1.6vw,20px);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.6em 1em;align-items:start;box-shadow:0 2px 0 #b5b4ac;position:relative;overflow:hidden}
+.tag::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ink)}
+.tag[data-state=promo]::before{background:var(--red)}
+.tag[data-state=promo]{background:var(--red-soft)}
+.tag-meta{display:flex;align-items:center;gap:.6em;font-size:clamp(9px,.74vw,11px);letter-spacing:.1em;color:var(--grey);font-weight:650}
+.tag-meta .promo{color:var(--red);border:1px solid var(--red);padding:.12em .4em;border-radius:2px;letter-spacing:.06em}
+.tag h2{font-size:clamp(15px,1.34vw,21px);line-height:1.3;font-weight:700;margin-top:.24em;letter-spacing:-.01em}
+.tag .spec{font-size:clamp(10px,.82vw,12px);color:var(--grey);margin-top:.28em;line-height:1.5}
+.price{text-align:right;display:grid;gap:.1em;align-content:start}
+.price small{font-size:clamp(9px,.7vw,11px);color:var(--grey);letter-spacing:.06em}
+.price b{font:800 clamp(24px,2.6vw,40px)/1 "Barlow Condensed","Arial Narrow",sans-serif;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.price b s{font-size:.42em;color:var(--grey);font-weight:600;margin-right:.3em;letter-spacing:0}
+.price .unit{font-size:clamp(9px,.76vw,11px);color:var(--grey);letter-spacing:.02em}
+.battery{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:1em;border-top:1px dashed #bab9b1;padding-top:.5em;margin-top:.1em;font-size:clamp(9px,.74vw,11px);color:#6f7068;letter-spacing:.05em}
+.battery span{display:flex;align-items:center;gap:.4em}
+.battery i{width:1.7em;height:.7em;border:1px solid #6f7068;position:relative;display:inline-block}
+.battery i::after{content:"";position:absolute;inset:1px;right:55%;background:#6f7068}
+.battery i[data-low=true]::after{background:var(--red);right:82%}
+.controls{display:grid;gap:clamp(10px,1.4vh,18px);align-content:start}
+.panel{background:var(--paper-2);border:1px solid #c4c3bb;border-radius:4px;padding:clamp(12px,1.8vw,22px)}
+.panel h3{font-size:clamp(10px,.84vw,12px);letter-spacing:.18em;color:var(--grey);font-weight:750;margin-bottom:.8em}
+.seg{display:flex;border:1px solid var(--stone);border-radius:3px;overflow:hidden}
+.seg button{flex:1;padding:.62em .4em;min-height:44px;font-size:clamp(11px,.9vw,13px);font-weight:700;text-align:center;color:var(--grey);background:var(--paper)}
+.seg button+button{border-left:1px solid var(--stone)}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.rows{display:grid;gap:.55em;margin-top:.9em;font-size:clamp(11px,.88vw,13px);line-height:1.55}
+.rows div{display:grid;grid-template-columns:auto 1fr;gap:.7em}
+.rows dt{color:var(--grey);font-weight:650}
+.rows dd{color:var(--ink)}
+.reader{background:var(--paper);border:1px solid #c4c3bb;border-radius:3px;padding:clamp(14px,2vw,26px);display:grid;gap:.7em}
+.reader h3{font-size:clamp(13px,1.1vw,16px);font-weight:700;letter-spacing:.01em}
+.reader p{font-size:clamp(12px,.98vw,14px);line-height:1.85;color:#2b2c28;max-width:29em}
+.reader .ghost{color:#8b8c85;font-size:clamp(10px,.8vw,12px);letter-spacing:.04em;display:flex;justify-content:space-between;gap:1em;border-top:1px solid #d4d3cb;padding-top:.6em}
+.reader .bar{height:3px;background:#c9c8c0;position:relative}
+.reader .bar i{position:absolute;inset:0 62% 0 0;background:var(--ink)}
+.note{border-left:3px solid var(--stone-dark);padding-left:.9em;font-size:clamp(10px,.84vw,12px);line-height:1.7;color:var(--grey)}
+.note b{color:var(--ink)}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:3px solid #1d6a8c;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="shelf">
+<main class="wrap">
+  <header class="head">
+    <div>
+      <h1>货架电子价签与墨水屏</h1>
+      <p>价签在断电后仍显示最后一帧，刷新一次耗电极低。因此它的设计约束不是「好看」，而是「1.2 米外读得清、刷新不闪、只写必要信息」。</p>
+    </div>
+    <span class="stamp">电子纸 · 黑白 1 bit · 2.9 英寸</span>
+  </header>
+  <div class="stage">
+    <section class="shelf" aria-label="货架价签">
+      <div class="tags" id="tags">
+        <article class="tag" data-state="normal" data-review-id="esl-tag-01">
+          <div>
+            <div class="tag-meta"><span>标签纸</span><span>2431-08</span></div>
+            <h2>热敏标签纸 40×30</h2>
+            <p class="spec">12 卷 / 盒 · 白底</p>
+          </div>
+          <div class="price"><small>零售价</small><b>¥18.00</b><span class="unit">¥1.50 / 卷</span></div>
+          <div class="battery"><span><i></i>电量 82% · 上次刷新 14:02</span><span>A-03 货位</span></div>
+        </article>
+        <article class="tag" data-state="promo" data-review-id="esl-tag-02">
+          <div>
+            <div class="tag-meta"><span class="promo">限时 3 天</span><span>2431-11</span></div>
+            <h2>蜂窝纸袋 中号</h2>
+            <p class="spec">8 包 / 提 · 可降解</p>
+          </div>
+          <div class="price"><small>促销价</small><b><s>¥28</s>¥21.00</b><span class="unit">¥2.63 / 包</span></div>
+          <div class="battery"><span><i></i>电量 64% · 上次刷新 14:02</span><span>A-09 货位</span></div>
+        </article>
+        <article class="tag" data-state="normal" data-review-id="esl-tag-03">
+          <div>
+            <div class="tag-meta"><span>防水封签</span><span>2432-02</span></div>
+            <h2>一次性防水封签</h2>
+            <p class="spec">2 盒 / 组 · 含铅封</p>
+          </div>
+          <div class="price"><small>零售价</small><b>¥46.00</b><span class="unit">¥23.00 / 盒</span></div>
+          <div class="battery"><span><i data-low="true"></i>电量 9% · 建议本周更换</span><span>B-02 货位</span></div>
+        </article>
+      </div>
+    </section>
+    <aside class="controls">
+      <div class="panel">
+        <h3>显示模式</h3>
+        <div class="seg" role="group" aria-label="显示模式">
+          <button type="button" data-mode="price" aria-pressed="true">价格</button>
+          <button type="button" data-mode="stock" aria-pressed="false">库存</button>
+          <button type="button" data-mode="batch" aria-pressed="false">批次</button>
+        </div>
+        <dl class="rows" id="mode-rows">
+          <dt>重点</dt><dd>零售价与单位价</dd>
+          <dt>次要</dt><dd>规格、编号、货位</dd>
+          <dt>排除</dt><dd>条形码、促销文案、二维码</dd>
+        </dl>
+      </div>
+      <div class="panel">
+        <h3>墨水屏阅读器</h3>
+        <div class="reader">
+          <h3>河道养护记录 · 第三段</h3>
+          <p>闸口以东的护岸在去年秋天完成加固，表层石块仍可见新旧交界。巡查时以第 14 号桩为界，向北逐段核对排水口是否通畅。</p>
+          <div class="bar" aria-hidden="true"><i></i></div>
+          <div class="ghost"><span>第 42 / 68 页</span><span>翻页刷新 0.6 秒</span></div>
+        </div>
+        <p class="note" style="margin-top:.8em"><b>刷新代价。</b>整屏刷新会闪一下黑，局部刷新则残留浅影。长文阅读用局部刷新，章节切换才整屏刷新。</p>
+      </div>
+      <p class="note"><b>不要照搬 LCD 的做法。</b>电子纸没有灰阶动画、不能反白悬停、也不适合密集小字。价签上位数字用窄体大字，说明文字退到 12 px 以下即可省略。</p>
+      <p class="note" id="live" role="status" aria-live="polite">当前显示：价格模式。</p>
+    </aside>
+  </div>
+</main>
+<script>
+(() => {
+  'use strict';
+  const live = document.getElementById('live');
+  const rows = document.getElementById('mode-rows');
+  const buttons = [...document.querySelectorAll('[data-mode]')];
+  const content = {
+    price: [['重点', '零售价与单位价'], ['次要', '规格、编号、货位'], ['排除', '条形码、促销文案、二维码']],
+    stock: [['重点', '可用数量与补货点'], ['次要', '在途、锁定数量'], ['排除', '价格与单位价']],
+    batch: [['重点', '生产批次与效期'], ['次要', '入库时间、供应商'], ['排除', '促销标记与单位价']]
+  };
+  buttons.forEach(button => button.addEventListener('click', () => {
+    buttons.forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+    const mode = button.dataset.mode;
+    rows.replaceChildren(...content[mode].map(([term, value]) => {
+      const row = document.createElement('div');
+      const dt = document.createElement('dt'); dt.textContent = term;
+      const dd = document.createElement('dd'); dd.textContent = value;
+      row.append(dt, dd); return row;
+    }));
+    live.textContent = '当前显示：' + button.textContent + '模式，价签只保留' + content[mode][0][1] + '。';
+  }));
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1b1c17">
+<title>仓位 · 手持终端</title>
+<style>
+:root{
+  --hazard:#f0c008;--ink:#1b1c17;--grip:#2a2c24;--lcd:#dfe3d0;--lcd-dark:#12140f;
+  --hit:#33591f;--miss:#8f2f14;--line:#7f8672;
+  font-family:"Roboto Condensed","Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+  color:var(--ink);font-synthesis:none
+}
+*{box-sizing:border-box}
+body{margin:0;background:repeating-linear-gradient(45deg,#20221c 0 12px,#25271f 12px 24px);min-height:100vh;display:grid;place-items:center;padding:16px}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.device{width:min(430px,100%);background:var(--grip);border-radius:22px 22px 14px 14px;padding:10px 10px 0;box-shadow:0 26px 54px #0009,inset 0 2px #4a4d3e;position:relative}
+.device::before{content:"";position:absolute;inset:5px 5px auto;height:6px;background:repeating-linear-gradient(115deg,var(--hazard) 0 9px,#1b1c17 9px 18px);border-radius:6px 6px 0 0;opacity:.85}
+.head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 6px 8px;color:#c9cdb6;font-size:12px;letter-spacing:.1em}
+.head b{color:var(--hazard);font-weight:700}
+.bezel{background:#111209;border:3px solid #3a3d31;border-radius:8px;padding:5px;margin:0 2px}
+.lcd{background:var(--lcd);color:var(--lcd-dark);border-radius:3px;display:grid;grid-template-rows:auto auto 1fr auto;min-height:min(430px,58vh);overflow:hidden}
+.lcd-top{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:7px 9px;background:#c3c9b0;border-bottom:2px solid #9aa287;font-size:11px;font-weight:700;letter-spacing:.06em}
+.batt{display:flex;align-items:center;gap:5px}
+.batt i{display:inline-block;width:20px;height:9px;border:2px solid #12140f;position:relative}
+.batt i::after{content:"";position:absolute;inset:1px 5px 1px 1px;background:var(--hit)}
+.task{padding:9px 10px 8px;border-bottom:2px solid #a9b097}
+.task .eyebrow{font-size:10px;letter-spacing:.16em;font-weight:700;color:#4c5340}
+.task h1{font-size:23px;line-height:1.1;letter-spacing:-.02em;font-weight:800;margin-top:3px}
+.task p{font-size:11.5px;color:#3f4636;margin-top:3px;line-height:1.4}
+.scan{padding:9px 10px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;background:#eef0e2;border-bottom:2px solid #a9b097}
+.scan label{font-size:10px;letter-spacing:.13em;font-weight:700;color:#4c5340;display:block}
+.scan input{width:100%;margin-top:4px;font:700 16px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase;padding:7px 8px;border:2px solid #7f8672;border-radius:3px;background:#fff;color:var(--lcd-dark);text-align:center;min-height:44px}
+.scan input:focus{outline:3px solid var(--hazard);outline-offset:1px}
+.side{display:grid;gap:5px}
+.side button{border:2px solid #333d26;background:#4c5c34;color:#f2f5e4;border-radius:4px;font-size:11px;font-weight:700;padding:7px 9px;min-height:44px;letter-spacing:.04em}
+.side button[data-variant=flash]{background:#6a5f24;border-color:#3f3a12}
+.list{overflow:auto;padding:0 0 4px;scrollbar-width:thin}
+.list h2{font-size:10px;letter-spacing:.14em;color:#4c5340;padding:7px 10px 4px;font-weight:700;border-bottom:1px solid #b3b99f}
+.row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;width:100%;text-align:left;padding:8px 10px;border-bottom:1px solid #bfc4ab;font-size:13px}
+.row .tick{width:16px;height:16px;border:2px solid #4f5744;border-radius:2px;display:grid;place-items:center;font-size:11px;font-weight:800;color:transparent}
+.row b{font:800 14px/1.2 ui-monospace,Consolas,monospace;letter-spacing:.03em}
+.row small{display:block;font-size:11px;color:#48503c;margin-top:1px;font-weight:500}
+.row .qty{font:700 12px ui-monospace,Consolas,monospace;color:#3d4433;text-align:right}
+.row[data-state=hit]{background:#d5e2c2}
+.row[data-state=hit] .tick{background:var(--hit);border-color:var(--hit);color:#f4f7e9}
+.row[data-state=miss]{background:#eed7c8}
+.row[data-state=miss] .tick{background:var(--miss);border-color:var(--miss);color:#fff}
+.row[data-focus=true]{outline:3px solid #1b1c17;outline-offset:-3px}
+.lcd-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px;background:#c3c9b0;border-top:2px solid #9aa287;font-size:10.5px;font-weight:700;letter-spacing:.05em}
+.lcd-foot b{font-size:13px}
+.hw{display:grid;grid-template-columns:1fr auto;gap:10px;padding:10px 4px 12px}
+.keys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.keys button{background:#3c4033;color:#dfe3d0;border:2px solid #55594a;border-bottom-width:4px;border-radius:5px;font-size:12px;font-weight:700;min-height:40px;letter-spacing:.04em}
+.keys button:active{transform:translateY(2px);border-bottom-width:2px}
+.trigger{width:64px;border-radius:8px 8px 26px 8px;background:linear-gradient(#f0c008,#a98a06);border:2px solid #6f5c04;border-bottom-width:6px;color:#282a12;font-weight:800;font-size:12px;letter-spacing:.02em;line-height:1.2;padding:6px 2px}
+.trigger:active{transform:translateY(3px);border-bottom-width:3px}
+:focus-visible{outline:3px solid var(--hazard);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(min-width:640px){body{align-items:start;padding-top:40px}}
+</style>
+</head>
+<body data-review-context="count">
+<main class="device" aria-label="手持终端模拟机">
+  <div class="head"><span>WT-40 · 手持终端</span><b>仓位</b><span>1 号库 · 班次 B</span></div>
+  <div class="bezal bezel">
+    <div class="lcd">
+      <div class="lcd-top"><span>盘点单 PK-1107-08</span><span class="batt">信号 <i aria-label="电量充足"></i></span></div>
+      <div class="task">
+        <p class="eyebrow">货位 A-03</p>
+        <h1>标签纸 · 应盘 4 卷</h1>
+        <p>扫描货位标签或商品条码。手套操作也需一次到位。</p>
+      </div>
+      <div class="scan">
+        <div>
+          <label for="code">扫描结果</label>
+          <input id="code" value="A-03" maxlength="14" autocomplete="off" spellcheck="false" aria-describedby="scan-help">
+        </div>
+        <div class="side">
+          <button type="button" data-variant="flash" data-review-id="pda-flash">补光</button>
+          <button type="button" data-review-id="pda-confirm">确认</button>
+        </div>
+      </div>
+      <div class="list" id="list" aria-label="本单明细">
+        <h2>本单明细 · 3 项</h2>
+        <button class="row" data-code="A-03" data-qty="4 卷" data-state="hit" data-review-id="pda-row-a03"><span class="tick" aria-hidden="true">✓</span><span><b>A-03</b><small>标签纸 · 4 卷</small></span><span class="qty">已盘</span></button>
+        <button class="row" data-code="A-09" data-qty="8 包" data-review-id="pda-row-a09"><span class="tick" aria-hidden="true">✓</span><span><b>A-09</b><small>蜂窝纸袋 · 8 包</small></span><span class="qty">待盘</span></button>
+        <button class="row" data-code="B-02" data-qty="2 盒" data-state="miss" data-review-id="pda-row-b02"><span class="tick" aria-hidden="true">!</span><span><b>B-02</b><small>防水封签 · 2 盒</small></span><span class="qty">差异 −1</span></button>
+      </div>
+      <div class="lcd-foot"><span>已盘 <b id="done">1</b> / 3</span><span id="msg" role="status">扫描 A-09 继续</span></div>
+    </div>
+  </div>
+  <div class="hw">
+    <div class="keys">
+      <button type="button">功能</button>
+      <button type="button">方向</button>
+      <button type="button">返回</button>
+      <button type="button">清除</button>
+      <button type="button">移位</button>
+      <button type="button">提交</button>
+    </div>
+    <button type="button" class="trigger" data-review-id="pda-scan">扫描<br>SCAN</button>
+  </div>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const input = document.getElementById('code');
+  const rows = [...document.querySelectorAll('.row')];
+  const done = document.getElementById('done');
+  const msg = document.getElementById('msg');
+  const live = document.getElementById('live');
+  let focusIndex = -1;
+  function paint() {
+    const hits = rows.filter(row => row.dataset.state === 'hit').length;
+    done.textContent = hits;
+    rows.forEach((row, i) => {
+      row.dataset.focus = String(i === focusIndex);
+      row.querySelector('.qty').textContent = row.dataset.state === 'hit' ? '已盘'
+        : row.dataset.state === 'miss' ? '差异 −1' : '待盘';
+    });
+  }
+  function scan() {
+    const value = input.value.trim().toUpperCase();
+    const row = rows.find(item => item.dataset.code === value);
+    if (!row) {
+      msg.textContent = '未在本单找到 ' + (value || '空码');
+      live.textContent = '未在本单找到该编码。本单只有 A-03、A-09、B-02。';
+      input.select();
+      return;
+    }
+    if (row.dataset.state === 'hit') {
+      msg.textContent = value + ' 已经盘过';
+      live.textContent = value + ' 已经盘过，无需重复。';
+      return;
+    }
+    row.dataset.state = 'hit';
+    row.querySelector('.qty').textContent = '已盘';
+    msg.textContent = value + ' 已记录 · ' + row.dataset.qty;
+    live.textContent = value + ' 已记录，应盘 ' + row.dataset.qty + '。';
+    focusIndex = rows.indexOf(row);
+    paint();
+    const next = rows.find(item => item.dataset.state !== 'hit');
+    input.value = next ? next.dataset.code : '';
+    input.select();
+    if (!next) msg.textContent = '本单已全部盘点，可提交';
+  }
+  input.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); scan(); } });
+  document.querySelector('[data-review-id="pda-confirm"]').addEventListener('click', scan);
+  document.querySelector('[data-review-id="pda-scan"]').addEventListener('click', scan);
+  document.querySelector('[data-review-id="pda-flash"]').addEventListener('click', () => {
+    const button = document.querySelector('[data-variant="flash"]');
+    const on = button.dataset.on === 'true';
+    button.dataset.on = String(!on);
+    button.textContent = on ? '补光' : '补光 · 开';
+    live.textContent = on ? '补光已关闭。' : '补光已打开，适合暗区货架。';
+  });
+  rows.forEach((row, index) => {
+    row.addEventListener('click', () => { focusIndex = index; paint(); input.value = row.dataset.code; input.select(); });
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

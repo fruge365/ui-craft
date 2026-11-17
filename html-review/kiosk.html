@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>和济 · 自助挂号机</title>
+<style>
+:root{--ink:#14181a;--sub:#4c555a;--line:#c8cfd2;--paper:#ffffff;--wash:#f1f4f5;--cyan:#00697e;--cyan-dark:#00505f;--warn:#8a3d10;--ok:#1c6b47;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+body{margin:0;background:#d9e0e2;font-size:clamp(17px,1.28vw,25px);font-synthesis:none;display:grid;place-items:center;min-height:100vh;padding:18px}
+h1,h2,h3,p,dl,dd{margin:0}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.kiosk{width:min(1180px,100%);background:var(--paper);border-radius:14px;overflow:hidden;box-shadow:0 22px 50px #1d2b2f2b;display:grid;grid-template-rows:auto 1fr auto;min-height:min(860px,calc(100vh - 36px))}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1.4em;padding:clamp(16px,2.2vh,30px) clamp(20px,2.6vw,44px);border-bottom:3px solid var(--ink)}
+.brand{display:flex;align-items:center;gap:.7em;font-weight:800;letter-spacing:.06em}
+.brand i{width:1.9em;height:1.9em;border-radius:50%;background:var(--cyan);display:grid;place-items:center;color:#fff;font-style:normal;font-size:.72em;font-weight:800}
+.brand small{display:block;font-size:.6em;font-weight:600;color:var(--sub);letter-spacing:.14em;margin-top:.2em}
+.steps{display:flex;align-items:center;gap:.5em;font-size:.72em;color:var(--sub);font-weight:600}
+.steps li{list-style:none;display:flex;align-items:center;gap:.45em}
+.steps ol{display:flex;gap:.9em;padding:0;margin:0}
+.steps b{width:1.7em;height:1.7em;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.94em;color:var(--sub)}
+.steps [aria-current=step] b{background:var(--cyan);border-color:var(--cyan);color:#fff}
+.steps [aria-current=step] span{color:var(--ink);font-weight:750}
+.body{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(280px,.85fr);gap:clamp(16px,2.4vw,40px);padding:clamp(18px,2.6vh,40px) clamp(20px,2.6vw,44px)}
+.aside{border-left:1px solid var(--line);padding-left:clamp(16px,2vw,34px);display:flex;flex-direction:column;gap:1em}
+h1{font-size:clamp(30px,2.6vw,50px);line-height:1.16;letter-spacing:-.02em;font-weight:800}
+.hint{color:var(--sub);margin-top:.5em;line-height:1.6;font-size:.86em}
+.slot-group{margin-top:1.4em}
+.slot-group h2{font-size:.86em;font-weight:750;color:var(--sub);letter-spacing:.04em;margin-bottom:.7em}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:.6em}
+.slot{border:2px solid var(--line);border-radius:9px;padding:.62em .3em;text-align:center;font-weight:750;background:#fff;transition:background .12s}
+.slot b{display:block;font-size:1.18em;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.slot small{display:block;font-size:.66em;font-weight:600;color:var(--sub);margin-top:.2em}
+.slot[aria-pressed=true]{background:var(--cyan);border-color:var(--cyan);color:#fff}
+.slot[aria-pressed=true] small{color:#d7eef2}
+.slot:disabled{background:var(--wash);color:#8e989c;border-style:dashed}
+.doc-row{display:grid;grid-template-columns:1fr 1fr;gap:.6em;margin-top:1em}
+.doc{border:2px solid var(--line);border-radius:9px;padding:.7em .9em;display:flex;align-items:center;gap:.6em;font-weight:700;background:#fff}
+.doc em{width:2em;height:1.5em;border:2px solid var(--ink);border-radius:3px;flex:none;display:grid;place-items:center;font-size:.6em;font-style:normal;font-weight:800}
+.doc[aria-pressed=true]{border-color:var(--cyan);background:#e8f4f6;color:var(--cyan-dark)}
+.notice{margin-top:1em;display:flex;gap:.7em;padding:.85em 1em;border-left:5px solid var(--warn);background:#fdf3ec;color:#5f2c0c;border-radius:0 8px 8px 0;font-size:.82em;line-height:1.55}
+.notice b{font-weight:800}
+.aside h3{font-size:.86em;font-weight:750;letter-spacing:.04em;color:var(--sub)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:.5em .9em;font-size:.84em;line-height:1.5}
+dt{color:var(--sub);font-weight:600}
+dd{font-weight:650}
+.aside .quote{margin-top:auto;border-top:1px solid var(--line);padding-top:1em;font-size:.78em;color:var(--sub);line-height:1.6}
+.aside .quote b{color:var(--ink);font-weight:800}
+.actions{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:clamp(14px,1.9vh,26px) clamp(20px,2.6vw,44px);border-top:1px solid var(--line);background:var(--wash)}
+.actions p{font-size:.78em;color:var(--sub);line-height:1.5}
+.buttons{display:flex;gap:.7em}
+.buttons button{border-radius:10px;padding:.78em 1.6em;font-weight:800;min-height:2.9em;font-size:.94em;border:2px solid var(--line);background:#fff}
+.buttons .go{background:var(--cyan);border-color:var(--cyan);color:#fff}
+.buttons .go:disabled{background:#aab4b8;border-color:#aab4b8;color:#eef2f3}
+.buttons button[aria-pressed]:focus-visible,.slot:focus-visible,.doc:focus-visible{outline:4px solid #ff9a1f;outline-offset:3px}
+.screen-reader{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:900px){.body{grid-template-columns:1fr}.aside{border-left:0;border-top:1px solid var(--line);padding:1em 0 0}.steps li span{display:none}.slots{grid-template-columns:repeat(4,1fr)}.buttons button{padding:.7em 1em}.kiosk{min-height:auto}}
+@media(max-width:560px){.slots{grid-template-columns:repeat(2,1fr)}.doc-row{grid-template-columns:1fr}.top{flex-wrap:wrap;gap:.7em}.actions{flex-direction:column;align-items:stretch}.buttons{justify-content:stretch}.buttons button{flex:1}}
+</style>
+</head>
+<body data-review-context="pick">
+<main class="kiosk">
+  <header class="top">
+    <div class="brand"><i aria-hidden="true">济</i><div>和济医院<small>门诊自助服务</small></div></div>
+    <div class="steps" aria-label="办理进度"><ol><li aria-current="step"><b>1</b><span>选科室</span></li><li><b>2</b><span>选时段</span></li><li><b>3</b><span>核对</span></li><li><b>4</b><span>取凭条</span></li></ol></div>
+  </header>
+  <div class="body">
+    <section aria-labelledby="k-title">
+      <h1 id="k-title">请选择就诊时段</h1>
+      <p class="hint">以下时段为今日下午。选中后按「下一步」核对信息，凭条会在下方出票口打印。</p>
+      <div class="slot-group">
+        <h2>呼吸内科 · 普通门诊 · 13:30—17:00</h2>
+        <div class="slots" role="group" aria-labelledby="k-title">
+          <button class="slot" type="button" data-slot="13:30" data-review-id="kiosk-slot-1330"><b>13:30</b><small>余 6</small></button>
+          <button class="slot" type="button" data-slot="14:00" data-review-id="kiosk-slot-1400" aria-pressed="true"><b>14:00</b><small>余 3</small></button>
+          <button class="slot" type="button" data-slot="14:30" data-review-id="kiosk-slot-1430"><b>14:30</b><small>余 11</small></button>
+          <button class="slot" type="button" data-slot="15:00" data-review-id="kiosk-slot-1500" disabled><b>15:00</b><small>已满</small></button>
+          <button class="slot" type="button" data-slot="15:30" data-review-id="kiosk-slot-1530"><b>15:30</b><small>余 8</small></button>
+          <button class="slot" type="button" data-slot="16:00" data-review-id="kiosk-slot-1600"><b>16:00</b><small>余 4</small></button>
+          <button class="slot" type="button" data-slot="16:30" data-review-id="kiosk-slot-1630"><b>16:30</b><small>余 2</small></button>
+          <button class="slot" type="button" data-slot="17:00" data-review-id="kiosk-slot-1700"><b>17:00</b><small>余 1</small></button>
+        </div>
+      </div>
+      <div class="slot-group">
+        <h2>需要使用的证件</h2>
+        <div class="doc-row">
+          <button class="doc" type="button" data-doc="id" aria-pressed="true" data-review-id="kiosk-doc-id"><em aria-hidden="true">证</em>身份证</button>
+          <button class="doc" type="button" data-doc="card" aria-pressed="false" data-review-id="kiosk-doc-card"><em aria-hidden="true">卡</em>医保卡</button>
+        </div>
+      </div>
+      <p class="notice" role="note"><span aria-hidden="true">!</span><span><b>15:00 时段已满。</b>如需要更早时段，请到 2 号人工窗口；自助机只发放今日剩余号源。</span></p>
+    </section>
+    <aside class="aside" aria-labelledby="sum-title">
+      <h3 id="sum-title">本次预约</h3>
+      <dl>
+        <dt>科室</dt><dd>呼吸内科 · 普通门诊</dd>
+        <dt>医生</dt><dd>轮诊（按号序）</dd>
+        <dt>时段</dt><dd id="sum-slot">14:00 — 14:30</dd>
+        <dt>证件</dt><dd id="sum-doc">身份证</dd>
+        <dt>费用</dt><dd>挂号费 ¥12.00 · 现场支付</dd>
+      </dl>
+      <p class="quote"><b>取号方式</b>凭条在下方出票口打印，请勿离开超过 40 秒，超时凭条将回收。</p>
+    </aside>
+  </div>
+  <footer class="actions">
+    <p>本机为模拟界面，不会真实挂号，也不会读取证件。</p>
+    <div class="buttons">
+      <button type="button" data-review-id="kiosk-back">上一步</button>
+      <button type="button" class="go" id="next" data-review-id="kiosk-next">下一步 · 核对</button>
+    </div>
+  </footer>
+</main>
+<p class="screen-reader" id="announce" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const slots = [...document.querySelectorAll('[data-slot]')];
+  const docs = [...document.querySelectorAll('[data-doc]')];
+  const sumSlot = document.getElementById('sum-slot');
+  const sumDoc = document.getElementById('sum-doc');
+  const announce = document.getElementById('announce');
+  const next = document.getElementById('next');
+  let chosen = '14:00';
+  let doc = 'id';
+  const labels = { id: '身份证', card: '医保卡' };
+  function range(value) {
+    const [h, m] = value.split(':').map(Number);
+    const end = m === 30 ? (h + 1) + ':00' : h + ':' + String(m + 30).padStart(2, '0');
+    return value + ' — ' + end;
+  }
+  function paint() {
+    slots.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.slot === chosen)));
+    docs.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.doc === doc)));
+    sumSlot.textContent = range(chosen);
+    sumDoc.textContent = labels[doc];
+    next.disabled = false;
+  }
+  slots.forEach(button => button.addEventListener('click', () => {
+    if (button.disabled) return;
+    chosen = button.dataset.slot;
+    paint();
+    announce.textContent = '已选择 ' + range(chosen) + '，' + labels[doc] + ' 就诊。';
+  }));
+  docs.forEach(button => button.addEventListener('click', () => {
+    doc = button.dataset.doc;
+    paint();
+    announce.textContent = '证件已改为' + labels[doc] + '。';
+  }));
+  next.addEventListener('click', () => {
+    announce.textContent = '已进入核对页（模拟）。时段 ' + range(chosen) + '，' + labels[doc] + '。';
+    next.textContent = '已核对 · 返回';
+  });
+  paint();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f6f3ea">
+<title>案头 · 平板分屏批注</title>
+<style>
+:root{--canvas:#e8e4d8;--paper:#fffdf6;--ink:#22201b;--sub:#5f5b50;--line:#cfc9b8;--rule:#e2dcce;--coral:#b4402f;--teal:#1c6b5f;--high:#f7e08a;font-family:"Source Han Sans SC","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:var(--ink);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(160deg,#dcd8cb,#cdc8b9);min-height:100vh;padding:clamp(10px,2.4vw,34px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.slate{width:min(1180px,100%);background:#2c2924;border-radius:20px;padding:clamp(10px,1.4vw,18px);box-shadow:0 26px 60px #2a251b47,inset 0 1px #ffffff1a;position:relative}
+.slate::after{content:"";position:absolute;left:50%;bottom:6px;width:64px;height:3px;transform:translateX(-50%);border-radius:99px;background:#5b564c}
+.view{background:var(--canvas);border-radius:10px;height:min(760px,calc(100vh - 80px));display:grid;grid-template-rows:auto 1fr;overflow:hidden}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:clamp(8px,1.2vh,14px) clamp(12px,1.6vw,22px);border-bottom:1px solid #d3cdbd;background:#f2eee3}
+.bar .doc{display:flex;align-items:center;gap:.6em;font-size:clamp(12px,1vw,15px);font-weight:650}
+.bar .doc i{width:1.4em;height:1.7em;background:#fff;border:1px solid #c3bcaa;border-radius:2px;position:relative;flex:none}
+.bar .doc i::after{content:"";position:absolute;inset:.3em .25em auto;height:2px;background:#b4402f;box-shadow:0 .35em 0 #c9c2b1,0 .7em 0 #c9c2b1}
+.bar .tools{display:flex;gap:.4em;align-items:center;flex-wrap:wrap}
+.bar .tools button{padding:.5em .8em;border-radius:6px;border:1px solid #cdc6b4;font-size:clamp(11px,.86vw,13px);font-weight:650;background:#fffdf7;min-height:44px;transition:background .12s}
+.bar .tools button:hover{background:#fff}
+.bar .tools button[aria-pressed=true]{background:var(--ink);color:#fff8ec;border-color:var(--ink)}
+.split{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);min-height:0}
+.split[data-layout=tall]{grid-template-columns:minmax(0,1.5fr) minmax(0,1fr)}
+@media(max-width:900px){.split{grid-template-columns:1fr;grid-template-rows:1fr auto}.split .reader{display:none}}
+.reader{overflow:auto;padding:clamp(16px,2.4vw,34px) clamp(16px,2.6vw,40px);border-right:1px solid #d3cdbd;scrollbar-width:thin;cursor:text}
+.reader h1{font-size:clamp(19px,1.9vw,28px);line-height:1.3;letter-spacing:-.02em;font-weight:750}
+.reader .byline{color:var(--sub);font-size:clamp(11px,.86vw,13px);margin-top:.5em;letter-spacing:.02em}
+.reader p{font-size:clamp(13px,1.06vw,15.5px);line-height:1.92;margin-top:1.1em;color:#2e2b25;max-width:34em}
+.reader mark{background:var(--high);padding:0 .1em;border-radius:2px;cursor:pointer;box-shadow:inset 0 -1px var(--coral)}
+.reader mark[data-note]{border-bottom:2px solid var(--coral)}
+.reader .target{background:#1c6b5f14;box-shadow:0 0 0 2px #1c6b5f59}
+.sheet{background:var(--paper);border-left:1px solid #d3cdbd;display:grid;grid-template-rows:auto 1fr auto;min-height:0}
+.sheet-head{padding:clamp(10px,1.4vh,16px) clamp(12px,1.4vw,20px);border-bottom:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between;gap:.6em}
+.sheet-head h2{font-size:clamp(11px,.9vw,13px);letter-spacing:.14em;font-weight:750;color:var(--sub)}
+.sheet-head .count{font-size:clamp(11px,.86vw,13px);color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+.notes{overflow:auto;padding:clamp(10px,1.4vh,16px) clamp(12px,1.4vw,20px);display:grid;gap:.7em;align-content:start;scrollbar-width:thin}
+.note{border:1px solid #ded7c6;border-left:3px solid var(--coral);border-radius:6px;padding:.72em .85em;background:#fffef9;display:grid;gap:.35em;transition:box-shadow .12s,transform .12s}
+.note[data-type=query]{border-left-color:var(--teal)}
+.note[data-focus=true]{box-shadow:0 0 0 2px var(--ink);background:#fff}
+.note .q{font-size:clamp(11px,.86vw,13px);color:var(--sub);line-height:1.6;border-left:2px solid #e0d9c8;padding-left:.6em;font-style:italic}
+.note .t{font-size:clamp(12px,.96vw,14px);line-height:1.65;color:#2b2823}
+.note .who{font-size:clamp(9px,.74vw,11px);letter-spacing:.06em;color:#8b8578;display:flex;justify-content:space-between;gap:.6em}
+.note .acts{display:flex;gap:.35em;margin-top:.1em}
+.note .acts button{font-size:clamp(10px,.8vw,12px);font-weight:650;padding:.35em .65em;border-radius:4px;border:1px solid #d8d1be;color:var(--sub);min-height:44px;min-width:44px}
+.note .acts button:hover{background:#f4efe2;color:var(--ink)}
+.note .acts button.done{background:var(--teal);border-color:var(--teal);color:#f2fbf8}
+.compose{border-top:1px solid var(--rule);padding:clamp(10px,1.4vh,16px) clamp(12px,1.4vw,20px);display:grid;gap:.55em;background:#f8f4e9}
+.compose label{font-size:clamp(10px,.78vw,11.5px);letter-spacing:.1em;color:var(--sub);font-weight:700}
+.compose .row{display:grid;grid-template-columns:1fr auto;gap:.5em;align-items:end}
+.compose textarea{width:100%;min-height:4.4em;resize:none;font:inherit;font-size:clamp(12px,.94vw,14px);line-height:1.6;padding:.6em .7em;border:1px solid #cec7b4;border-radius:6px;background:#fff;color:var(--ink)}
+.compose textarea:focus{outline:2px solid var(--teal);outline-offset:1px}
+.compose .add{padding:.6em 1.1em;border-radius:6px;background:var(--ink);color:#fff6e9;font-size:clamp(11px,.9vw,13px);font-weight:700;min-height:44px}
+.compose .add:disabled{background:#b9b2a2;cursor:not-allowed}
+.compose .hintline{font-size:clamp(9px,.76vw,11px);color:#8b8578;line-height:1.6}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:.55em clamp(12px,1.6vw,22px);border-top:1px solid #d3cdbd;background:#f2eee3;font-size:clamp(9px,.76vw,11px);color:#7b7568;flex-wrap:wrap}
+.foot b{color:var(--ink);font-weight:700}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="review">
+<main class="slate">
+  <div class="view">
+    <header class="bar">
+      <div class="doc"><i aria-hidden="true"></i><span>河岸养护方案 · 第三稿</span></div>
+      <div class="tools" role="group" aria-label="批注工具">
+        <button type="button" data-tool="split" aria-pressed="true">并排</button>
+        <button type="button" data-tool="tall" aria-pressed="false">宽文</button>
+        <button type="button" data-tool="mark" aria-pressed="false">选中即批注</button>
+      </div>
+    </header>
+    <div class="split" id="split" data-layout="split">
+      <div class="reader" id="reader">
+        <h1>河岸养护方案 · 第三稿</h1>
+        <p class="byline">编制：养护二组 · 2026-11-14 · 待审</p>
+        <p>闸口以东的护岸在去年秋天完成加固。<mark data-note="n1">表层石块仍可见新旧交界</mark>，巡查时以第 14 号桩为界，向北逐段核对排水口是否通畅。</p>
+        <p>本段共 1 240 米，其中三段为干砌石结构。干砌段不承受连续水流冲刷，因此<mark data-note="n2">每年汛前必须重新勾缝一次</mark>；若发现局部位移超过 5 厘米，需要整段拆砌，不得局部补石。</p>
+        <p>排水口共 18 处，其中 6 处位于弯道内侧，淤积速度约为直段的 2.4 倍。<mark data-note="n3">建议将弯道内侧的清理频次由每季一次改为每月一次</mark>，并记录每次清出的泥沙体积，用于校核下次预算。</p>
+        <p>第四稿需补充：各段的实测断面图、上一汛期的位移记录，以及清理频次调整后的年度工时估算。</p>
+      </div>
+      <section class="sheet" aria-labelledby="sheet-title">
+        <div class="sheet-head"><h2 id="sheet-title">批注</h2><span class="count" id="count">3 条</span></div>
+        <div class="notes" id="notes"></div>
+        <div class="compose">
+          <label for="memo">追加批注</label>
+          <div class="row">
+            <textarea id="memo" placeholder="针对选中的句子写批注。手指长按选择后可点此追加。"></textarea>
+            <button class="add" id="add" type="button">添加</button>
+          </div>
+          <p class="hintline" id="hint">未选中文本。先在上方段落中点选一句，批注会挂在这句上。</p>
+        </div>
+      </section>
+    </div>
+    <footer class="foot"><span>平板 11 英寸 · 横屏分屏 · 触控与键盘均可</span><span id="status">并排视图：正文与批注各占一半</span></footer>
+  </div>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const notes = [
+    { id: 'n1', type: 'query', quote: '表层石块仍可见新旧交界', text: '新旧交界处需要一张近景，第四稿里补上。', who: '审阅 · 陈', done: false },
+    { id: 'n2', type: 'fix', quote: '每年汛前必须重新勾缝一次', text: '去年有两段改成两年一次，这里要不要写成「按段确定」？', who: '审阅 · 罗', done: false },
+    { id: 'n3', type: 'fix', quote: '弯道内侧的清理频次由每季一次改为每月一次', text: '同意。请同时给出每月一次的工时与车辆安排。', who: '审阅 · 陈', done: true }
+  ];
+  const list = document.getElementById('notes');
+  const count = document.getElementById('count');
+  const memo = document.getElementById('memo');
+  const add = document.getElementById('add');
+  const hint = document.getElementById('hint');
+  const live = document.getElementById('live');
+  const reader = document.getElementById('reader');
+  let focused = 'n1';
+  function render() {
+    list.replaceChildren();
+    for (const note of notes) {
+      const card = document.createElement('article');
+      card.className = 'note';
+      card.dataset.type = note.type;
+      card.dataset.focus = String(note.id === focused);
+      card.dataset.reviewId = 'tablet-note-' + note.id;
+      const quote = document.createElement('p'); quote.className = 'q'; quote.textContent = '「' + note.quote + '」';
+      const text = document.createElement('p'); text.className = 't'; text.textContent = note.text;
+      const who = document.createElement('div'); who.className = 'who';
+      who.innerHTML = '<span>' + note.who + '</span><span>' + (note.done ? '已处理' : '待处理') + '</span>';
+      const acts = document.createElement('div'); acts.className = 'acts';
+      const locate = document.createElement('button'); locate.type = 'button'; locate.textContent = '定位原文';
+      locate.addEventListener('click', () => locateNote(note));
+      const toggle = document.createElement('button'); toggle.type = 'button';
+      toggle.textContent = note.done ? '重新打开' : '标记已处理';
+      toggle.classList.toggle('done', note.done);
+      toggle.addEventListener('click', () => {
+        note.done = !note.done;
+        render();
+        live.textContent = note.quote.slice(0, 12) + '… 的批注已' + (note.done ? '标记为已处理。' : '重新打开。');
+      });
+      acts.append(locate, toggle);
+      card.append(quote, text, who, acts);
+      card.addEventListener('click', () => { focused = note.id; render(); });
+      list.append(card);
+    }
+    count.textContent = notes.filter(note => !note.done).length + ' 条待处理';
+    reader.querySelectorAll('mark').forEach(mark => {
+      const id = mark.dataset.note;
+      const note = notes.find(item => item.id === id);
+      if (note) mark.dataset.note = id;
+      mark.style.opacity = note && note.done ? '.55' : '1';
+    });
+  }
+  function locateNote(note) {
+    const mark = [...reader.querySelectorAll('mark')].find(item => item.textContent === note.quote);
+    if (!mark) { live.textContent = '这一段已不在当前稿中，批注仍保留。'; return; }
+    mark.classList.add('target');
+    mark.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    focused = note.id;
+    render();
+    setTimeout(() => mark.classList.remove('target'), 1600);
+    live.textContent = '已定位到原文：「' + note.quote.slice(0, 16) + '…」。';
+  }
+  let selection = null;
+  function updateSelection() {
+    const sel = window.getSelection();
+    const text = sel ? String(sel).trim() : '';
+    const anchor = sel && sel.anchorNode ? (sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentElement) : null;
+    const mark = anchor && anchor.closest ? anchor.closest('mark') : null;
+    if (mark) {
+      selection = { quote: mark.textContent.trim(), id: mark.dataset.note || null };
+    } else if (text.length >= 4) {
+      selection = { quote: text.slice(0, 40), id: null };
+    } else {
+      selection = null;
+    }
+    add.disabled = !selection;
+    hint.textContent = selection
+      ? '将批注挂在这句：「' + selection.quote.slice(0, 22) + (selection.quote.length > 22 ? '…' : '') + '」'
+      : '未选中文本。先在上方段落中点选一句，批注会挂在这句上。';
+  }
+  reader.addEventListener('mouseup', updateSelection);
+  reader.addEventListener('touchend', () => setTimeout(updateSelection, 10));
+  reader.querySelectorAll('mark').forEach(mark => mark.addEventListener('click', () => {
+    document.querySelectorAll('mark').forEach(other => other.classList.remove('target'));
+    mark.classList.add('target');
+    focused = mark.dataset.note || focused;
+    render();
+    document.querySelectorAll('mark').forEach(other => { if (other !== mark) other.classList.remove('target'); });
+    live.textContent = '已选中原文：「' + mark.textContent.slice(0, 16) + '」。';
+  }));
+  add.addEventListener('click', () => {
+    if (!selection) return;
+    const text = memo.value.trim();
+    if (!text) { memo.focus(); hint.textContent = '请先写下批注内容。'; return; }
+    const id = 'n' + (notes.length + 1);
+    notes.push({ id, type: 'fix', quote: selection.quote, text, who: '我 · 刚刚', done: false });
+    if (selection.id) {
+      const mark = [...reader.querySelectorAll('mark')].find(item => item.dataset.note === selection.id);
+      if (mark) mark.dataset.note = id;
+    }
+    memo.value = ''; selection = null; add.disabled = true;
+    render(); updateSelection();
+    live.textContent = '已追加 1 条批注，共 ' + notes.length + ' 条。';
+  });
+  document.querySelectorAll('[data-tool]').forEach(button => button.addEventListener('click', () => {
+    const tool = button.dataset.tool;
+    if (tool === 'mark') {
+      const on = button.getAttribute('aria-pressed') === 'true';
+      button.setAttribute('aria-pressed', String(!on));
+      hint.textContent = !on ? '选中即批注：点任意句子都会挂上批注。' : '未选中文本。先在上方段落中点选一句。';
+      return;
+    }
+    document.querySelectorAll('[data-tool="split"],[data-tool="tall"]').forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+    document.getElementById('split').dataset.layout = tool;
+    document.getElementById('status').textContent = tool === 'tall'
+      ? '宽文视图：正文变宽，批注列收窄但仍可追加'
+      : '并排视图：正文与批注各占一半';
+    live.textContent = document.getElementById('status').textContent;
+  }));
+  render(); updateSelection();
+})();
+</script>
+</body>
+</html>

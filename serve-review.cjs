@@ -10,7 +10,10 @@ const pages = new Set([
   'culture.html', 'library.html', 'mobility.html', 'scheduling.html',
   'field-app.html', 'repair-mini.html', 'style-lab.html', 'intake.html', 'editions.html',
   'materials.html', 'assets.html', 'reader.html', 'cues.html', 'atlas.html', 'depot.html', 'programme.html', 'handover.html', 'proofroom.html', 'policy-diff.html', 'orbital.html', 'departures.html',
-  'bloom.html', 'blueprint.html', 'splitline.html', 'sprout.html'
+  'bloom.html', 'blueprint.html', 'splitline.html', 'sprout.html',
+  'television.html', 'kiosk.html', 'pda.html', 'pos.html', 'vehicle.html',
+  'watch.html', 'homepanel.html', 'arglass.html', 'vr.html', 'esl.html',
+  'dualmonitor.html', 'tablet.html', 'signage.html', 'foldable.html'
 ]);
 
 function parsePort(value = '4173') {

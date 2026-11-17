@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0f1512">
+<title>值守 · 双屏工位</title>
+<style>
+:root{--void:#0a0f0d;--frame:#1a211d;--panel:#121a16;--raise:#18211c;--line:#2a3630;--paper:#e9f0ea;--mute:#8fa398;--lime:#a8e06a;--cyan:#63c8d6;--amber:#e9a94b;--danger:#e06a52;font-family:"IBM Plex Sans","Noto Sans SC","Microsoft YaHei",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 80% 60% at 50% -10%,#16201a,#080b09 62%);min-height:100vh;padding:clamp(10px,2vw,26px);display:grid;place-items:center}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;text-align:left}
+.rig{width:min(1440px,100%);display:grid;gap:clamp(8px,1.1vw,14px)}
+.screens{display:grid;grid-template-columns:minmax(0,2.55fr) minmax(240px,1fr);gap:clamp(8px,1.1vw,14px)}
+/* Two physical displays: the wide one carries the timeline, the narrow one is
+   the auxiliary monitor an operator keeps on the side for reference data. */
+.monitor{background:var(--frame);border-radius:6px;padding:8px;box-shadow:0 18px 40px #0009,inset 0 1px #ffffff0a}
+.monitor .bar{display:flex;align-items:center;justify-content:space-between;gap:.8em;padding:.2em .3em .55em;font-size:clamp(9px,.72vw,11px);letter-spacing:.12em;color:#6d8077}
+.monitor .bar b{color:var(--lime);font-weight:650}
+.surface{background:var(--void);border-radius:3px;overflow:hidden;min-height:clamp(330px,44vh,560px);display:grid;grid-template-rows:auto 1fr;border:1px solid #24302a}
+.surface.aux{min-height:clamp(330px,44vh,560px);grid-template-rows:auto auto 1fr auto}
+.top{display:flex;align-items:center;justify-content:space-between;gap:1em;padding:clamp(9px,1.1vh,15px) clamp(10px,1.2vw,18px);border-bottom:1px solid var(--line);background:#0d1411}
+.top h1,.top h2{font-size:clamp(12px,.98vw,15px);font-weight:700;letter-spacing:.05em}
+.top .meta{font-size:clamp(9px,.74vw,11px);color:var(--mute);letter-spacing:.06em;display:flex;gap:1em;flex-wrap:wrap}
+.body{display:grid;grid-template-columns:minmax(0,1fr) minmax(200px,.52fr);min-height:0}
+@media(max-width:1080px){.screens{grid-template-columns:1fr}.body{grid-template-columns:1fr}}
+.timeline{padding:clamp(10px,1.4vh,18px) clamp(10px,1.2vw,18px);min-height:0;overflow:auto;border-right:1px solid var(--line);scrollbar-width:thin}
+.timeline h2{font-size:clamp(9px,.76vw,11px);letter-spacing:.16em;color:#7d9289;font-weight:700;margin-bottom:.75em}
+.grid-head,.lane{display:grid;grid-template-columns:minmax(96px,1.05fr) repeat(8,minmax(0,1fr));align-items:center}
+.grid-head{font-size:clamp(8px,.68vw,10px);color:#657a70;letter-spacing:.08em;padding-bottom:.4em;border-bottom:1px solid var(--line)}
+.grid-head span{text-align:center}
+.grid-head span:first-child{text-align:left}
+.lane{position:relative;border-bottom:1px solid #1c2722;min-height:clamp(38px,5.4vh,54px)}
+.lane .who{font-size:clamp(10px,.82vw,12px);color:#c3d6cb;font-weight:650;padding-right:.5em;line-height:1.35}
+.lane .who small{display:block;font-size:clamp(8px,.68vw,10px);color:#6d8279;font-weight:500;margin-top:.15em;letter-spacing:.04em}
+.slot{border-left:1px solid #1c2722;height:100%;min-height:inherit}
+.bar{grid-column:span var(--len,1);height:clamp(20px,2.8vh,28px);border-radius:3px;margin:0 2px;display:flex;align-items:center;gap:.4em;padding:0 .45em;font-size:clamp(8px,.7vw,10.5px);font-weight:700;letter-spacing:.02em;overflow:hidden;white-space:nowrap;cursor:pointer;transition:box-shadow .12s,filter .12s}
+/* The wide console drops to a touch surface on a phone, so every bar becomes a
+   full-width row instead of a 20 px slice of a timeline. */
+@media(max-width:620px){
+  .grid-head{display:none}
+  .timeline h2{margin-bottom:.5em}
+  .lane{grid-template-columns:1fr;min-height:0;padding:.4em 0;gap:.35em;align-content:start}
+  .lane .who{padding:0}
+  .lane .slot{display:none}
+  .lane .bar{--len:1!important;width:100%;height:44px;grid-column:auto}
+}
+.bar:hover,.bar:focus-visible{filter:brightness(1.18);box-shadow:0 0 0 2px #ffffff33}
+.bar[data-kind=run]{background:#2f5f3a;color:#d9f5c9;--len:2}
+.bar[data-kind=setup]{background:#3a4a5e;color:#cfe3f2;--len:1}
+.bar[data-kind=hold]{background:#5a4526;color:#f4dfb6;--len:1}
+.bar[data-kind=idle]{background:#242e28;color:#7d9089;--len:1;font-weight:600}
+.bar[aria-pressed=true]{box-shadow:0 0 0 2px var(--lime)}
+.bar .dot{width:.44em;height:.44em;border-radius:50%;background:currentColor;flex:none}
+.side{padding:clamp(10px,1.4vh,18px) clamp(10px,1.1vw,16px);display:grid;align-content:start;gap:clamp(8px,1.1vh,14px)}
+.side h2{font-size:clamp(9px,.76vw,11px);letter-spacing:.16em;color:#7d9289;font-weight:700}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:.35em .7em;font-size:clamp(10px,.82vw,12px);line-height:1.5}
+.kv dt{color:#6d8279;font-weight:650}
+.kv dd{color:#d3e3d9;font-variant-numeric:tabular-nums}
+.gauge{display:grid;gap:.4em}
+.gauge .row{display:grid;grid-template-columns:1fr auto;gap:.6em;font-size:clamp(9px,.74vw,11px);color:#a9bdb2}
+.gauge .track{height:5px;background:#1e2924;border-radius:99px;overflow:hidden;grid-column:1/-1}
+.gauge .track i{display:block;height:100%;background:var(--lime)}
+.gauge .track i.warn{background:var(--amber)}
+.tabs{display:flex;gap:3px;padding:0 clamp(10px,1.2vw,18px) clamp(8px,1vh,12px)}
+.tabs button{padding:.5em .85em;font-size:clamp(9px,.76vw,11px);font-weight:700;letter-spacing:.06em;border-radius:3px;color:#8fa398;background:#121a16;border:1px solid #24302a;min-height:44px}
+.tabs button[aria-pressed=true]{background:#1e2b24;color:var(--lime);border-color:#3c5548}
+.aux-body{padding:clamp(10px,1.4vh,18px) clamp(10px,1.1vw,16px);display:grid;align-content:start;gap:clamp(8px,1.2vh,14px);min-height:0;overflow:auto}
+.aux-body h2{font-size:clamp(9px,.76vw,11px);letter-spacing:.16em;color:#7d9289;font-weight:700;display:flex;justify-content:space-between;gap:.6em;align-items:center}
+.aux-body h2 span{color:var(--amber);letter-spacing:.04em}
+.ticket{background:#141d18;border:1px solid #26332b;border-left:3px solid var(--danger);border-radius:3px;padding:.65em .8em;display:grid;gap:.28em}
+.ticket[data-level=warn]{border-left-color:var(--amber)}
+.ticket b{font-size:clamp(11px,.9vw,13px);font-weight:700;color:#e6efe8}
+.ticket small{font-size:clamp(9px,.74vw,11px);color:#93a89d;line-height:1.5}
+.ticket .at{color:#6d8279;letter-spacing:.06em;font-size:clamp(8px,.68vw,10px)}
+.ticket[aria-pressed=true]{box-shadow:0 0 0 1px var(--lime);background:#18241d}
+.log{display:grid;gap:.2em;font-family:"IBM Plex Mono",Consolas,monospace;font-size:clamp(9px,.72vw,10.5px);color:#8aa093;line-height:1.6}
+.log b{color:var(--lime);font-weight:600}
+/* The second display never holds destructive controls. It mirrors what the
+   operator checked on the wide screen, so the audit trail matches one action. */
+.footer{display:flex;align-items:center;justify-content:space-between;gap:1em;flex-wrap:wrap;padding:clamp(8px,1.2vh,14px) clamp(12px,1.4vw,20px);background:#0d1411;border-top:1px solid var(--line);font-size:clamp(9px,.76vw,11px);color:#8fa398}
+.footer b{color:var(--paper)}
+.footer .acts{display:flex;gap:.5em}
+.footer .acts button{padding:.5em .9em;border-radius:3px;border:1px solid #34443b;color:#cfe3d8;font-size:clamp(9px,.76vw,11px);font-weight:700;min-height:44px}
+.footer .acts button.primary{background:var(--lime);color:#0d1a10;border-color:var(--lime)}
+.legend{display:flex;gap:.9em;flex-wrap:wrap;font-size:clamp(8px,.7vw,10.5px);color:#7d9289;letter-spacing:.04em}
+.legend i{display:inline-block;width:.6em;height:.6em;border-radius:2px;margin-right:.35em}
+.legend span{display:inline-flex;align-items:center}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="monitor">
+<main class="rig">
+  <div class="screens">
+    <section class="monitor" aria-label="主显示器">
+      <div class="bar"><span>显示器 1 · 2560 × 1440</span><b>产线 A · 三班交接</b><span id="clock">08:42</span></div>
+      <div class="surface">
+        <div class="top">
+          <h1>今日排程 · 11 月 17 日</h1>
+          <div class="meta"><span>07:00 — 19:00</span><span id="headline">已排 6 单 · 冲突 1 处</span></div>
+        </div>
+        <div class="body">
+          <div class="timeline">
+            <h2>产线时段（每格 90 分钟）</h2>
+            <div class="grid-head" aria-hidden="true"><span>工单 / 产线</span><span>07:00</span><span>08:30</span><span>10:00</span><span>11:30</span><span>13:00</span><span>14:30</span><span>16:00</span><span>17:30</span></div>
+            <div id="lanes"></div>
+          </div>
+          <aside class="side" aria-label="选中工单详情">
+            <h2>选中工单</h2>
+            <dl class="kv" id="detail">
+              <dt>工单</dt><dd>WO-1107-04</dd>
+              <dt>产品</dt><dd>铸铝端盖 · B 型</dd>
+              <dt>数量</dt><dd>1 200 件</dd>
+              <dt>占用</dt><dd>08:30 — 11:30</dd>
+              <dt>前置</dt><dd>模具已校验 · 08:12</dd>
+            </dl>
+            <div class="gauge" aria-label="资源占用">
+              <div class="row"><span>产线 A 负载</span><span>86%</span><div class="track"><i style="width:86%"></i></div></div>
+              <div class="row"><span>换模工位</span><span>满载</span><div class="track"><i class="warn" style="width:100%"></i></div></div>
+              <div class="row"><span>在制缓存</span><span>34%</span><div class="track"><i style="width:34%"></i></div></div>
+            </div>
+          </aside>
+        </div>
+        <div class="tabs" role="group" aria-label="主屏视图">
+          <button type="button" data-view="plan" aria-pressed="true">排程</button>
+          <button type="button" data-view="queue" aria-pressed="false">待排 4 单</button>
+          <button type="button" data-view="load" aria-pressed="false">负载</button>
+        </div>
+        <div class="footer">
+          <div class="legend"><span><i style="background:#2f5f3a"></i>生产中</span><span><i style="background:#3a4a5e"></i>换模</span><span><i style="background:#5a4526"></i>暂停待料</span><span><i style="background:#242e28"></i>空档</span></div>
+          <span id="hint">点一段色块可查看工单详情；辅屏会同步同一张工单</span>
+        </div>
+      </div>
+    </section>
+    <section class="monitor" aria-label="辅显示器">
+      <div class="bar"><span>显示器 2 · 竖向 1200 × 1920</span><span>参考与告警</span></div>
+      <div class="surface aux">
+        <div class="top"><h2>待处理</h2><div class="meta"><span>3 条</span></div></div>
+        <div class="aux-body">
+          <h2>告警 <span>1 高</span></h2>
+          <button class="ticket" type="button" data-review-id="dual-alert-1" aria-pressed="false"><b>WO-1107-04 与前序冲突</b><small>模具校验完成时间推后 20 分钟，08:30 起工将等待。</small><span class="at">08:04 · 排程器</span></button>
+          <button class="ticket" type="button" data-level="warn" aria-pressed="false"><b>换模工位排满</b><small>10:00 后无可用窗口，建议把 WO-1107-06 顺延。</small><span class="at">07:58 · 排程器</span></button>
+          <h2>同一工单的历史</h2>
+          <div class="log">
+            <span><b>08:12</b> 模具校验通过 · 张工</span>
+            <span><b>08:04</b> 排程冲突被标记</span>
+            <span><b>07:41</b> 工单由 11:30 提前至 08:30</span>
+            <span><b>07:20</b> 班前会确认数量 1 200</span>
+          </div>
+        </div>
+        <div class="footer">
+          <span><b>辅屏只读。</b>修改排程在主屏完成。</span>
+          <div class="acts"><button type="button" data-review-id="dual-open">在主屏定位</button></div>
+        </div>
+      </div>
+    </section>
+  </div>
+</main>
+<p class="sr" id="live" role="status" aria-live="polite"></p>
+<script>
+(() => {
+  'use strict';
+  const lanes = [
+    { who: 'WO-1107-01', sub: '端盖 A · 800 件', start: 0, len: 2, kind: 'run', range: '07:00 — 10:00' },
+    { who: 'WO-1107-02', sub: '支架 · 400 件', start: 1, len: 1, kind: 'setup', range: '08:30 — 10:00', detail: true },
+    { who: 'WO-1107-04', sub: '端盖 B · 1 200 件', start: 2, len: 2, kind: 'hold', range: '10:00 — 13:00' },
+    { who: 'WO-1107-05', sub: '底座 · 600 件', start: 4, len: 2, kind: 'run', range: '13:00 — 16:00' },
+    { who: 'WO-1107-06', sub: '支架 · 300 件', start: 6, len: 2, kind: 'run', range: '16:00 — 19:00' }
+  ];
+  const live = document.getElementById('live');
+  const detail = document.getElementById('detail');
+  const hint = document.getElementById('hint');
+  const host = document.getElementById('lanes');
+  function build() {
+    lanes.forEach((lane, index) => {
+      const row = document.createElement('div');
+      row.className = 'lane';
+      const who = document.createElement('span');
+      who.className = 'who';
+      who.innerHTML = lane.who + '<small>' + lane.sub + '</small>';
+      row.append(who);
+      for (let i = 0; i < 8; i++) {
+        if (i === lane.start) {
+          const bar = document.createElement('button');
+          bar.type = 'button';
+          bar.className = 'bar';
+          bar.dataset.kind = lane.kind;
+          bar.dataset.reviewId = 'dual-bar-' + lane.who.toLowerCase();
+          bar.style.setProperty('--len', lane.len);
+          bar.setAttribute('aria-pressed', lane.detail ? 'true' : 'false');
+          const dot = document.createElement('i');
+          dot.className = 'dot';
+          bar.append(dot, document.createTextNode(lane.who));
+          bar.title = lane.who + ' · ' + lane.range;
+          bar.addEventListener('click', () => select(bar, lane));
+          row.append(bar);
+          i += lane.len - 1;
+        } else {
+          const slot = document.createElement('span');
+          slot.className = 'slot';
+          row.append(slot);
+        }
+      }
+      host.append(row);
+    });
+  }
+  function select(bar, lane) {
+    host.querySelectorAll('.bar').forEach(other => other.setAttribute('aria-pressed', 'false'));
+    bar.setAttribute('aria-pressed', 'true');
+    detail.innerHTML = '<dt>工单</dt><dd>' + lane.who + '</dd><dt>产品</dt><dd>' + lane.sub.split(' · ')[0] +
+      '</dd><dt>数量</dt><dd>' + lane.sub.split(' · ')[1] + '</dd><dt>占用</dt><dd>' + lane.range +
+      '</dd><dt>状态</dt><dd>' + ({ run: '生产中', setup: '换模', hold: '暂停待料' }[lane.kind] || '未排') + '</dd>';
+    hint.textContent = '已选中 ' + lane.who + '；辅屏的「在主屏定位」会同步这一段。';
+    live.textContent = '已选中工单 ' + lane.who + '，占用 ' + lane.range + '，状态 ' +
+      ({ run: '生产中', setup: '换模', hold: '暂停待料' }[lane.kind] || '未排') + '。';
+  }
+  document.querySelector('[data-review-id="dual-open"]').addEventListener('click', () => {
+    const target = host.querySelector('[aria-pressed="true"]') || host.querySelector('.bar');
+    target.focus();
+    target.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+    hint.textContent = '焦点已移回主屏的 ' + (target.textContent.trim() || '首段') + '。';
+  });
+  document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('[data-view]').forEach(other => other.setAttribute('aria-pressed', String(other === button)));
+    live.textContent = '主屏视图切换为「' + button.textContent + '」。';
+  }));
+  const pad = n => String(n).padStart(2, '0');
+  const tick = () => { const now = new Date(); document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes()); };
+  tick(); setInterval(tick, 20000);
+  build();
+})();
+</script>
+</body>
+</html>

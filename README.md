@@ -1,22 +1,116 @@
 # UI-Craft · UI/UX 设计
 
-给 AI 编程助手使用的中文前端设计技能。告诉它谁会用这个页面、在哪种屏幕上用、最常做什么，它会据此选择布局、字阶、配色和交互，并在你的项目中实现。适用于指挥大屏、公共信息屏、品牌官网、业务系统、App 和微信小程序。
+给 AI 编程助手使用的中文前端设计技能。告诉它谁会用这个页面、在哪种屏幕上用、最常做什么，它会据此选择布局、字阶、配色和交互，并在你的项目中实现。
 
-[选择开发工具](#按平台安装和使用) · [选一个视觉方向](#风格速览) · [大屏、官网与移动示例](#更多界面风格) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.0.0/ui-craft-v11.0.0.zip)
+覆盖 16 类设备形态：指挥大屏、公共信息屏、客厅电视、竖屏数字标牌、自助终端、收银双屏、手持终端、电子价签、腕表、车机与 HUD、AR 眼镜、VR 头显、双屏工位、平板分屏、折叠屏、家居面板；以及官网、业务系统、App 和微信小程序。
+
+[选择开发工具](#按平台安装和使用) · [设备矩阵](#设备矩阵) · [风格速览](#风格速览) · [在线评审台](https://fruge365.github.io/ui-craft/) · [下载技能包](https://github.com/fruge365/ui-craft/releases/download/v11.0.0/ui-craft-v11.0.0.zip)
+
+## 设备矩阵
+
+每个样页都由这台设备的真实约束驱动，不是把同一个界面换个配色。这张表就是技能在做设计判断时使用的依据。
+
+| 设备 / 场景 | 关键约束 | 样页 |
+| --- | --- | --- |
+| 指挥大屏 · 能源墙 | 远距读数、缺报与零值可区分、单位与时间口径 | [凌日](https://fruge365.github.io/ui-craft/orbital.html) · [江湾](https://fruge365.github.io/ui-craft/bigscreen.html) |
+| 客运信息屏 | 几秒内读出班次、闸口与改闸 | [渡口](https://fruge365.github.io/ui-craft/departures.html) |
+| 客厅电视 | 十英尺字阶、只用方向键、暗环境、overscan 安全区 | [燕居](https://fruge365.github.io/ui-craft/television.html) |
+| 竖屏数字标牌 | 一屏一件事、动态字段坐标固定、无输入 | [厅刊](https://fruge365.github.io/ui-craft/signage.html) |
+| 自助终端 | 站立操作、强光对比、已满项给出替代去处、打印回执 | [和济](https://fruge365.github.io/ui-craft/kiosk.html) |
+| 收银台双屏 | 店员屏与顾客屏职责分离、两屏数字同源 | [台口](https://fruge365.github.io/ui-craft/pos.html) |
+| 手持终端 | 手套热区、一次扫码一个回执、差异行双通道标记 | [仓位](https://fruge365.github.io/ui-craft/pda.html) |
+| 电子价签 | 一位元灰阶、刷新闪屏代价、1.2 米远读 | [架签](https://fruge365.github.io/ui-craft/esl.html) |
+| 腕表 | 圆屏内切安全区、三个数字两个动作、防误触 | [拾野](https://fruge365.github.io/ui-craft/watch.html) |
+| 车机与 HUD | 驻车/行车状态分离、行驶中控件真阻断、降级说明 | [行野](https://fruge365.github.io/ui-craft/vehicle.html) |
+| AR 眼镜 | 窄视场两块卡片、锚定真实物体、手势失败回落语音 | [眺望](https://fruge365.github.io/ui-craft/arglass.html) |
+| VR 头显 | 注视+确认两步、按视角算目标尺寸、三种降级 | [沉积](https://fruge365.github.io/ui-craft/vr.html) |
+| 双屏工位 | 主屏执行、辅屏只读、一条操作一份审计 | [值守](https://fruge365.github.io/ui-craft/dualmonitor.html) |
+| 平板分屏 | 选句即批注、批注能回原文、分栏可调内容不跳 | [案头](https://fruge365.github.io/ui-craft/tablet.html) |
+| 折叠屏 | 形态变化不重置选中项与滚动位置、折痕避开交互 | [展签](https://fruge365.github.io/ui-craft/foldable.html) |
+| 家居面板 | 实测与设定分离、低亮度暖字、情景写清影响范围 | [栖居](https://fruge365.github.io/ui-craft/homepanel.html) |
+| 品牌官网 | 主推单品的材质与体量、留白与段落节奏 | [LUMA](https://fruge365.github.io/ui-craft/website.html) |
+| 业务平台 | 任务密度、语义用色、搜索筛选与批量处理 | [澄序](https://fruge365.github.io/ui-craft/platform.html) |
+| App 与小程序 | 草稿、返回、扫码直达、单手可达 | [栖庭巡检](https://fruge365.github.io/ui-craft/field-app.html) · [报修](https://fruge365.github.io/ui-craft/repair-mini.html) |
 
 ## 风格速览
 
 点击截图可打开页面。想在自己的项目中使用某种方向，可以把图下的设计描述与业务需求一起发给技能。
 
+| **客厅电视 · 燕居** | **自助挂号机 · 和济** |
+| --- | --- |
+| [![暗底客厅大屏，金色续看标题、横排片单与遥控按键提示](docs/images/television.png)](https://fruge365.github.io/ui-craft/television.html) | [![白底自助机，时段网格、右侧小结与底部出票说明](docs/images/kiosk.png)](https://fruge365.github.io/ui-craft/kiosk.html) |
+| 三米外先读到主标题与续看进度。方向键换行、左右选片，确认打开详情，返回回到原选中项。 | 站立状态选时段，已满时段置灰并说明人工窗口去处。摘要固定右上，改选不回头。 |
+
+| **手持终端 · 仓位** | **收银台双屏 · 台口** |
+| --- | --- |
+| [![黄黑工业手持机，绿底液晶屏上是扫码输入与盘点行](docs/images/pda.png)](https://fruge365.github.io/ui-craft/pda.html) | [![深色收银主屏与浅色顾客副屏并排，金额大字居中](docs/images/pos.png)](https://fruge365.github.io/ui-craft/pos.html) |
+| 戴手套也要一次扫对。重复扫描不累加，差异行同时用颜色和符号标出。 | 店员的明细与顾客的金额来自同一份状态，副屏只读不参与计算。 |
+
+| **腕表训练 · 拾野** | **车机与 HUD · 行野** |
+| --- | --- |
+| [![圆形表壳内的绿色进度环、配速大字与两个圆角按钮](docs/images/watch.png)](https://fruge365.github.io/ui-craft/watch.html) | [![深色座舱屏，上方抬头显示速度与限速，下方媒体卡与车况卡](docs/images/vehicle.png)](https://fruge365.github.io/ui-craft/vehicle.html) |
+| 抬腕一秒只读三个数。边缘 12% 不放可点区域，结束训练藏在长按之后。 | 驻车可完整操作，行车只留速度、限速、下一转向与续航，控件真被置灰。 |
+
+| **AR 眼镜 · 眺望** | **VR 头显 · 沉积** |
+| --- | --- |
+| [![眼镜第一人称视场，绿色虚线安全区与两块锚定卡片](docs/images/arglass.png)](https://fruge365.github.io/ui-craft/arglass.html) | [![双目并排的沉浸视场，中央紫色准星与地层卡片](docs/images/vr.png)](https://fruge365.github.io/ui-craft/vr.html) |
+| 窄视场只放两块卡片。内容挂在真实物体上，手势识别失败立刻给出语音后路。 | 注视指向、手势确认，两步之间可取消。追踪丢失、有障碍、晕动各有一套降级。 |
+
+| **双屏工位 · 值守** | **平板分屏 · 案头** |
+| --- | --- |
+| [![左宽屏排程时间轴，右竖屏告警与历史记录](docs/images/dualmonitor.png)](https://fruge365.github.io/ui-craft/dualmonitor.html) | [![平板内左正文右批注，选中句高亮并挂批注卡](docs/images/tablet.png)](https://fruge365.github.io/ui-craft/tablet.html) |
+| 主屏做决定，辅屏查参考。辅屏只读，定位动作把焦点送回主屏。 | 选句即挂批注，点批注能回到原句。宽文视图仍保留追加入口。 |
+
+| **折叠屏 · 展签** | **家居面板 · 栖居** |
+| --- | --- |
+| [![折叠屏展开双列，中间一条折痕，左侧展品列表右侧详情](docs/images/foldable.png)](https://fruge365.github.io/ui-craft/foldable.html) | [![深色铜饰面板，三个房间旋钮与情景列表](docs/images/homepanel.png)](https://fruge365.github.io/ui-craft/homepanel.html) |
+| 合起单列、展开双列。切换形态不丢选中项与滚动位置，折痕处不放交互。 | 实测温度与设定温度分开显示，情景切换要说出影响了哪几个房间。 |
+
+| **电梯厅标牌 · 厅刊** | **电子价签 · 架签** |
+| --- | --- |
+| [![竖屏标牌，大标题、三条日程与底部二维码带](docs/images/signage.png)](https://fruge365.github.io/ui-craft/signage.html) | [![灰底货架上的纸质价签，促销价与单位价并排](docs/images/esl.png)](https://fruge365.github.io/ui-craft/esl.html) |
+| 十几秒里读出下一场的时间、名称与楼层。动态字段只换值不换位置。 | 一位元灰阶没有动画和悬停，价格最大、单位价其次，其余能读即可。 |
+
+<details>
+<summary><strong>更多界面风格</strong> · 花艺、蓝晒、赛道、像素、指挥大屏、建筑导览</summary>
+
 | **花艺画册 · 花序** | **工程蓝晒 · 晒图室** |
 | --- | --- |
 | [![花序以莓红色大标题配整幅桃粉花束摄影](docs/images/bloom.png)](https://fruge365.github.io/ui-craft/bloom.html) | [![钴蓝制图纸上用白色线稿分解家具，用亮黄指出选中的部件](docs/images/blueprint.png)](https://fruge365.github.io/ui-craft/blueprint.html) |
-| 用莓果红作底，让花材摄影占据半幅页面。品种、价格与花束尺寸排在另一侧，像一本可以订购的花册。 | 让整张屏幕成为蓝图，部件的爆炸视图占据中心。白线交代结构，亮黄标出正在装配的零件。 |
+| 用莓果红作底，让花材摄影占据半幅页面。品种、价格与花束尺寸排在另一侧。 | 让整张屏幕成为蓝图，部件的爆炸视图占据中心，亮黄标出正在装配的零件。 |
 
 | **赛道计时 · 折返** | **像素掌机 · 芽间** |
 | --- | --- |
 | [![朱红跑道、白色斜体分秒与近黑排名带](docs/images/splitline.png)](https://fruge365.github.io/ui-craft/splitline.html) | [![薄荷绿背景、淡紫掌机外壳和像素温室里的专注计时器](docs/images/sprout.png)](https://fruge365.github.io/ui-craft/sprout.html) |
-| 用斜体大数字做第一眼的焦点，跑道和近黑成绩带分层。切换计时点，领跑选手、赛道和成绩同步改变。 | 用薄荷绿、淡紫机身与杏橙按键做一台掌上计时器。像素花床记录完成的专注段数，手机上也能单手操作。 |
+| 用斜体大数字做第一眼的焦点，切换计时点时领跑选手与成绩同步改变。 | 薄荷绿与淡紫机身组成的掌上计时器，像素花床记录已完成的专注段数。 |
+
+| **深色指挥大屏 · 凌日** | **黄黑公共导视 · 渡口** |
+| --- | --- |
+| [![暗色地球轨迹图、航天器遥测和过站时间窗](docs/images/orbital.png)](https://fruge365.github.io/ui-craft/orbital.html) | [![高对比的离港时刻、登船闸口和方向箭头](docs/images/departures.png)](https://fruge365.github.io/ui-craft/departures.html) |
+| 值班员切换目标，在同一幅轨迹图上读出接收窗口。 | 旅客远看时间和闸口，走近后再读船次与延误信息。 |
+
+| **暖白极简 · LUMA 空间音箱** | **淡紫音乐海报 · 声场室内乐周** |
+| --- | --- |
+| [![暖白背景上的织物音箱、留白和产品标题](docs/images/luma-website.png)](https://fruge365.github.io/ui-craft/website.html) | [![淡紫海报、深色波形和两天的演出日程](docs/images/programme.png)](https://fruge365.github.io/ui-craft/programme.html) |
+| 用留白与织物细节呈现产品的材质，适合主推单品的品牌官网。 | 用衬线大标题、波形和日期组织首屏，向下衔接演出日程。 |
+
+| **材料样本馆** | **河岸建筑图志** |
+| --- | --- |
+| [![石纹、木纹和织物纹理样本排成目录](docs/images/materials.png)](https://fruge365.github.io/ui-craft/materials.html) | [![河岸示意图、编号与地点索引](docs/images/atlas.png)](https://fruge365.github.io/ui-craft/atlas.html) |
+| 看纹理选材料，按材质和色调缩小范围，再放进同一张规格表比较。 | 沿示意河道找建筑，再切到地点目录，按编号核对同一站。 |
+
+| **库区作业板** | **早班调度简报** |
+| --- | --- |
+| [![仓库平面与高亮货位](docs/images/depot.png)](https://fruge365.github.io/ui-craft/depot.html) | [![调度趋势与优先补车站点](docs/images/mobility-desktop.png)](https://fruge365.github.io/ui-craft/mobility.html) |
+| 从库区平面或货位目录找同一地址，预览货位后填写盘点。 | 从早高峰趋势判断哪里需要补车，区分实测、缺报与预测。 |
+
+**移动服务 · 栖庭巡检 App 与园区报修小程序**
+
+同一品牌用两种信息密度服务不同用户。左侧给技师看下一项工单和班次，右侧给访客确认地点、选择问题并提交。[打开巡检 App 示例](https://fruge365.github.io/ui-craft/field-app.html) · [打开报修小程序示例](https://fruge365.github.io/ui-craft/repair-mini.html)
+
+![两个手机界面并排，左为青绿的技师巡检班表，右为浅色的访客报修表单](docs/images/qiting-mobile.png)
+
+</details>
 
 ## 按平台安装和使用
 
@@ -167,38 +261,42 @@ npx skills add fruge365/ui-craft --skill ui-craft --agent windsurf --copy
 
 使用其他兼容工具时，可在 [skills.sh](https://www.skills.sh/fruge365/ui-craft/ui-craft) 复制安装命令，运行后从列表选择你的工具。
 
-## 更多界面风格
+## 在线评审台
 
-| **深色指挥大屏 · 凌日** | **黄黑公共导视 · 渡口** |
-| --- | --- |
-| [![暗色地球轨迹图、航天器遥测和过站时间窗](docs/images/orbital.png)](https://fruge365.github.io/ui-craft/orbital.html) | [![高对比的离港时刻、登船闸口和方向箭头](docs/images/departures.png)](https://fruge365.github.io/ui-craft/departures.html) |
-| 值班员切换目标，在同一幅轨迹图上读出接收窗口。 | 旅客远看时间和闸口，走近后再读船次与延误信息。 |
+打开 [fruge365.github.io/ui-craft](https://fruge365.github.io/ui-craft/) 可以在浏览器里逐页体验全部样页，切换 390 / 1024 / 1440 / 1920 四种画布，并在任意元素上留标注、打视觉评分、导出 JSON 或 Markdown 评审单。
 
-| **暖白极简 · LUMA 空间音箱** | **淡紫音乐海报 · 声场室内乐周** |
-| --- | --- |
-| [![暖白背景上的织物音箱、留白和产品标题](docs/images/luma-website.png)](https://fruge365.github.io/ui-craft/website.html) | [![淡紫海报、深色波形和两天的演出日程](docs/images/programme.png)](https://fruge365.github.io/ui-craft/programme.html) |
-| 用留白与织物细节呈现产品的材质，适合主推单品的品牌官网。 | 用衬线大标题、波形和日期组织首屏，向下衔接演出日程。 |
+本地启动同一个评审台：
 
-**移动服务 · 栖庭巡检 App 与园区报修小程序**
+```sh
+npm start
+```
 
-同一品牌用两种信息密度服务不同用户。左侧给技师看下一项工单和班次，右侧给访客确认地点、选择问题并提交。[打开巡检 App 示例](https://fruge365.github.io/ui-craft/field-app.html) · [打开报修小程序示例](https://fruge365.github.io/ui-craft/repair-mini.html)
+默认监听 `127.0.0.1:4173`。也可用 `npm start -- 4180` 换端口。标注通过元素选择器与预览尺寸定位，保存在当前浏览器，不经过服务器。
 
-![两个手机界面并排，左为青绿的技师巡检班表，右为浅色的访客报修表单](docs/images/qiting-mobile.png)
+## 设计约束从哪来
 
-<details>
-<summary><strong>更多业务与内容案例</strong> · 材料选购、建筑导览、仓储、调度</summary>
+技能里的判断不是风格偏好，每一条都能追到一个设备事实：
 
-[样本材质目录](https://fruge365.github.io/ui-craft/materials.html) · [河岸建筑地图](https://fruge365.github.io/ui-craft/atlas.html) · [荧光绿仓储作业板](https://fruge365.github.io/ui-craft/depot.html) · [藏蓝运营简报](https://fruge365.github.io/ui-craft/mobility.html)
+- **注意力预算**：驾驶一瞥、跑步一秒、排队几分钟，决定信息量与层级数量的上限。
+- **触控与视线**：站立操作 48 px、戴手套 44 px、圆屏内切 76%、折痕 30—40 px 不可点。
+- **刷新代价**：电子纸整刷闪黑、局部留影，所以价签只写必要信息。
+- **形态保持**：折叠屏、分屏、旋转后必须保住选中项与滚动位置。
+- **降级路径**：追踪丢失、周边障碍、晕动、断网、打印失败，每种都要有可见的替代动作。
+- **状态分离**：驻车与行车、实测与设定、焦点与选中，混在一起就是设计缺陷。
 
-| 材料样本馆 | 河岸建筑图志 |
-| --- | --- |
-| [![石纹、木纹和织物纹理样本排成目录](docs/images/materials.png)](https://fruge365.github.io/ui-craft/materials.html) | [![河岸示意图、编号与地点索引](docs/images/atlas.png)](https://fruge365.github.io/ui-craft/atlas.html) |
+`skills/ui-craft/references/` 下按场景分开写，共 22 篇，装进项目后按当前任务加载对应的一篇就够。
 
-| 库区作业板 | 早班调度简报 |
-| --- | --- |
-| [![仓库平面与高亮货位](docs/images/depot.png)](https://fruge365.github.io/ui-craft/depot.html) | [![调度趋势与优先补车站点](docs/images/mobility-desktop.png)](https://fruge365.github.io/ui-craft/mobility.html) |
+## 仓库结构
 
-</details>
+```text
+html-review/            评审台与 42 个独立样页，发布到 GitHub Pages
+skills/ui-craft/        技能本体：SKILL.md、references/、assets/tokens.css
+docs/images/            样页截图
+scripts/                发布测试与开发用探针
+serve-review.cjs        本地评审服务
+```
+
+`npm test` 会检查发布目录只含预期文件、每页离线可渲染、内联脚本可解析、技能与 README 的相对链接都在包内。`scripts/layout-probe.cjs` 与 `scripts/interaction-probe.cjs` 是开发用探针，用无头 Chrome 检查 1440 与 390 两个宽度下的溢出、热区与主路径行为，不参与发布。
 
 ## 其他获取方式
 

@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0e100f">
+<title>燕居 · 客厅大屏</title>
+<style>
+:root{--ink:#0e100f;--panel:#171a18;--raise:#20241f;--line:#3a3f38;--paper:#f2efe6;--mute:#a5a89c;--gold:#f0b64c;--moss:#8fb37a;--clay:#c9704a;font-family:"Noto Sans SC","Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:var(--paper);font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse 120% 90% at 50% -18%,#243026 0,transparent 62%),var(--ink);min-height:100vh;overflow:hidden}
+h1,h2,h3,p{margin:0}button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+.screen{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;height:100svh;padding:clamp(18px,2.2vh,34px) clamp(24px,4vw,86px) clamp(14px,1.8vh,26px)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:2em}
+.brand{display:flex;align-items:center;gap:.6em;font-size:clamp(18px,1.5vw,28px);font-weight:700;letter-spacing:.16em}
+.brand i{width:1.5em;height:1.1em;background:var(--gold);clip-path:polygon(0 0,100% 0,100% 62%,52% 100%,0 100%)}
+.meta{display:flex;align-items:center;gap:clamp(14px,1.6vw,28px);color:var(--mute);font-size:clamp(13px,1.05vw,19px)}
+.meta b{color:var(--paper);font-weight:600}
+.lead{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:clamp(20px,3vw,64px);align-items:center;padding:clamp(14px,2.4vh,34px) 0}
+.lead h1{font-size:clamp(40px,4.6vw,92px);line-height:1.02;letter-spacing:-.045em;font-weight:800}
+.lead h1 span{display:block;color:var(--gold)}
+.lead p{margin-top:.9em;max-width:34em;font-size:clamp(15px,1.2vw,23px);line-height:1.6;color:#d7d4c8}
+.tags{display:flex;flex-wrap:wrap;gap:.6em;margin-top:1.4em}
+.tags span{font-size:clamp(12px,.9vw,17px);padding:.32em .8em;border:1px solid var(--line);border-radius:99px;color:var(--mute)}
+.hero{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:linear-gradient(148deg,#2f4436,#1b2a22 46%,#33261c);box-shadow:0 24px 60px #0009}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 74% 30%,#f0b64c3a,transparent 46%),repeating-linear-gradient(112deg,#0000001a 0 2px,transparent 2px 9px)}
+.hero b{position:absolute;left:1.1em;bottom:.9em;z-index:1;font-size:clamp(17px,1.5vw,28px);letter-spacing:.02em}
+.hero em{position:absolute;right:1.1em;top:1em;z-index:1;font-style:normal;font-size:clamp(12px,.9vw,17px);padding:.3em .7em;background:#0e100fcc;border-radius:4px;color:var(--gold)}
+.rails{display:grid;align-content:start;gap:clamp(14px,2.1vh,30px);min-height:0;overflow:auto;padding-bottom:8px;scrollbar-width:none}
+.rails::-webkit-scrollbar{display:none}
+.rail h2{font-size:clamp(15px,1.16vw,23px);font-weight:600;color:#dedbcf;letter-spacing:.02em;margin-bottom:.7em;display:flex;align-items:center;gap:.6em}
+.rail h2::before{content:"";width:3px;height:.9em;background:var(--gold)}
+.track{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(clamp(180px,15vw,290px),1fr);gap:clamp(10px,1vw,20px);overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.track::-webkit-scrollbar{display:none}
+.tile{position:relative;border-radius:10px;overflow:hidden;background:var(--panel);border:1px solid #262a25;padding:0;transition:transform .14s ease,box-shadow .14s ease}
+.tile .art{display:block;aspect-ratio:16/10;background:var(--swatch,linear-gradient(140deg,#3d5341,#22332a))}
+.tile .art::after{content:"";display:block;height:100%;background:radial-gradient(circle at 30% 24%,#ffffff1f,transparent 52%),repeating-linear-gradient(74deg,#00000014 0 3px,transparent 3px 11px)}
+.tile figcaption{padding:.72em .8em .84em;display:block}
+.tile b{display:block;font-size:clamp(13px,1.02vw,20px);font-weight:650;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile small{display:block;margin-top:.28em;font-size:clamp(11px,.82vw,16px);color:var(--mute);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile .pin{position:absolute;left:.6em;top:.6em;font-size:clamp(10px,.76vw,14px);padding:.22em .55em;border-radius:3px;background:#0e100fd9;color:var(--gold);letter-spacing:.06em}
+.tile[data-focus=true]{transform:scale(1.035);box-shadow:0 0 0 3px var(--gold),0 16px 40px #000a;z-index:1;outline:none}
+.tile[data-focus=true] b{color:#fff}
+.foot{display:flex;align-items:center;justify-content:space-between;gap:2em;padding-top:clamp(8px,1.2vh,16px);border-top:1px solid #23271f;font-size:clamp(12px,.94vw,17px);color:var(--mute)}
+.keys{display:flex;gap:1.4em;align-items:center}
+.keys kbd{font:600 .92em/1 "Segoe UI",sans-serif;border:1px solid #4a5046;border-bottom-width:2px;border-radius:4px;padding:.34em .5em;margin-right:.4em;color:#dcd9cd;background:#1a1e1a}
+.detail{position:fixed;inset:0;z-index:9;display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);background:#0b0d0cf5;backdrop-filter:blur(6px)}
+.detail[hidden]{display:none}
+.detail .poster{position:relative;background:linear-gradient(150deg,#3a5342,#1d2c24 55%,#3a2b1f);border-right:1px solid #2c312a}
+.detail .poster::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 62% 34%,#f0b64c47,transparent 46%)}
+.detail .body{padding:clamp(24px,4vh,64px) clamp(24px,3vw,58px);display:flex;flex-direction:column;justify-content:center;gap:1em}
+.detail h2{font-size:clamp(30px,3.4vw,64px);line-height:1.1;letter-spacing:-.03em}
+.detail .sub{color:var(--gold);font-size:clamp(14px,1.05vw,20px);letter-spacing:.04em}
+.detail p{color:#cdcabe;font-size:clamp(14px,1.1vw,20px);line-height:1.7;max-width:32em}
+.acts{display:flex;flex-wrap:wrap;gap:.8em;margin-top:1em}
+.acts button{padding:.72em 1.5em;border-radius:6px;font-size:clamp(14px,1.05vw,20px);font-weight:650;border:1px solid #4b5147}
+.acts .play{background:var(--gold);color:#1a1408;border-color:var(--gold)}
+.acts button[data-focus=true]{box-shadow:0 0 0 3px var(--gold);border-color:transparent}
+.sr{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip-path:inset(50%)}
+@media(max-width:900px){.screen{padding:16px 20px}.lead{grid-template-columns:1fr;gap:16px}.hero{display:none}.lead h1{font-size:clamp(34px,7vw,58px)}.detail{grid-template-columns:1fr}.detail .poster{display:none}.track{grid-auto-columns:minmax(150px,42vw)}.keys{display:none}}
+@media(reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body data-review-context="browse">
+<main class="screen">
+  <header class="bar">
+    <div class="brand"><i aria-hidden="true"></i>燕居</div>
+    <div class="meta"><span>客厅大屏 · 1920 × 1080</span><span>遥控器操作 · 三米观看</span><b id="clock">20:14</b></div>
+  </header>
+  <section class="lead" aria-labelledby="lead-title">
+    <div>
+      <h1 id="lead-title">今晚<em>继续</em><span>牯岭街手记</span></h1>
+      <p>第 4 集 · 还剩 18 分钟。按下方向键选中封面，确认键继续播放；返回键回到片单首行。</p>
+      <div class="tags"><span>剧情 · 2026</span><span>4K · 杜比</span><span>共 8 集</span><span>上次观看 昨天 22:40</span></div>
+    </div>
+    <div class="hero" aria-hidden="true"><b>牯岭街手记</b><em>续看 18:04</em></div>
+  </section>
+  <div class="rails" id="rails">
+    <section class="rail" aria-labelledby="r1"><h2 id="r1">继续观看</h2>
+      <div class="track" role="group">
+        <button class="tile" data-review-id="tv-continue-1"><span class="art" style="--swatch:linear-gradient(145deg,#43573f,#26362a)"></span><span class="pin">还剩 18 分</span><figcaption><b>牯岭街手记</b><small>第 4 集 · 4K</small></figcaption></button>
+        <button class="tile" data-review-id="tv-continue-2"><span class="art" style="--swatch:linear-gradient(145deg,#4b4032,#2c241b)"></span><span class="pin">还剩 41 分</span><figcaption><b>沿海公路</b><small>第 2 集 · 1080p</small></figcaption></button>
+        <button class="tile" data-review-id="tv-continue-3"><span class="art" style="--swatch:linear-gradient(145deg,#35464c,#222c31)"></span><span class="pin">还剩 9 分</span><figcaption><b>雨夜档案</b><small>第 6 集 · 4K</small></figcaption></button>
+      </div>
+    </section>
+    <section class="rail" aria-labelledby="r2"><h2 id="r2">今晚直播</h2>
+      <div class="track" role="group">
+        <button class="tile" data-review-id="tv-live-1"><span class="art" style="--swatch:linear-gradient(145deg,#5a3a2c,#31221a)"></span><span class="pin">21:00 直播</span><figcaption><b>城南剧院 · 仲夏夜</b><small>直播 · 剩 46 分钟开演</small></figcaption></button>
+        <button class="tile" data-review-id="tv-live-2"><span class="art" style="--swatch:linear-gradient(145deg,#2f4249,#1d2a2e)"></span><span class="pin">21:30 直播</span><figcaption><b>港口联赛 · 第八轮</b><small>直播 · 解说可选</small></figcaption></button>
+        <button class="tile" data-review-id="tv-live-3"><span class="art" style="--swatch:linear-gradient(145deg,#4a4a2e,#2a2a1b)"></span><span class="pin">22:10 直播</span><figcaption><b>夜航电台</b><small>直播 · 点歌互动</small></figcaption></button>
+        <button class="tile" data-review-id="tv-live-4"><span class="art" style="--swatch:linear-gradient(145deg,#3c3248,#241e2c)"></span><span class="pin">明日 08:00</span><figcaption><b>早间书场</b><small>预约 · 已设提醒</small></figcaption></button>
+      </div>
+    </section>
+    <section class="rail" aria-labelledby="r3"><h2 id="r3">纪录片精选</h2>
+      <div class="track" role="group">
+        <button class="tile" data-review-id="tv-doc-1"><span class="art" style="--swatch:linear-gradient(145deg,#2c3f33,#1a2620)"></span><figcaption><b>苔原的十二月</b><small>自然 · 52 分钟</small></figcaption></button>
+        <button class="tile" data-review-id="tv-doc-2"><span class="art" style="--swatch:linear-gradient(145deg,#443a28,#292318)"></span><figcaption><b>铸钟人</b><small>人文 · 3 集</small></figcaption></button>
+        <button class="tile" data-review-id="tv-doc-3"><span class="art" style="--swatch:linear-gradient(145deg,#303d45,#1e272c)"></span><figcaption><b>水路图</b><small>地理 · 4K 修复</small></figcaption></button>
+        <button class="tile" data-review-id="tv-doc-4"><span class="art" style="--swatch:linear-gradient(145deg,#4a3330,#2b1e1c)"></span><figcaption><b>砖窑余温</b><small>人文 · 38 分钟</small></figcaption></button>
+        <button class="tile" data-review-id="tv-doc-5"><span class="art" style="--swatch:linear-gradient(145deg,#33413a,#1e2622)"></span><figcaption><b>潮间带</b><small>自然 · 6 集</small></figcaption></button>
+      </div>
+    </section>
+  </div>
+  <footer class="foot">
+    <div class="keys"><span><kbd>←</kbd><kbd>→</kbd>选片</span><span><kbd>↑</kbd><kbd>↓</kbd>换行</span><span><kbd>确认</kbd>打开</span><span><kbd>返回</kbd>上一级</span></div>
+    <span id="status" role="status">当前选中：牯岭街手记</span>
+  </footer>
+</main>
+<section class="detail" id="detail" aria-labelledby="d-title" hidden>
+  <div class="poster" aria-hidden="true"></div>
+  <div class="body">
+    <p class="sub" id="d-sub">剧情 · 2026 · 4K</p>
+    <h2 id="d-title">牯岭街手记</h2>
+    <p id="d-desc">一座南方小城的旧书店在拆迁前最后一个月。店主与常客轮流讲述他们留在书架上的那本书。</p>
+    <div class="acts" id="d-acts">
+      <button class="play" data-act="play" data-review-id="tv-detail-play">继续播放 · 第 4 集</button>
+      <button data-act="restart">从头开始</button>
+      <button data-act="close">返回片单</button>
+    </div>
+  </div>
+</section>
+<script>
+(() => {
+  'use strict';
+  const detail = document.getElementById('detail');
+  const status = document.getElementById('status');
+  const tiles = [...document.querySelectorAll('.tile')];
+  const acts = [...document.querySelectorAll('#d-acts button')];
+  const meta = {
+    '牯岭街手记': ['剧情 · 2026 · 4K', '一座南方小城的旧书店在拆迁前最后一个月。店主与常客轮流讲述他们留在书架上的那本书。', '继续播放 · 第 4 集'],
+    '沿海公路': ['剧情 · 2025 · 1080p', '两个人沿东部海岸线开车送一批旧家具，途中不断改变主意。', '继续播放 · 第 2 集'],
+    '雨夜档案': ['悬疑 · 2026 · 4K', '一场连续降雨让档案馆的旧卷宗重新被人翻阅。', '继续播放 · 第 6 集'],
+    '城南剧院 · 仲夏夜': ['直播 · 剩 46 分钟开演', '今晚的演出在城南剧院进行，开演前 15 分钟开放入席。', '预约开演提醒'],
+    '港口联赛 · 第八轮': ['直播 · 解说可选', '港口联赛第八轮，主队与客队在本赛季第二次交手。', '预约开演提醒'],
+    '夜航电台': ['直播 · 点歌互动', '深夜电台节目，听众可以点歌并留言。', '预约开演提醒'],
+    '早间书场': ['预约 · 已设提醒', '每天早间播出的评书节目，今天讲第三段。', '取消提醒'],
+    '苔原的十二月': ['自然 · 52 分钟', '一位摄影师在北极圈内记录整个十二月的日照变化。', '播放'],
+    '铸钟人': ['人文 · 3 集', '三代铸造师在同一个作坊里完成最后一口大钟。', '播放'],
+    '水路图': ['地理 · 4K 修复', '沿运河测绘队伍在四十年间的往返记录。', '播放'],
+    '砖窑余温': ['人文 · 38 分钟', '一座停烧的砖窑与守窑人最后的清点。', '播放'],
+    '潮间带': ['自然 · 6 集', '潮水每天两次覆盖又退回的窄带里，生活着另一套秩序。', '播放']
+  };
+  let column = 0, row = 0, inDetail = false, actIndex = 0, last = 0;
+  const rows = () => [...document.querySelectorAll('.track')].map(track => [...track.querySelectorAll('.tile')]);
+  function paint() {
+    const grid = rows();
+    if (inDetail) {
+      tiles.forEach(tile => tile.dataset.focus = 'false');
+      acts.forEach((button, i) => { button.dataset.focus = String(i === actIndex); });
+      return;
+    }
+    grid.forEach((list, r) => list.forEach((tile, c) => {
+      tile.dataset.focus = String(r === row && c === column);
+    }));
+    const current = grid[row] && grid[row][column];
+    if (current) status.textContent = '当前选中：' + current.querySelector('b').textContent;
+  }
+  function openDetail() {
+    const grid = rows();
+    const tile = grid[row] && grid[row][column];
+    if (!tile) return;
+    last = tile;
+    const title = tile.querySelector('b').textContent;
+    const data = meta[title] || ['', '', '播放'];
+    document.getElementById('d-title').textContent = title;
+    document.getElementById('d-sub').textContent = data[0];
+    document.getElementById('d-desc').textContent = data[1];
+    acts[0].textContent = data[2];
+    inDetail = true; actIndex = 0;
+    detail.hidden = false;
+    paint();
+    status.textContent = '已打开 ' + title;
+    acts[0].focus({ preventScroll: true });
+  }
+  function closeDetail() {
+    inDetail = false;
+    detail.hidden = true;
+    paint();
+    if (last) last.focus({ preventScroll: true });
+    status.textContent = '已返回片单';
+  }
+  document.addEventListener('keydown', event => {
+    const key = event.key;
+    if (key === 'Escape' || key === 'Backspace') {
+      if (inDetail) { event.preventDefault(); closeDetail(); }
+      return;
+    }
+    if (inDetail) {
+      if (key === 'ArrowRight' || key === 'ArrowLeft') {
+        event.preventDefault();
+        actIndex = (actIndex + (key === 'ArrowRight' ? 1 : acts.length - 1)) % acts.length;
+        acts[actIndex].focus({ preventScroll: true });
+        paint();
+        return;
+      }
+      if (key === 'Enter' || key === ' ') { event.preventDefault(); acts[actIndex].click(); }
+      return;
+    }
+    const grid = rows();
+    if (key === 'ArrowRight') {
+      event.preventDefault();
+      column = Math.min(column + 1, grid[row].length - 1); paint();
+    } else if (key === 'ArrowLeft') {
+      event.preventDefault();
+      column = Math.max(column - 1, 0); paint();
+    } else if (key === 'ArrowDown') {
+      event.preventDefault();
+      row = Math.min(row + 1, grid.length - 1);
+      column = Math.min(column, grid[row].length - 1);
+      grid[row][column].scrollIntoView({ block: 'nearest' });
+      paint();
+    } else if (key === 'ArrowUp') {
+      event.preventDefault();
+      row = Math.max(row - 1, 0);
+      column = Math.min(column, grid[row].length - 1);
+      grid[row][column].scrollIntoView({ block: 'nearest' });
+      paint();
+    } else if (key === 'Enter' || key === ' ') {
+      event.preventDefault();
+      openDetail();
+    }
+  });
+  tiles.forEach((tile, index) => {
+    tile.addEventListener('click', () => {
+      const grid = rows();
+      for (let r = 0; r < grid.length; r++) {
+        const c = grid[r].indexOf(tile);
+        if (c >= 0) { row = r; column = c; break; }
+      }
+      paint(); openDetail();
+    });
+    tile.addEventListener('focus', () => {
+      const grid = rows();
+      for (let r = 0; r < grid.length; r++) {
+        const c = grid[r].indexOf(tile);
+        if (c >= 0) { row = r; column = c; paint(); break; }
+      }
+    });
+  });
+  acts.forEach((button, i) => {
+    button.addEventListener('focus', () => { actIndex = i; paint(); });
+    button.addEventListener('click', () => {
+      if (button.dataset.act === 'close') { closeDetail(); return; }
+      status.textContent = button.dataset.act === 'play' ? '开始播放（模拟）' : '已从头开始（模拟）';
+      closeDetail();
+    });
+  });
+  const pad = n => String(n).padStart(2, '0');
+  const tick = () => {
+    const now = new Date();
+    document.getElementById('clock').textContent = pad(now.getHours()) + ':' + pad(now.getMinutes());
+  };
+  tick(); setInterval(tick, 20000);
+  paint();
+})();
+</script>
+</body>
+</html>

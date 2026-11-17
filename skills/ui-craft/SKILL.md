@@ -1,6 +1,6 @@
 ---
 name: ui-craft
-description: Design, implement, or review distinctive frontend UI/UX for command-center video walls, public displays, brand websites, business platforms, apps, and mini programs. 用于数据大屏、官网、后台及移动端的视觉设计、交互实现与界面评审。
+description: Design, implement, or review distinctive frontend UI/UX across televisions, kiosks, POS and handhelds, watches, car dashboards and HUDs, AR/VR headsets, e-paper tags, multi-screen workstations, tablets, digital signage, foldables, home panels, websites, business platforms, apps and mini programs. 用于大屏、电视、自助终端、车机、可穿戴、空间计算、多屏工位、折叠屏、家居面板、官网、后台与移动端的视觉设计、交互实现与界面评审。
 ---
 
 # UI-Craft · UI/UX 设计
@@ -11,7 +11,9 @@ description: Design, implement, or review distinctive frontend UI/UX for command
 
 先看项目已有品牌、组件、数据与设备要求。用一句具体的话明确“谁、在什么设备上、依据什么信息、完成什么动作”。从这句话确定首屏最大的对象，以及最先出现的操作。例如园区值班员在值守屏上先看异常区域和影响设备，再转到异常清单处理。窄范围修改沿用既有体系。
 
-从题材里找一件能承担信息的主视觉。轨道测控需要能读的轨迹和过站窗口，港口旅客要先看到下一班的时间与闸口，品牌产品页则可能需要一张能看清材料与尺寸的近景。对新设计，试排两种有实质区别的构图，再决定留白、字形、表面和动效。对已有页面，优先保留用户熟悉的操作位置。收到设计评审请求时，从实际界面找出问题，给出位置、影响、改法与复核路径。
+**先算注意力预算。** 驾驶中只有一瞥、跑步中只有一秒、自助机前有排队的人、电视前隔着三米。注意力越少，信息量与层级越少，可点区域越大。这个判断比风格选择更早发生。
+
+从题材里找一件能承担信息的主视觉。轨道测控需要能读的轨迹和过站窗口，港口旅客要先看到下一班的时间与闸口，品牌产品页则可能需要一张看清材料与尺寸的近景。对新设计，试排两种有实质区别的构图，再决定留白、字形、表面和动效。对已有页面，优先保留用户熟悉的操作位置。收到设计评审请求时，从实际界面找出问题，给出位置、影响、改法与复核路径。
 
 ## 选择参考
 
@@ -30,11 +32,16 @@ description: Design, implement, or review distinctive frontend UI/UX for command
 | 为 App、微信小程序或 H5 设计任务入口、返回、草稿和提交 | [移动平台的导航与验证](references/mobile-platforms.md) |
 | 切换深浅主题、调整长文字号与行距，或在值守界面区分预选和执行 | [外观偏好、阅读位置与动态反馈](references/appearance-and-reading.md) |
 | 设计指挥中心大屏、场馆公共显示或能源监控墙，确定主画面、远距字阶和整屏布局 | [大屏视觉方向与验证](references/wall-displays.md) |
+| 为客厅电视、投屏或机顶盒设计遥控焦点导航与十英尺字阶 | [电视、家用大屏与遥控焦点](references/television.md) |
 | 区分实测与预测，或从区域趋势找到待处理站点 | [数据大屏与分析看板](references/data-display.md) |
+| 设计自助挂号机、排队机、收银台或手持终端，确定扫码、打印与失败回执 | [自助终端、POS 与手持设备](references/terminals-and-pos.md) |
+| 为车机、仪表、HUD、手表、AR 眼镜或 VR 头显分配极低注意力预算 | [座舱、可穿戴与空间计算](references/spatial-and-vehicle.md) |
+| 设计双屏工位、平板分屏、折叠屏形态切换或竖屏数字标牌 | [多屏、形态变化与分屏](references/multi-screen-and-forms.md) |
+| 为墙面家居面板、开关屏或低亮度环境设计即时控制 | [智能家居面板与低注意力界面](references/home-and-panels.md) |
 | 借鉴小米、华为、Rokid、Apple 或记录中的其他品牌 | [官方页面观察与迁移边界](references/brand-research.md) |
 | 检查成品，或根据用户标注修正具体页面 | [质量评审](references/quality-review.md)、[标注反馈](references/review-loop.md) |
 
-同一项目可按页面组合不同场景。图书馆活动介绍需要读者理解活动，选座页需要读者核对场次与座位，可以共享馆徽、字体与品牌色，分别决定标题大小、图片占比和首要操作位置。
+同一项目可按页面组合不同场景。图书馆活动介绍需要读者理解活动，选座页需要读者核对场次与座位，可以共享馆徽、字体与品牌色，分别决定标题大小、图片占比和首要操作位置。同品牌的电视端、手机端与手表端也应共享名称与动作色，但信息量按各自的注意力预算分别裁到不同规模。
 
 ## 实现
 
@@ -42,3 +49,5 @@ description: Design, implement, or review distinctive frontend UI/UX for command
 2. **为视觉角色命名。** 先区分文字、表面、动作、选择、告警、焦点等角色，再从品牌体系映射色值。用间距表达分组，用字阶表达信息重要性。已有设计系统优先。新项目可从 [语义 token 示例](assets/tokens.css) 选择需要的部分。
 3. **实现主路径及其状态。** 搜索、筛选、弹层、提交和返回应改变对应内容或状态。使用场景需要的加载、空、错误、成功反馈。原型采用标明来源的模拟数据，操作结果明确写出是否仅保存在本机。
 4. **用真实视口校准。** 在目标桌面或大屏和代表性窄屏检查裁切、字阶、触控、键盘焦点及动态反馈。给出运行入口、已验证的操作和剩余限制。用户要求本地评审时，验证实际监听地址和 HTTP 响应后再报端口。
+
+**不要用一种风格覆盖所有屏幕。** 同一批界面里，指挥大屏用暗底高对比、自助机用高明度大热区、手表用圆屏内切安全区、电子价签用一位元灰阶、折叠屏用双列重排。风格差异来自设备约束，不是审美偏好。若用户只给了一个方向，仍要为每类设备检查其约束是否被违反。
